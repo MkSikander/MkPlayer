@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MkPlayer" parent="Theme.Material3.DayNight.NoActionBar">
+
+         <item name="colorPrimary">#504E53</item>
+        <item name="android:background">#7A7680</item>
+    </style>
+</resources>
