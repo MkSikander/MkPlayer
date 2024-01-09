@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -45,6 +46,8 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         }
     }
 
+
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -64,7 +67,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
 
         // Set item views based on the data model
         holder.folderNameTextView.setText(videoFolder.getFolderName());
-        holder.folderVideoCount.setText(String.valueOf(noOfFiles(fpath.get(position))));
+        holder.folderVideoCount.setText((noOfFiles(fpath.get(position))));
 
         // Bind other data if needed
 
@@ -82,7 +85,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
     }
 
 
-    private int noOfFiles(String folderPath) {
+    private String noOfFiles(String folderPath) {
         int fileCount = 0;
 
         File folder = new File(folderPath);
@@ -101,8 +104,10 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
                 }
             }
         }
+        String filesInFolder = fileCount + " videos";
+        Log.d("VideoFolder","videoFolder with videos"+filesInFolder);
 
-        return fileCount;
+        return filesInFolder;
     }
 
 

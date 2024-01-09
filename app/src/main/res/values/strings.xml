@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Mk Player</string>
+    <string name="download">Download</string>
+    <string name="thumbnail_image_des">thumbnail image</string>
+    <string name="duration_placeholder">04:12</string>
+    <string name="video_title_placeHolder">Video Title</string>
+    <string name="more_button_des">more button</string>
+    <string name="delete">Delete</string>
+    <string name="share">Share</string>
+    <string name="info">Info</string>
+    <string name="rename">Rename</string>
+    <string name="place_holder_folder_name">Videos (3)</string>
 </resources>

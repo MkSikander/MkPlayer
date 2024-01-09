@@ -1,9 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.MkPlayer" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Light theme -->
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorPrimaryContainer">@color/white</item>
+        <item name="colorAccent">@color/colorLightDark</item>
+        <item name="colorPrimaryDark">@color/colorLightDark1</item>
+        <item name="colorTertiary">@color/colorLightDark2</item>
+        <item name="colorTertiaryFixedDim">@color/colorLightDark3</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Add other light theme attributes -->
 
-    <style name="Theme.MkPlayer" parent="Base.Theme.MkPlayer" />
+<!--        &lt;!&ndash; Dark theme &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/colorPrimaryDark</item>-->
+<!--        <item name="colorSecondary">@color/colorSecondaryDark</item>-->
+<!--        &lt;!&ndash; Add other dark theme attributes &ndash;&gt;-->
+
+        <!-- Dynamic (system default) theme -->
+<!--        <item name="colorPrimary">@color/colorPrimaryDynamic</item>-->
+<!--        <item name="colorSecondary">@color/colorSecondaryDynamic</item>-->
+        <!-- Add other dynamic theme attributes -->
+    </style>
 </resources>

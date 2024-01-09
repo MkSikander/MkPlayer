@@ -1,8 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MkPlayer" parent="Theme.Material3.DayNight.NoActionBar">
 
-         <item name="colorPrimary">#504E53</item>
-        <item name="android:background">#7A7680</item>
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+
+
+        <!-- Dark theme -->
+        <item name="colorPrimary">@color/colorSecondaryDark</item>
+        <item name="colorPrimaryContainer">#151717</item>
+        <item name="colorTertiary">@color/colorPrimaryLight</item>
+        <item name="android:statusBarColor">#151717</item>
+
+        <!-- Add other dark theme attributes -->
+
+        <!-- Dynamic (system default) theme -->
+<!--        <item name="colorPrimary">@color/colorPrimaryDynamic</item>-->
+<!--        <item name="colorSecondary">@color/colorSecondaryDynamic</item>-->
+        <!-- Add other dynamic theme attributes -->
     </style>
 </resources>

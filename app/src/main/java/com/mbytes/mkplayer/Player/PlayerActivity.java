@@ -10,6 +10,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -18,10 +19,12 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.mbytes.mkplayer.R;
 
+import java.io.File;
+
 public class PlayerActivity extends AppCompatActivity {
 
 
-    private SimpleExoPlayer player;
+    private ExoPlayer player;
     private PlayerView playerView;
 
 
@@ -31,19 +34,26 @@ public class PlayerActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
         playerView = findViewById(R.id.player_view);
-        player = new SimpleExoPlayer.Builder(PlayerActivity.this).build();
+
         String videoPath = getIntent().getStringExtra("path");
 
-        MediaSource mediaSource = new ProgressiveMediaSource.Factory(
-                new DefaultDataSourceFactory(PlayerActivity.this, "Mk Player")
-        ).createMediaSource(MediaItem.fromUri(Uri.parse(videoPath)));
+        setRequestedOrientation(getVideoRotation(videoPath));
 
-        int videoRotation = getVideoRotation(videoPath);
-        setRequestedOrientation(videoRotation);
+        initializePlayer(videoPath);
 
+    }
+
+    private void initializePlayer(String videoPath) {
+        player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
-        player.prepare(mediaSource);
-
+        // Build the media item.
+        MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(videoPath)));
+// Set the media item to be played.
+        player.setMediaItem(mediaItem);
+// Prepare the player.
+        player.prepare();
+// Start the playback.
+        player.play();
     }
 
     //getting video Orientation
@@ -67,7 +77,10 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if(player!= null)
+        {
         player.release();
+        }
         super.onDestroy();
     }
 
@@ -78,6 +91,21 @@ public class PlayerActivity extends AppCompatActivity {
         // Pause the player when the activity is not visible
         if (player != null) {
             player.setPlayWhenReady(false);
+
+                player.release();
+            // Release the player here
+            player = null; // Set player to null to indicate it's released
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // Release the player when the back button is pressed
+        if (player != null) {
+            player.setPlayWhenReady(false);
+            player.release();
+            player = null;
         }
     }
     @Override

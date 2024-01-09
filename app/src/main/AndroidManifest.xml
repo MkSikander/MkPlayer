@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,17 +15,20 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MkPlayer"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
         <activity
             android:name=".Player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".VideosListActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".AllowAccessActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

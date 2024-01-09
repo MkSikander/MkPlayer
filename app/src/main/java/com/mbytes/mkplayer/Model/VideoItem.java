@@ -7,14 +7,39 @@ import java.util.Objects;
 public class VideoItem {
     private String videoName;
     private String videoPath;
+    private boolean isVideoPlayed;
+    private String videoDuration;
 
 
-    public VideoItem(String videoName, String videoPath) {
+
+
+
+
+
+
+
+    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration) {
         this.videoName = videoName;
         this.videoPath = videoPath;
+        this.isVideoPlayed=isVideoPlayed;
+        this.videoDuration=videoDuration;
 
     }
+    public void setVideoPlayed(boolean videoPlayed) {
+        isVideoPlayed = videoPlayed;
+    }
 
+    public boolean isVideoPlayed() {
+        return isVideoPlayed;
+    }
+
+    public String getVideoDuration() {
+        return videoDuration;
+    }
+
+    public void setVideoDuration(String videoDuration) {
+        this.videoDuration = videoDuration;
+    }
 
     public String getVideoName() {
         return videoName;
@@ -37,12 +62,12 @@ public class VideoItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoItem videoItem = (VideoItem) o;
-        return Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath);
+        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(videoName, videoPath);
+        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration);
     }
 
     @Override
@@ -50,7 +75,10 @@ public class VideoItem {
         return "VideoItem{" +
                 "videoName='" + videoName + '\'' +
                 ", videoPath='" + videoPath + '\'' +
-
+                ", isVideoPlayed=" + isVideoPlayed +
+                ", videoDuration='" + videoDuration + '\'' +
                 '}';
     }
+
+
 }
