@@ -1,4 +1,4 @@
-package com.mbytes.mkplayer;
+package com.mbytes.mkplayer.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.mbytes.mkplayer.Adapter.VideoListAdapter;
 import com.mbytes.mkplayer.Model.VideoItem;
-import com.mbytes.mkplayer.Utils.FolderSort;
+import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.VideoSort;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 

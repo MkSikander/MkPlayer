@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
-import com.mbytes.mkplayer.VideosListActivity;
+import com.mbytes.mkplayer.activities.VideosListActivity;
 
 import java.io.File;
 import java.util.ArrayList;
