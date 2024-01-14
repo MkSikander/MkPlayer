@@ -36,6 +36,8 @@ dependencies {
     implementation (libs.glide)
     implementation (libs.swiperefreshlayout)
     implementation(libs.exoplayer)
+
+
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)

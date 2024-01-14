@@ -9,6 +9,7 @@
         <item name="colorTertiary">@color/colorPrimaryLight</item>
         <item name="android:statusBarColor">#151717</item>
 
+
         <!-- Add other dark theme attributes -->
 
         <!-- Dynamic (system default) theme -->

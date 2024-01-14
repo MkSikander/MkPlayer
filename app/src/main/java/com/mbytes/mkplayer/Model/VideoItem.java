@@ -2,27 +2,25 @@ package com.mbytes.mkplayer.Model;
 
 import android.graphics.Bitmap;
 
+import java.util.Date;
 import java.util.Objects;
 
-public class VideoItem {
+public class VideoItem implements Comparable<VideoItem>{
     private String videoName;
     private String videoPath;
     private boolean isVideoPlayed;
     private String videoDuration;
+    private Date dateAdded;
 
 
 
-
-
-
-
-
-
-    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration) {
+    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration,Date dateAdded) {
         this.videoName = videoName;
         this.videoPath = videoPath;
         this.isVideoPlayed=isVideoPlayed;
         this.videoDuration=videoDuration;
+        this.dateAdded=dateAdded;
+
 
     }
     public void setVideoPlayed(boolean videoPlayed) {
@@ -31,6 +29,14 @@ public class VideoItem {
 
     public boolean isVideoPlayed() {
         return isVideoPlayed;
+    }
+
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
     }
 
     public String getVideoDuration() {
@@ -62,12 +68,12 @@ public class VideoItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoItem videoItem = (VideoItem) o;
-        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration);
+        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration);
+        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration, dateAdded);
     }
 
     @Override
@@ -77,8 +83,13 @@ public class VideoItem {
                 ", videoPath='" + videoPath + '\'' +
                 ", isVideoPlayed=" + isVideoPlayed +
                 ", videoDuration='" + videoDuration + '\'' +
+                ", dateAdded=" + dateAdded +
                 '}';
     }
 
+    @Override
 
+    public int compareTo(VideoItem otherItem) {
+        return this.getDateAdded().compareTo(otherItem.getDateAdded());
+    }
 }

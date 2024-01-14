@@ -12,14 +12,17 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- Add other light theme attributes -->
 
-<!--        &lt;!&ndash; Dark theme &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/colorPrimaryDark</item>-->
-<!--        <item name="colorSecondary">@color/colorSecondaryDark</item>-->
-<!--        &lt;!&ndash; Add other dark theme attributes &ndash;&gt;-->
 
-        <!-- Dynamic (system default) theme -->
-<!--        <item name="colorPrimary">@color/colorPrimaryDynamic</item>-->
-<!--        <item name="colorSecondary">@color/colorSecondaryDynamic</item>-->
-        <!-- Add other dynamic theme attributes -->
+    </style>
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorPrimaryDark</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+
     </style>
 </resources>

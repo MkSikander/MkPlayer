@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginTop="3dp"
+
+    android:layout_marginTop="5dp"
+    android:background="?attr/selectableItemBackground"
     android:layout_height="wrap_content">
 
     <ImageView
         android:layout_width="wrap_content"
         android:src="@drawable/ic_folder"
+        android:layout_marginStart="10dp"
         android:id="@+id/icon"
         android:layout_height="wrap_content"/>
 <LinearLayout
@@ -23,6 +24,7 @@
         android:text="@string/download"
         android:textColor="?attr/colorTertiary"
         android:textStyle="bold"
+        android:layout_marginEnd="20dp"
         android:textSize="17sp"
         android:fontFamily="sans-serif"
         android:layout_marginStart="13dp"

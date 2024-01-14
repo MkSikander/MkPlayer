@@ -14,4 +14,5 @@
     <color name="colorDark1">#615055</color>
     <color name="colorPrimaryDynamic">?attr/colorPrimary</color>
     <color name="colorSecondaryDynamic">?attr/colorSecondary</color>
+    <color name="colorAccent">#4E9597</color>
 </resources>

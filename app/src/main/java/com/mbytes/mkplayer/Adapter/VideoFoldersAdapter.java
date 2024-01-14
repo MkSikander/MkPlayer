@@ -1,8 +1,6 @@
 package com.mbytes.mkplayer.Adapter;
 
 
-import static com.google.common.io.Files.getFileExtension;
-
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -28,12 +26,20 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
 
     private final List<VideoFolder> videoFolders;
     private ArrayList<String> fpath;
+    private Context context;
 
-    public VideoFoldersAdapter(List<VideoFolder> videoFolders,ArrayList<String> fpath) {
+
+    public VideoFoldersAdapter(List<VideoFolder> videoFolders, ArrayList<String> fpath) {
         this.videoFolders = videoFolders;
         this.fpath=fpath;
-    }
 
+
+    }
+    public void toggleSelection(int position) {
+        VideoFolder folder = videoFolders.get(position);
+        folder.setSelected(!folder.isSelected());
+        notifyItemChanged(position);
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
         public TextView folderNameTextView,folderVideoCount;
@@ -68,6 +74,11 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         // Set item views based on the data model
         holder.folderNameTextView.setText(videoFolder.getFolderName());
         holder.folderVideoCount.setText((noOfFiles(fpath.get(position))));
+        // Handle folder selection
+
+
+
+
 
         // Bind other data if needed
 

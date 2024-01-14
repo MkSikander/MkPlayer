@@ -1,14 +1,30 @@
 package com.mbytes.mkplayer.Model;
 
-public class VideoFolder {
+import java.util.Date;
+import java.util.Objects;
+
+public class VideoFolder implements Comparable<VideoFolder> {
     private String folderName;
     private String folderPath;
+    private Date dateAdded;
+    private boolean isSelected;
 
 
-    public VideoFolder(String folderName, String folderPath) {
+    public VideoFolder(String folderName, String folderPath, Date dateAdded) {
         this.folderName = folderName;
         this.folderPath = folderPath;
+        this.dateAdded = dateAdded;
+        this.isSelected = false; // Default to not selected
     }
+
+    // Constructor with isSelected parameter
+    public VideoFolder(String folderName, String folderPath, Date dateAdded, boolean isSelected) {
+        this.folderName = folderName;
+        this.folderPath = folderPath;
+        this.dateAdded = dateAdded;
+        this.isSelected = isSelected;
+    }
+
 
     public String getFolderName() {
         return folderName;
@@ -16,6 +32,14 @@ public class VideoFolder {
 
     public void setFolderName(String folderName) {
         this.folderName = folderName;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     public String getFolderPath() {
@@ -26,23 +50,25 @@ public class VideoFolder {
         this.folderPath = folderPath;
     }
 
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         VideoFolder that = (VideoFolder) o;
-
-        if (folderName != null ? !folderName.equals(that.folderName) : that.folderName != null) return false;
-        return folderPath != null ? folderPath.equals(that.folderPath) : that.folderPath == null;
+        return isSelected == that.isSelected && Objects.equals(folderName, that.folderName) && Objects.equals(folderPath, that.folderPath) && Objects.equals(dateAdded, that.dateAdded);
     }
 
     @Override
     public int hashCode() {
-        int result = folderName != null ? folderName.hashCode() : 0;
-        result = 31 * result + (folderPath != null ? folderPath.hashCode() : 0);
-        return result;
+        return Objects.hash(folderName, folderPath, dateAdded, isSelected);
     }
 
     @Override
@@ -50,6 +76,14 @@ public class VideoFolder {
         return "VideoFolder{" +
                 "folderName='" + folderName + '\'' +
                 ", folderPath='" + folderPath + '\'' +
+                ", dateAdded=" + dateAdded +
+                ", isSelected=" + isSelected +
                 '}';
+    }
+
+    @Override
+
+    public int compareTo(VideoFolder otherFolder) {
+        return this.getDateAdded().compareTo(otherFolder.getDateAdded());
     }
 }

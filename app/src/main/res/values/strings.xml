@@ -10,4 +10,6 @@
     <string name="info">Info</string>
     <string name="rename">Rename</string>
     <string name="place_holder_folder_name">Videos (3)</string>
+    <string name="allow_access">Allow Access</string>
+    <string name="permission_text">To Play Videos Please Give Storage Permission</string>
 </resources>

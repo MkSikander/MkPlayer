@@ -1,35 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="?attr/colorPrimaryContainer"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
-    
-
     <TextView
+        android:id="@+id/heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginStart="20dp"
         android:text="Folders"
-        android:textStyle="bold"
+        android:textAlignment="center"
         android:textColor="?attr/colorTertiary"
-        android:layout_margin="10dp"
-        android:id="@+id/heading"
-        android:textSize="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="21sp"
+        android:textStyle="bold" />
+
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:id="@+id/img_setting"
+    android:src="@drawable/ic_setting"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:clipToPadding="false"
+    android:layout_alignParentEnd="true"
+    android:contentDescription="@string/permission_text"
+  />
+
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_sort"
+            android:src="@drawable/ic_sort"
+            android:layout_marginEnd="55dp"
+            android:layout_marginTop="20dp"
+         android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clipToPadding="false"
+            android:layout_gravity="start"/>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="0dp"
         android:id="@+id/folders_recyclerview"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/heading"
-        android:layout_height="0dp"/>
+        android:layout_below="@+id/img_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>
