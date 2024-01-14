@@ -17,9 +17,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+
 
 public class VideoUtils {
 

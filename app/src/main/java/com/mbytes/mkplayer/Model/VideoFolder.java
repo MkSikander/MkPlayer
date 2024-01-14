@@ -1,5 +1,7 @@
 package com.mbytes.mkplayer.Model;
 
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -52,6 +54,7 @@ public class VideoFolder implements Comparable<VideoFolder> {
         return Objects.hash(folderName, folderPath, dateAdded);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "VideoFolder{" +

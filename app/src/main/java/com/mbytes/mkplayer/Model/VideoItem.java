@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class VideoItem implements Comparable<VideoItem>{
-    private String videoName;
+    private final String videoName;
     private final String videoPath;
     private final boolean isVideoPlayed;
     private final String videoDuration;
