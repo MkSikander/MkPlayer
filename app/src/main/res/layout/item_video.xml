@@ -16,14 +16,12 @@
         app:cardCornerRadius="5dp">
 
 
-
-
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="95dp"
             android:layout_height="58dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher"
+            android:background="@color/black"
             android:contentDescription="@string/thumbnail_image_des" />
 
         <TextView
@@ -43,11 +41,12 @@
             android:layout_width="wrap_content"
             android:id="@+id/symbol_new"
             android:text="New"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@color/white"
             android:background="@drawable/new_view"
             android:visibility="gone"
             android:layout_marginStart="3dp"
-            android:padding="1dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
             android:layout_marginTop="3dp"
             android:textSize="11sp"
             android:layout_gravity="top|start"

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+
+
+        <!-- Dark theme -->
+        <item name="colorPrimary">@color/colorSecondaryDark</item>
+        <item name="colorPrimaryContainer">#151717</item>
+        <item name="colorTertiary">@color/colorPrimaryLight</item>
+        <item name="android:statusBarColor">#151717</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_app</item>
+
+        <!-- Add other dark theme attributes -->
+
+        <!-- Dynamic (system default) theme -->
+        <!--        <item name="colorPrimary">@color/colorPrimaryDynamic</item>-->
+        <!--        <item name="colorSecondary">@color/colorSecondaryDynamic</item>-->
+        <!-- Add other dynamic theme attributes -->
+    </style>
+</resources>
