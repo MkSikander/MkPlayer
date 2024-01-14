@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 >
@@ -10,23 +11,26 @@ android:layout_height="match_parent"
     android:layout_height="wrap_content"
     android:src="@drawable/ic_round_remove_24"
     android:layout_gravity="center|top"
-    android:scaleType="centerCrop"/>
+    android:scaleType="centerCrop"
+    android:contentDescription="@string/todo" />
 
     <LinearLayout
-
         android:orientation="horizontal"
+        android:id="@+id/rename_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:padding="10dp">
+        android:padding="10dp"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_rename"/>
+            android:src="@drawable/ic_rename"
+            android:contentDescription="@string/todo" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:id="@+id/layout_rename"
             android:layout_height="wrap_content"
             android:text="@string/rename"
@@ -39,21 +43,22 @@ android:layout_height="match_parent"
 
     android:orientation="horizontal"
     android:layout_width="match_parent"
+    android:id="@+id/delete_layout"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:padding="10dp">
+    android:padding="10dp"
+    tools:ignore="UseCompoundDrawables">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_delete"/>
+        android:src="@drawable/ic_delete"
+        android:contentDescription="@string/todo" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:id="@+id/layout_delete"
         android:layout_height="wrap_content"
         android:text="@string/delete"
-
         android:textColor="?attr/colorTertiary"
         android:layout_marginStart="30dp"
         android:textSize="16sp"/>
@@ -61,20 +66,22 @@ android:layout_height="match_parent"
 </LinearLayout>
 
 <LinearLayout
-
     android:orientation="horizontal"
     android:layout_width="match_parent"
+    android:id="@+id/share_layout"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:padding="10dp"
+    tools:ignore="UseCompoundDrawables">
 
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_share"/>
+        android:src="@drawable/ic_share"
+        android:contentDescription="@string/todo" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/share"
         android:id="@+id/layout_share"
@@ -91,17 +98,20 @@ android:layout_height="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
+    android:id="@+id/info_layout"
     android:paddingTop="10dp"
-    android:paddingBottom="30dp">
+    android:paddingBottom="30dp"
+    tools:ignore="UseCompoundDrawables">
 
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_info"/>
+        android:src="@drawable/ic_info"
+        android:contentDescription="@string/todo" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:id="@+id/layout_info"
         android:layout_height="wrap_content"
         android:text="@string/info"

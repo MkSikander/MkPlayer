@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="?attr/colorPrimaryContainer"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".Activities.MainActivity">
     <TextView
         android:id="@+id/heading"
         android:layout_width="wrap_content"
@@ -17,7 +16,7 @@
         android:layout_marginBottom="15dp"
         android:layout_marginTop="18dp"
         android:layout_marginStart="20dp"
-        android:text="Folders"
+        android:text="@string/folders"
         android:textAlignment="center"
         android:textColor="?attr/colorTertiary"
         android:textSize="21sp"
@@ -35,8 +34,6 @@
     android:contentDescription="@string/permission_text"
   />
 
-
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,7 +44,8 @@
          android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clipToPadding="false"
-            android:layout_gravity="start"/>
+            android:layout_gravity="start"
+            android:contentDescription="@string/todo" />
 
 
 

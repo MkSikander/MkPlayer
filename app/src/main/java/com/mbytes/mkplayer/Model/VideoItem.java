@@ -1,35 +1,51 @@
 package com.mbytes.mkplayer.Model;
 
-import android.graphics.Bitmap;
+
+import androidx.annotation.NonNull;
 
 import java.util.Date;
 import java.util.Objects;
 
 public class VideoItem implements Comparable<VideoItem>{
     private String videoName;
-    private String videoPath;
-    private boolean isVideoPlayed;
-    private String videoDuration;
+    private final String videoPath;
+    private final boolean isVideoPlayed;
+    private final String videoDuration;
     private Date dateAdded;
+    private final String videoType;
+    private final String videoResolution;
+    private final long videoSize;
 
 
 
-    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration,Date dateAdded) {
+    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration,Date dateAdded,long videoSize,String videoType,String videoResolution) {
         this.videoName = videoName;
         this.videoPath = videoPath;
         this.isVideoPlayed=isVideoPlayed;
         this.videoDuration=videoDuration;
         this.dateAdded=dateAdded;
+        this.videoSize=videoSize;
+        this.videoResolution=videoResolution;
+        this.videoType=videoType;
 
 
     }
-    public void setVideoPlayed(boolean videoPlayed) {
-        isVideoPlayed = videoPlayed;
+
+    public String getVideoType() {
+        return videoType;
     }
 
-    public boolean isVideoPlayed() {
-        return isVideoPlayed;
+    public String getVideoResolution() {
+        return videoResolution;
     }
+
+
+
+    public long getVideoSize() {
+        return videoSize;
+    }
+
+
 
     public Date getDateAdded() {
         return dateAdded;
@@ -43,39 +59,34 @@ public class VideoItem implements Comparable<VideoItem>{
         return videoDuration;
     }
 
-    public void setVideoDuration(String videoDuration) {
-        this.videoDuration = videoDuration;
-    }
+
 
     public String getVideoName() {
         return videoName;
     }
 
-    public void setVideoName(String videoName) {
-        this.videoName = videoName;
-    }
+
 
     public String getVideoPath() {
         return videoPath;
     }
 
-    public void setVideoPath(String videoPath) {
-        this.videoPath = videoPath;
-    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoItem videoItem = (VideoItem) o;
-        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded);
+        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoResolution, videoItem.videoResolution) && videoSize == videoItem.videoSize && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded) && Objects.equals(videoType, videoItem.videoType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration, dateAdded);
+        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration, dateAdded, videoType, videoResolution, videoSize);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "VideoItem{" +
@@ -84,6 +95,9 @@ public class VideoItem implements Comparable<VideoItem>{
                 ", isVideoPlayed=" + isVideoPlayed +
                 ", videoDuration='" + videoDuration + '\'' +
                 ", dateAdded=" + dateAdded +
+                ", videoType='" + videoType + '\'' +
+                ", videoResolution=" + videoResolution +
+                ", videoSize=" + videoSize +
                 '}';
     }
 

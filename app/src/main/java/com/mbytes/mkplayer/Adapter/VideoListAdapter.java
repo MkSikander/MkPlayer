@@ -3,13 +3,12 @@ package com.mbytes.mkplayer.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -32,7 +31,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
 
     private final List<VideoItem> videos;
@@ -57,6 +56,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         }
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -69,7 +69,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data model based on position
         VideoItem videoItem = videos.get(position);
         // Set symbol based on video playback status
@@ -89,23 +89,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         holder.videoDuration.setText(VideoUtils.timeConversion((long)milliSeconds));
 
         // Bind other data if needed
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              Context context = view.getContext();
-                setVideoPlayedStatus(videoItem.getVideoPath(), true);
-                Intent intent = new Intent(context, PlayerActivity.class);
-                intent.putExtra("path",videoItem.getVideoPath());
-                context.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+          Context context = view.getContext();
+            setVideoPlayedStatus(videoItem.getVideoPath());
+            Intent intent = new Intent(context, PlayerActivity.class);
+            intent.putExtra("path",videoItem.getVideoPath());
+            context.startActivity(intent);
         });
         
-        holder.moreMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VideoUtils.showMenu(view.getContext(), view, videoItem);
-            }
-        });
+        holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
     }
 
 
@@ -119,12 +111,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoLoadListener.onVideoLoadRequested();
         }
     }
-    private void setVideoPlayedStatus(String videoPath, boolean isPlayed) {
+    private void setVideoPlayedStatus(String videoPath) {
         // Save video playback status to SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(videoKey, isPlayed);
+        editor.putBoolean(videoKey, true);
         editor.apply();
     }
     private boolean getVideoPlayedStatus(String videoPath) {

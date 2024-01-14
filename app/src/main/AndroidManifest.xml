@@ -4,8 +4,8 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:ignore="SelectedPhotoAccess" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
 
     <application
         android:allowBackup="true"
@@ -18,20 +18,20 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".Activities.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="false" />
         <activity
             android:name=".Player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"
             android:exported="true" />
         <activity
-            android:name=".activities.VideosListActivity"
+            android:name=".Activities.VideosListActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.AllowAccessActivity"
+            android:name=".Activities.AllowAccessActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

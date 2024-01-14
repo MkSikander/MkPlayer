@@ -4,25 +4,17 @@ import java.util.Date;
 import java.util.Objects;
 
 public class VideoFolder implements Comparable<VideoFolder> {
-    private String folderName;
-    private String folderPath;
+    private final String folderName;
+    private final String folderPath;
     private Date dateAdded;
-    private boolean isSelected;
+
 
 
     public VideoFolder(String folderName, String folderPath, Date dateAdded) {
         this.folderName = folderName;
         this.folderPath = folderPath;
         this.dateAdded = dateAdded;
-        this.isSelected = false; // Default to not selected
-    }
 
-    // Constructor with isSelected parameter
-    public VideoFolder(String folderName, String folderPath, Date dateAdded, boolean isSelected) {
-        this.folderName = folderName;
-        this.folderPath = folderPath;
-        this.dateAdded = dateAdded;
-        this.isSelected = isSelected;
     }
 
 
@@ -30,25 +22,14 @@ public class VideoFolder implements Comparable<VideoFolder> {
         return folderName;
     }
 
-    public void setFolderName(String folderName) {
-        this.folderName = folderName;
-    }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
+
 
     public String getFolderPath() {
         return folderPath;
     }
 
-    public void setFolderPath(String folderPath) {
-        this.folderPath = folderPath;
-    }
 
     public Date getDateAdded() {
         return dateAdded;
@@ -63,12 +44,12 @@ public class VideoFolder implements Comparable<VideoFolder> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoFolder that = (VideoFolder) o;
-        return isSelected == that.isSelected && Objects.equals(folderName, that.folderName) && Objects.equals(folderPath, that.folderPath) && Objects.equals(dateAdded, that.dateAdded);
+        return  Objects.equals(folderName, that.folderName) && Objects.equals(folderPath, that.folderPath) && Objects.equals(dateAdded, that.dateAdded);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(folderName, folderPath, dateAdded, isSelected);
+        return Objects.hash(folderName, folderPath, dateAdded);
     }
 
     @Override
@@ -77,7 +58,6 @@ public class VideoFolder implements Comparable<VideoFolder> {
                 "folderName='" + folderName + '\'' +
                 ", folderPath='" + folderPath + '\'' +
                 ", dateAdded=" + dateAdded +
-                ", isSelected=" + isSelected +
                 '}';
     }
 

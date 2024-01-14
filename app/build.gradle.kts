@@ -36,9 +36,9 @@ dependencies {
     implementation (libs.glide)
     implementation (libs.swiperefreshlayout)
     implementation(libs.exoplayer)
-
-
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    annotationProcessor (libs.compiler)
+    implementation (libs.dash)
+    implementation (libs.ui)
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

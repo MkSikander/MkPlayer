@@ -1,9 +1,6 @@
 package com.mbytes.mkplayer.Utils;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -37,34 +34,31 @@ public class FolderSort {
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Sort Options")
-                .setSingleChoiceItems(new CustomSortAdapter(context, items, checkedItemIndex), checkedItemIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Handle the selected sorting option
-                        switch (which) {
-                            case 0:
-                                editor.putString("sort", "sortName");
-                                break;
-                            case 1:
-                                editor.putString("sort", "sortNamer");
-                                break;
-                            case 2:
-                                editor.putString("sort", "sortDate");
-                                break;
-                            case 3:
-                                editor.putString("sort", "sortDater");
-                                break;
-                        }
-                        editor.apply();
-
-                        // Notify the listener that the sorting preference has been updated
-                        if (listener != null) {
-                            listener.onSortOptionSelected();
-                        }
-
-                        // Dismiss the dialog after handling the selection
-                        dialog.dismiss();
+                .setSingleChoiceItems(new CustomSortAdapter(context, items, checkedItemIndex), checkedItemIndex, (dialog, which) -> {
+                    // Handle the selected sorting option
+                    switch (which) {
+                        case 0:
+                            editor.putString("sort", "sortName");
+                            break;
+                        case 1:
+                            editor.putString("sort", "sortNamer");
+                            break;
+                        case 2:
+                            editor.putString("sort", "sortDate");
+                            break;
+                        case 3:
+                            editor.putString("sort", "sortDater");
+                            break;
                     }
+                    editor.apply();
+
+                    // Notify the listener that the sorting preference has been updated
+                    if (listener != null) {
+                        listener.onSortOptionSelected();
+                    }
+
+                    // Dismiss the dialog after handling the selection
+                    dialog.dismiss();
                 });
 
 
@@ -72,8 +66,8 @@ public class FolderSort {
     }
 
     private static class CustomSortAdapter extends ArrayAdapter<String> {
-        private Context context;
-        private int checkedItemIndex;
+        private final Context context;
+        private final int checkedItemIndex;
 
         public CustomSortAdapter(Context context, String[] items, int checkedItemIndex) {
             super(context, R.layout.custom_sort_item, items);
@@ -116,8 +110,6 @@ public class FolderSort {
         private int getIconResId(int position) {
             // Replace with your logic to get the icon resource ID based on position
             switch (position) {
-                case 0:
-                    return R.drawable.sort_name;
                 case 1:
                     return R.drawable.sort_name_reverse;
                 case 2:
@@ -159,11 +151,17 @@ public class FolderSort {
 
 
         public static class VideoFolderComparator implements Comparator<VideoFolder> {
-            private String sortBy;
+            private final String sortBy;
 
             public VideoFolderComparator(Context context) {
                 SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-                sortBy = preferences.getString("sort", "folderName");
+                if (!preferences.contains("sort")) {
+                    // Set a default sort preference (e.g., "sortName")
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("sort", "sortName");
+                    editor.apply();
+                }
+                sortBy = preferences.getString("sort", "sortName");
             }
 
             @Override

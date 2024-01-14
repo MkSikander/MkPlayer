@@ -2,24 +2,18 @@ package com.mbytes.mkplayer.Player;
 
 
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.mbytes.mkplayer.R;
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 
+import com.mbytes.mkplayer.R;
 import java.io.File;
+import java.util.Objects;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -62,8 +56,8 @@ public class PlayerActivity extends AppCompatActivity {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             retriever.setDataSource(videoPath);
             // Swap width and height for portrait videos
-            int width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-            int height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            int width = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
+            int height = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
             if (width > height) {
                 return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
             }
@@ -97,17 +91,7 @@ public class PlayerActivity extends AppCompatActivity {
             player = null; // Set player to null to indicate it's released
         }
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
 
-        // Release the player when the back button is pressed
-        if (player != null) {
-            player.setPlayWhenReady(false);
-            player.release();
-            player = null;
-        }
-    }
     @Override
     protected void onRestart() {
         super.onRestart();

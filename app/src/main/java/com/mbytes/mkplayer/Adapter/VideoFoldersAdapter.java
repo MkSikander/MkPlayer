@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
-import com.mbytes.mkplayer.activities.VideosListActivity;
+import com.mbytes.mkplayer.Activities.VideosListActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.List;
 public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapter.ViewHolder> {
 
     private final List<VideoFolder> videoFolders;
-    private ArrayList<String> fpath;
-    private Context context;
+    private final ArrayList<String> fpath;
+
 
 
     public VideoFoldersAdapter(List<VideoFolder> videoFolders, ArrayList<String> fpath) {
@@ -35,11 +35,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
 
 
     }
-    public void toggleSelection(int position) {
-        VideoFolder folder = videoFolders.get(position);
-        folder.setSelected(!folder.isSelected());
-        notifyItemChanged(position);
-    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
         public TextView folderNameTextView,folderVideoCount;
@@ -82,16 +78,13 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
 
         // Bind other data if needed
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Handle item click
-                Context context = view.getContext();
-                Intent intent = new Intent(context, VideosListActivity.class);
-                intent.putExtra("folderPath", videoFolder.getFolderPath());
-                intent.putExtra("nameOfFolder", videoFolder.getFolderName());
-                context.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            // Handle item click
+            Context context = view.getContext();
+            Intent intent = new Intent(context, VideosListActivity.class);
+            intent.putExtra("folderPath", videoFolder.getFolderPath());
+            intent.putExtra("nameOfFolder", videoFolder.getFolderName());
+            context.startActivity(intent);
         });
     }
 
@@ -130,12 +123,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         }
 
         // Check by MIME type
-        if (isVideoFileByMimeType(filePath)) {
-
-            return true;
-        }
-
-        return false;
+        return isVideoFileByMimeType(filePath);
     }
 
     private boolean isVideoFileByExtension(String filePath) {
@@ -173,7 +161,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
     private String getMimeType(String filePath) {
         String extension = getFileExtension(filePath);
 
-        if (extension.length() > 0) {
+        if (!extension.isEmpty()) {
             return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
 

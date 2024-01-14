@@ -12,4 +12,18 @@
     <string name="place_holder_folder_name">Videos (3)</string>
     <string name="allow_access">Allow Access</string>
     <string name="permission_text">To Play Videos Please Give Storage Permission</string>
+    <string name="cancel">Cancel</string>
+    <string name="okay">Okay</string>
+    <string name="file_name">File Name:</string>
+    <string name="file_info">File Info</string>
+    <string name="rename_video">Rename Video</string>
+    <string name="folders">Folders</string>
+    <string name="todo">TODO</string>
+    <string name="enter_new_name">Enter new name</string>
+    <string name="size">Size:</string>
+    <string name="path">Path:</string>
+    <string name="duration">Duration:</string>
+    <string name="date_added">Date Added:</string>
+    <string name="format">Format:</string>
+    <string name="resolution">Resolution:</string>
 </resources>

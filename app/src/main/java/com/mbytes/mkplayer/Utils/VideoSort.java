@@ -1,6 +1,5 @@
 package com.mbytes.mkplayer.Utils;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -27,38 +26,35 @@ public class VideoSort {
         SharedPreferences.Editor editor = preferences.edit();
 
         final String[] items = {"Name (A-Z)", "Name (Z - A)", "Date (New - Old)", "Date (Old - New)"};
-        int checkedItemIndex = getCheckedItemIndex(preferences.getString("sortvideo", "abc"));
+        int checkedItemIndex = getCheckedItemIndex(preferences.getString("sortVideo", "abc"));
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Sort Options")
-                .setSingleChoiceItems(new VideoSort.CustomSortAdapter(context, items, checkedItemIndex), checkedItemIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Handle the selected sorting option
-                        switch (which) {
-                            case 0:
-                                editor.putString("sortvideo", "sortName");
-                                break;
-                            case 1:
-                                editor.putString("sortvideo", "sortNamer");
-                                break;
-                            case 2:
-                                editor.putString("sortvideo", "sortDate");
-                                break;
-                            case 3:
-                                editor.putString("sortvideo", "sortDater");
-                                break;
-                        }
-                        editor.apply();
-
-                        // Notify the listener that the sorting preference has been updated
-                        if (listener != null) {
-                            listener.onSortOptionSelected();
-                        }
-
-                        // Dismiss the dialog after handling the selection
-                        dialog.dismiss();
+                .setSingleChoiceItems(new VideoSort.CustomSortAdapter(context, items, checkedItemIndex), checkedItemIndex, (dialog, which) -> {
+                    // Handle the selected sorting option
+                    switch (which) {
+                        case 0:
+                            editor.putString("sortVideo", "sortName");
+                            break;
+                        case 1:
+                            editor.putString("sortVideo", "sortNamer");
+                            break;
+                        case 2:
+                            editor.putString("sortVideo", "sortDate");
+                            break;
+                        case 3:
+                            editor.putString("sortVideo", "sortDater");
+                            break;
                     }
+                    editor.apply();
+
+                    // Notify the listener that the sorting preference has been updated
+                    if (listener != null) {
+                        listener.onSortOptionSelected();
+                    }
+
+                    // Dismiss the dialog after handling the selection
+                    dialog.dismiss();
                 });
 
 
@@ -66,8 +62,8 @@ public class VideoSort {
     }
 
     private static class CustomSortAdapter extends ArrayAdapter<String> {
-        private Context context;
-        private int checkedItemIndex;
+        private final Context context;
+        private final int checkedItemIndex;
 
         public CustomSortAdapter(Context context, String[] items, int checkedItemIndex) {
             super(context, R.layout.custom_sort_item, items);
@@ -110,8 +106,6 @@ public class VideoSort {
         private int getIconResId(int position) {
             // Replace with your logic to get the icon resource ID based on position
             switch (position) {
-                case 0:
-                    return R.drawable.sort_name;
                 case 1:
                     return R.drawable.sort_name_reverse;
                 case 2:
@@ -153,11 +147,17 @@ public class VideoSort {
 
 
     public static class VideoFilesComparator implements Comparator<VideoItem> {
-        private String sortBy;
+        private final String sortBy;
 
         public VideoFilesComparator(Context context) {
             SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-            sortBy = preferences.getString("sortvideo", "videoItemName");
+            if (!preferences.contains("sortVideo")) {
+                // Set a default sort preference (e.g., "sortName")
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("sortVideo", "sortName");
+                editor.apply();
+            }
+            sortBy = preferences.getString("sortVideo", "sortName");
         }
 
         @Override
