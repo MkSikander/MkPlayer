@@ -3,12 +3,16 @@ package com.mbytes.mkplayer.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -16,42 +20,47 @@ import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> implements VideoUtils.AdapterCallback{
-
+public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> implements VideoUtils.AdapterCallback {
 
 
     public interface VideoLoadListener {
         void onVideoLoadRequested();
     }
     private VideoLoadListener videoLoadListener;
-
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
     private final SharedPreferences sharedPreferences;
+    private final ArrayList<VideoItem> videos;
 
-
-    private final List<VideoItem> videos;
-    public VideoListAdapter(List<VideoItem> videos, SharedPreferences sharedPreferences) {
+    public VideoListAdapter(ArrayList<VideoItem> videos, SharedPreferences sharedPreferences) {
         this.videos = videos;
-        this.sharedPreferences=sharedPreferences;
+        this.sharedPreferences = sharedPreferences;
+
     }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
-        public TextView videoName,videoDuration,newText;
+        public TextView videoName, videoDuration, newText;
         public ImageView thumbnail, moreMenu;
         Context context;
+        CheckBox checkBox;
+
         public ViewHolder(View itemView) {
             super(itemView);
             videoName = itemView.findViewById(R.id.video_name);
+            checkBox = itemView.findViewById(R.id.checkbox);
             newText = itemView.findViewById(R.id.symbol_new);
             thumbnail = itemView.findViewById(R.id.thumbnail);
-            videoDuration =itemView.findViewById(R.id.video_duration);
+            videoDuration = itemView.findViewById(R.id.video_duration);
             moreMenu = itemView.findViewById(R.id.video_menu_more);
-            context =itemView.getContext();
+            context = itemView.getContext();
+
             // Add other views if needed
         }
     }
@@ -68,12 +77,26 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
     }
 
-    @Override
+    @OptIn(markerClass = UnstableApi.class) @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get the data model based on position
         VideoItem videoItem = videos.get(position);
-        // Set symbol based on video playback status
 
+        holder.itemView.setOnClickListener(view -> {
+            Context context = view.getContext();
+            setVideoPlayedStatus(videoItem.getVideoPath());
+            Intent intent = new Intent(context, PlayerActivity.class);
+            intent.putExtra("position", position);
+            intent.putExtra("video_title",videoItem.getVideoName());
+            Bundle bundle=new Bundle();
+            bundle.putParcelableArrayList("videoArrayList",videos);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
+
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            VideoUtils.showMenu(view.getContext(), videoItem);
+            return false;
+        });
         double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
 
         boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
@@ -82,24 +105,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         } else {
             holder.newText.setVisibility(View.VISIBLE);
         }
-
         Glide.with(holder.context).load(new File(videoItem.getVideoPath())).into(holder.thumbnail);
-
         holder.videoName.setText(videoItem.getVideoName());
-        holder.videoDuration.setText(VideoUtils.timeConversion((long)milliSeconds));
-
-        // Bind other data if needed
-        holder.itemView.setOnClickListener(view -> {
-          Context context = view.getContext();
-            setVideoPlayedStatus(videoItem.getVideoPath());
-            Intent intent = new Intent(context, PlayerActivity.class);
-            intent.putExtra("path",videoItem.getVideoPath());
-            context.startActivity(intent);
-        });
-        
+        holder.videoDuration.setText(VideoUtils.timeConversion((long) milliSeconds));
         holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
     }
-
 
     @Override
     public int getItemCount() {
@@ -111,6 +121,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoLoadListener.onVideoLoadRequested();
         }
     }
+
     private void setVideoPlayedStatus(String videoPath) {
         // Save video playback status to SharedPreferences
         // Use a unique key for each video
@@ -119,6 +130,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         editor.putBoolean(videoKey, true);
         editor.apply();
     }
+
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         // Use a unique key for each video

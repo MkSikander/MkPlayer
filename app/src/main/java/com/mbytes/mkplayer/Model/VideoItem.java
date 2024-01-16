@@ -1,17 +1,23 @@
 package com.mbytes.mkplayer.Model;
 
 
-import androidx.annotation.NonNull;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import java.util.Date;
 import java.util.Objects;
 
-public class VideoItem implements Comparable<VideoItem>{
+public class VideoItem implements Comparable<VideoItem>, Parcelable {
     private final String videoName;
     private final String videoPath;
     private final boolean isVideoPlayed;
     private final String videoDuration;
     private Date dateAdded;
+
+
+
+
     private final String videoType;
     private final String videoResolution;
     private final long videoSize;
@@ -30,6 +36,29 @@ public class VideoItem implements Comparable<VideoItem>{
 
 
     }
+
+
+    protected VideoItem(Parcel in) {
+        videoName = in.readString();
+        videoPath = in.readString();
+        isVideoPlayed = in.readByte() != 0;
+        videoDuration = in.readString();
+        videoType = in.readString();
+        videoResolution = in.readString();
+        videoSize = in.readLong();
+    }
+
+    public static final Creator<VideoItem> CREATOR = new Creator<VideoItem>() {
+        @Override
+        public VideoItem createFromParcel(Parcel in) {
+            return new VideoItem(in);
+        }
+
+        @Override
+        public VideoItem[] newArray(int size) {
+            return new VideoItem[size];
+        }
+    };
 
     public String getVideoType() {
         return videoType;
@@ -105,5 +134,21 @@ public class VideoItem implements Comparable<VideoItem>{
 
     public int compareTo(VideoItem otherItem) {
         return this.getDateAdded().compareTo(otherItem.getDateAdded());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeString(videoName);
+        parcel.writeString(videoPath);
+        parcel.writeByte((byte) (isVideoPlayed ? 1 : 0));
+        parcel.writeString(videoDuration);
+        parcel.writeString(videoType);
+        parcel.writeString(videoResolution);
+        parcel.writeLong(videoSize);
     }
 }

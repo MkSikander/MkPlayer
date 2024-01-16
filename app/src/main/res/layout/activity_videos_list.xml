@@ -31,6 +31,7 @@
         android:layout_gravity="start"
         android:contentDescription="@string/todo" />
 
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:layout_width="match_parent"
     android:id="@+id/swipe_refresh"
@@ -41,9 +42,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:id="@+id/videos_recyclerview"
+
         android:layout_height="match_parent"/>
 
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
