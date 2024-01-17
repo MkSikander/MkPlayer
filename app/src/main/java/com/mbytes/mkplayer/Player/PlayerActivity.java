@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +50,7 @@ public class PlayerActivity extends AppCompatActivity {
     TextView title;
     int position;
     ConcatenatingMediaSource concatenatingMediaSource;
-    ImageButton nextBtn, prevBtn;
+    ImageView nextBtn, prevBtn;
 
 
     @Override
@@ -59,13 +60,12 @@ public class PlayerActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
         playerView = findViewById(R.id.player_view);
-        nextBtn = findViewById(R.id.btn_play_next);
-        prevBtn = findViewById(R.id.btn_play_prev);
+        nextBtn = findViewById(R.id.exo_next_btn);
+        prevBtn = findViewById(R.id.exo_prev);
         position = getIntent().getIntExtra("position", 1);
         videoTitle = getIntent().getStringExtra("video_title");
         playerVideos = getIntent().getExtras().getParcelableArrayList("videoArrayList");
-        title = findViewById(R.id.video_name);
-
+        title = findViewById(R.id.video_title);
         nextBtn.setOnClickListener(view -> PlayNext());
         prevBtn.setOnClickListener(view -> PlayPrev());
 
