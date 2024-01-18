@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.mbytes.mkplayer.Adapter.VideoFoldersAdapter;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
@@ -32,6 +35,14 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private SharedPreferences preferences;
     ArrayList<String> FolderPath;
     ImageView settingImg,sortImg;
+    SwipeRefreshLayout refreshLayout;
+
+    private List<VideoFolder> videoFolders;
+
+    private VideoFoldersAdapter adapter;
+    private ArrayList<String> sortedFPath;
+    private Handler mHandler;
+    private Runnable mRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +50,19 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         setContentView(R.layout.activity_main);
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
+        refreshLayout=findViewById(R.id.refresh_folder);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
         FolderPath = new ArrayList<>();
+        videoFolders = new ArrayList<>();
+        sortedFPath = new ArrayList<>();
         foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         foldersRecyclerview.setHasFixedSize(true);
+
+        adapter = new VideoFoldersAdapter(videoFolders, sortedFPath);
+        foldersRecyclerview.setAdapter(adapter);
+
+        mHandler = new Handler();
 
         if (isVideoFoldersEmpty()) {
             // Redirect to AllowAccessActivity
@@ -57,7 +76,22 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
             startActivity(intent);
         });
         sortImg.setOnClickListener(view -> FolderSort.showSortOptionsDialog(MainActivity.this, MainActivity.this));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                mHandler.postDelayed(mRunnable, 500);
+            }
+        });
+
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                loadVideoFolders();
+            }
+        };
     }
+
     @Override
     public void onSortOptionSelected() {
         sortPref = preferences.getString("sort", "sortName");
@@ -84,21 +118,21 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         editor.apply();
     }
     private void loadVideoFolders() {
-
-        List<VideoFolder> videoFolders = getVideoFolders();
-        ArrayList<String> fPath = getFolpath();
+        videoFolders.clear();
+        videoFolders.addAll(getVideoFolders());
         videoFolders.sort(new FolderSort.VideoFolderComparator(MainActivity.this));
-        Log.d("SortPreference", "Selected sort preference: " + sortPref);
         // Create a sorted copy of the FolderPath list based on the sorted videoFolders list
-        ArrayList<String> sortedFPath = new ArrayList<>();
+
+        ArrayList<String> fPath = getFolpath();
+        sortedFPath.clear();
         for (VideoFolder folder : videoFolders) {
             String folderPath = folder.getFolderPath();
             if (fPath.contains(folderPath)) {
                 sortedFPath.add(folderPath);
             }
         }
-        VideoFoldersAdapter adapter = new VideoFoldersAdapter(videoFolders, sortedFPath);
-        foldersRecyclerview.setAdapter(adapter);
+        refreshLayout.setRefreshing(false);
+        adapter.notifyDataSetChanged();
     }
 
 

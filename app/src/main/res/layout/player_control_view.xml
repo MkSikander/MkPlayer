@@ -19,11 +19,12 @@
             android:orientation="horizontal"
             android:visibility="visible">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/video_back"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
                 android:src="@drawable/ic_arrow_left" />
 
             <TextView
@@ -122,29 +123,29 @@
 
                 <ImageView
                     android:id="@+id/unlock"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_lock_open" />
 
                 <ImageView
                     android:id="@+id/exo_rew"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/rewind_back" />
 
                 <ImageView
                     android:id="@+id/exo_prev"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_skip_prev" />
 
                 <ImageView
                     android:id="@+id/exo_play_pause"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_play" />
 
@@ -157,15 +158,15 @@
 
                 <ImageView
                     android:id="@+id/exo_next_btn"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_skip_next" />
 
                 <ImageView
                     android:id="@+id/exo_ffwd"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/rewind_forward" />
 

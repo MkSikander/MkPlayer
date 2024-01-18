@@ -125,7 +125,7 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
                 ", videoDuration='" + videoDuration + '\'' +
                 ", dateAdded=" + dateAdded +
                 ", videoType='" + videoType + '\'' +
-                ", videoResolution=" + videoResolution +
+                ", videoResolution='" + videoResolution + '\'' +
                 ", videoSize=" + videoSize +
                 '}';
     }

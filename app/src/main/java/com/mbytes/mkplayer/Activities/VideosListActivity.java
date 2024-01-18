@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,8 +33,11 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private SharedPreferences preferences;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<VideoItem> videosList;
+    private Handler mHandler;
+    private Runnable mRunnable;
     private SharedPreferences sharedPreferences;
     ImageView sortImg;
+    ImageButton backBtn;
 
 
     @SuppressLint("SetTextI18n")
@@ -42,6 +48,8 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         RecyclerView videosRecyclerview = findViewById(R.id.videos_recyclerview);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
         sortImg = findViewById(R.id.img_sort);
+        backBtn = findViewById(R.id.list_back);
+        mHandler = new Handler();
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         videosList = new ArrayList<>();
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
@@ -51,8 +59,16 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         adapter.setVideoLoadListener(this);
         videosRecyclerview.setAdapter(adapter);
         VideoUtils.setAdapterCallback(adapter);
-        swipeRefreshLayout.setOnRefreshListener(this::loadVideos);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            mHandler.postDelayed(mRunnable, 500);
+        });
+
+        mRunnable = this::loadVideos;
+
+
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
+        backBtn.setOnClickListener(view -> finish());
     }
 
     @Override
@@ -105,23 +121,39 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         return videosInFolder;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged"})
     public void loadVideos() {
-        String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
-        videosList.clear();
-        videosList.addAll(getVideosInFolder(folderPath));
-        videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
-        String nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
-        TextView videoCount = findViewById(R.id.heading);
-        runOnUiThread(new Runnable() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-                videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
-            }
-        });
-        adapter.notifyDataSetChanged();
-        swipeRefreshLayout.setRefreshing(false);
+        new LoadVideosTask().execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class LoadVideosTask extends AsyncTask<Void, Void, List<VideoItem>> {
+
+        @Override
+        protected void onPreExecute() {
+            swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<VideoItem> doInBackground(Void... params) {
+            String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
+            return getVideosInFolder(folderPath);
+        }
+
+        @Override
+        protected void onPostExecute(List<VideoItem> result) {
+            videosList.clear();
+            videosList.addAll(result);
+            videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
+            String nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
+            TextView videoCount = findViewById(R.id.heading);
+            assert nameOfFolder != null;
+            nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0, 13) + "..." : nameOfFolder;
+            videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
+            adapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override

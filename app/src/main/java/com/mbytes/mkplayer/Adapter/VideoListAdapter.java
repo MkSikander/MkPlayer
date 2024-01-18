@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> implements VideoUtils.AdapterCallback {
 
 
@@ -97,8 +98,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             VideoUtils.showMenu(view.getContext(), videoItem);
             return false;
         });
-        double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
 
+        double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
         boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
         if (isVideoPlayed) {
             holder.newText.setVisibility(View.GONE);
