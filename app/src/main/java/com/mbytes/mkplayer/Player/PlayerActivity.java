@@ -50,7 +50,7 @@ public class PlayerActivity extends AppCompatActivity {
     TextView title;
     int position;
     ConcatenatingMediaSource concatenatingMediaSource;
-    ImageView nextBtn, prevBtn;
+    ImageView nextBtn, prevBtn,backBtn;
 
 
     @Override
@@ -62,12 +62,14 @@ public class PlayerActivity extends AppCompatActivity {
         playerView = findViewById(R.id.player_view);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
+        backBtn =findViewById(R.id.video_back);
         position = getIntent().getIntExtra("position", 1);
         videoTitle = getIntent().getStringExtra("video_title");
         playerVideos = getIntent().getExtras().getParcelableArrayList("videoArrayList");
         title = findViewById(R.id.video_title);
         nextBtn.setOnClickListener(view -> PlayNext());
         prevBtn.setOnClickListener(view -> PlayPrev());
+        backBtn.setOnClickListener(view -> finish());
 
         initializePlayer();
 

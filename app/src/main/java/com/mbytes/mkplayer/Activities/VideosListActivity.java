@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private ArrayList<VideoItem> videosList;
     private SharedPreferences sharedPreferences;
     ImageView sortImg;
+    ImageButton backBtn;
 
 
     @SuppressLint("SetTextI18n")
@@ -42,6 +44,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         RecyclerView videosRecyclerview = findViewById(R.id.videos_recyclerview);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
         sortImg = findViewById(R.id.img_sort);
+        backBtn=findViewById(R.id.list_back);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         videosList = new ArrayList<>();
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
@@ -53,6 +56,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         VideoUtils.setAdapterCallback(adapter);
         swipeRefreshLayout.setOnRefreshListener(this::loadVideos);
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
+        backBtn.setOnClickListener(view -> finish());
     }
 
     @Override
@@ -105,7 +109,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         return videosInFolder;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     public void loadVideos() {
         String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
         videosList.clear();
@@ -113,13 +117,9 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
         String nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
         TextView videoCount = findViewById(R.id.heading);
-        runOnUiThread(new Runnable() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void run() {
-                videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
-            }
-        });
+        assert nameOfFolder != null;
+        nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0,13)+"..." : nameOfFolder ;
+        videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
         adapter.notifyDataSetChanged();
         swipeRefreshLayout.setRefreshing(false);
     }
