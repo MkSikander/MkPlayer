@@ -51,6 +51,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         public ImageView thumbnail, moreMenu;
         Context context;
         CheckBox checkBox;
+        VideoItem videoItem;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -61,6 +62,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoDuration = itemView.findViewById(R.id.video_duration);
             moreMenu = itemView.findViewById(R.id.video_menu_more);
             context = itemView.getContext();
+
 
             // Add other views if needed
         }
@@ -75,30 +77,19 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         // Return a new holder instance
         return new ViewHolder(view);
 
-
     }
 
-    @OptIn(markerClass = UnstableApi.class) @Override
+    @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        VideoItem videoItem = videos.get(position);
+         VideoItem videoItem = videos.get(position);
 
         holder.itemView.setOnClickListener(view -> {
-            Context context = view.getContext();
-            setVideoPlayedStatus(videoItem.getVideoPath());
-            Intent intent = new Intent(context, PlayerActivity.class);
-            intent.putExtra("position", position);
-            intent.putExtra("video_title",videoItem.getVideoName());
-            Bundle bundle=new Bundle();
-            bundle.putParcelableArrayList("videoArrayList",videos);
-            intent.putExtras(bundle);
-            context.startActivity(intent);
-
+         onItemViewClicked(view,videoItem,position);
         });
         holder.itemView.setOnLongClickListener(view -> {
             VideoUtils.showMenu(view.getContext(), videoItem);
             return false;
         });
-
         double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
         boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
         if (isVideoPlayed) {
@@ -112,6 +103,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
     }
 
+    @OptIn(markerClass = UnstableApi.class)
+    private void onItemViewClicked(View view , VideoItem videoItem, int position) {
+        Context context = view.getContext();
+        setVideoPlayedStatus(videoItem.getVideoPath());
+        Intent intent = new Intent(context, PlayerActivity.class);
+        intent.putExtra("position", position);
+        intent.putExtra("video_title",videoItem.getVideoName());
+        Bundle bundle=new Bundle();
+        bundle.putParcelableArrayList("videoArrayList",videos);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
     @Override
     public int getItemCount() {
         return videos.size();

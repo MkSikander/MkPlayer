@@ -2,22 +2,35 @@ package com.mbytes.mkplayer.Model;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class VideoFolder implements Comparable<VideoFolder> {
+public class VideoFolder implements Comparable<VideoFolder>, Serializable {
     private final String folderName;
     private final String folderPath;
+    private int videoCount;
     private Date dateAdded;
 
 
 
-    public VideoFolder(String folderName, String folderPath, Date dateAdded) {
+
+    public VideoFolder(String folderName, String folderPath, Date dateAdded,int videoCount) {
         this.folderName = folderName;
         this.folderPath = folderPath;
         this.dateAdded = dateAdded;
+        this.videoCount=videoCount;
+
 
     }
+    public int getVideoCount() {
+        return videoCount;
+    }
+
+    public void setVideoCount(int videoCount) {
+        this.videoCount = videoCount;
+    }
+
 
 
     public String getFolderName() {

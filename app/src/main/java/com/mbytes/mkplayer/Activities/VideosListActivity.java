@@ -98,8 +98,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED);
             int sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE);
             int typeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE);
-            int widthColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION);
-            int heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION);
+            int resolutionColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION);
             while (cursor.moveToNext()) {
                 String videoName = cursor.getString(nameColumn);
                 String videoPath = cursor.getString(pathColumn);
@@ -109,9 +108,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 long videoSize = cursor.getLong(sizeColumn);
                 String format = cursor.getString(typeColumn);
                 String videoType = format.substring(format.lastIndexOf("/") + 1);
-                String videoWith = cursor.getString(widthColumn);
-                String videoHeight = cursor.getString(heightColumn);
-                String videoResolution = (videoWith + " x " + videoHeight);
+                String videoResolution = cursor.getString(resolutionColumn);
                 if (videoPath.lastIndexOf(File.separator) == folderPath.length()) {
                     VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDuration, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
                     videoItem.setDateAdded(new Date(dateAddedTimeStamp * 1000));
