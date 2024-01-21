@@ -51,9 +51,8 @@ public class FolderUtils {
 
         TextView shareTextView = bottomSheetView.findViewById(R.id.layout_share);
         shareTextView.setOnClickListener(v -> {
-            shareVideo(context, videoFolder);
+            shareFolder(context, videoFolder);
             bottomSheetDialog.dismiss();
-
         });
 
         TextView propertiesTextView = bottomSheetView.findViewById(R.id.layout_info);
@@ -80,11 +79,11 @@ public class FolderUtils {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Are You Sure");
         dialogBuilder.setMessage("Deleted video will not be restored");
-        dialogBuilder.setPositiveButton("Delete", (dialogInterface, i) -> deleteVideo(context, videoFolder));
+        dialogBuilder.setPositiveButton("Delete", (dialogInterface, i) -> deleteFolder(videoFolder));
 
         return dialogBuilder;
     }
-
+//renaming Folder
     private static void renameVideo(Context context, VideoFolder videoFolder) {
         MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context);
         View customView = LayoutInflater.from(context).inflate(R.layout.custom_rename_dialog, null);
@@ -103,7 +102,7 @@ public class FolderUtils {
 
         renameButton.setOnClickListener(view -> {
             String newName = newNameEditText.getText().toString().trim();
-            renameFolder(context, videoFolder.getFolderPath(), newName);
+            renameFolder(videoFolder.getFolderPath(), newName);
 
 
         });
@@ -113,7 +112,7 @@ public class FolderUtils {
         // Create and show the dialog
         alertDialog.show();
     }
-    private static void renameFolder(Context context, String currentFolderPath, String newName) {
+    private static void renameFolder( String currentFolderPath, String newName) {
         File currentFolder = new File(currentFolderPath);
         File parentDirectory = currentFolder.getParentFile();
 
@@ -134,8 +133,8 @@ public class FolderUtils {
             // Invalid parent directory
              alertDialog.dismiss();
         }}
-    // Video Delete
-    private static void deleteVideo(Context context, VideoFolder videoFolder) {
+    // Folder Delete
+    private static void deleteFolder( VideoFolder videoFolder) {
         File folder = new File(videoFolder.getFolderPath());
 
         if (folder.exists() && folder.isDirectory()) {
@@ -158,15 +157,11 @@ public class FolderUtils {
             if (adapterCallback != null) {
                 adapterCallback.onAdapterMethodCalled();
             }
-
         }
-
-
-
     }
 
     //Video Sharing
-    private static void shareVideo(Context context, VideoFolder videoFolder) {
+    private static void shareFolder(Context context, VideoFolder videoFolder) {
         String folderPath = videoFolder.getFolderPath();
 
         Intent intent = new Intent();
