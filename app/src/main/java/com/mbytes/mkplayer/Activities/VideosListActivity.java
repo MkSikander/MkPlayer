@@ -60,7 +60,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         adapter = new VideoListAdapter(videosList, sharedPreferences);
         adapter.setVideoLoadListener(this);
         videosRecyclerview.setAdapter(adapter);
-        Toast.makeText(this, "Hellogit", Toast.LENGTH_SHORT).show();
         VideoUtils.setAdapterCallback(adapter);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
