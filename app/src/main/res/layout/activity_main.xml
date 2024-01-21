@@ -35,8 +35,19 @@
     android:layout_alignParentEnd="true"
     android:contentDescription="@string/permission_text"
   />
+    <CheckBox
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        android:layout_alignParentEnd="true"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal"
+        />
 
-        <ImageView
+
+    <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/img_sort"
@@ -62,6 +73,136 @@
         android:layout_height="match_parent"
         />
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorTertiaryContainer">
+
+        <!-- Add your buttons for rename, delete, share, and a select all checkbox here -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent"
+            >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/rename_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_rename"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/layout_rename"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rename"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:id="@+id/delete_layout"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_delete"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/layout_delete"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:id="@+id/share_layout"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_share"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share"
+                    android:id="@+id/layout_share"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:id="@+id/info_layout"
+                android:padding="10dp"
+                tools:ignore="UseCompoundDrawables">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/layout_info"
+                    android:layout_height="wrap_content"
+                    android:text="@string/info"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </RelativeLayout>

@@ -4,6 +4,7 @@
         <!-- Light theme -->
         <item name="colorPrimary">@color/colorPrimaryLight</item>
         <item name="colorPrimaryContainer">@color/white</item>
+        <item name="colorTertiaryContainer">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorLightDark</item>
         <item name="colorPrimaryDark">@color/colorLightDark1</item>
         <item name="colorTertiary">@color/colorLightDark2</item>

@@ -6,6 +6,7 @@
         <!-- Dark theme -->
         <item name="colorPrimary">@color/colorSecondaryDark</item>
         <item name="colorPrimaryContainer">#151717</item>
+        <item name="colorTertiaryContainer">@color/colorPrimaryLight</item>
         <item name="colorTertiary">@color/colorPrimaryLight</item>
         <item name="android:statusBarColor">#151717</item>
 

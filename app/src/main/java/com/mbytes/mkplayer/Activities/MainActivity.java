@@ -1,19 +1,28 @@
 package com.mbytes.mkplayer.Activities;
 
+
+import static com.mbytes.mkplayer.Utils.MainActivityHelper.isVideoFile;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Adapter.VideoFoldersAdapter;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
@@ -33,14 +42,12 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private RecyclerView foldersRecyclerview;
     private String sortPref = "sortName";
     private SharedPreferences preferences;
-    ArrayList<String> FolderPath;
-    ImageView settingImg,sortImg;
+    private LinearLayout renameLayout, deleteLayout, shareLayout, infoLayout;
+    ImageView settingImg, sortImg;
     SwipeRefreshLayout refreshLayout;
-
-    private List<VideoFolder> videoFolders;
-
+    private ConstraintLayout bottomBar;
     private VideoFoldersAdapter adapter;
-    private ArrayList<String> sortedFPath;
+    private ArrayList<VideoFolder> sortedFolder;
     private Handler mHandler;
     private Runnable mRunnable;
 
@@ -48,103 +55,73 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init();
+        onCreateHelper();
+    }
+
+    void init() {
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
-        refreshLayout=findViewById(R.id.refresh_folder);
+        infoLayout = findViewById(R.id.info_layout);
+        refreshLayout = findViewById(R.id.refresh_folder);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
-        FolderPath = new ArrayList<>();
-        videoFolders = new ArrayList<>();
-        sortedFPath = new ArrayList<>();
+        bottomBar = findViewById(R.id.bottomBar);
+        renameLayout = findViewById(R.id.rename_layout);
+        sortedFolder = new ArrayList<>();
         foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         foldersRecyclerview.setHasFixedSize(true);
-
-        adapter = new VideoFoldersAdapter(videoFolders, sortedFPath);
+        adapter = new VideoFoldersAdapter(sortedFolder);
         foldersRecyclerview.setAdapter(adapter);
+    }
 
-        mHandler = new Handler();
+    void onCreateHelper() {
 
-        if (isVideoFoldersEmpty()) {
-            // Redirect to AllowAccessActivity
-            redirectToAllowAccessActivity();
-        } else {
-            // Load video folders
-            loadVideoFolders();
-        }
+        loadVideoFolders();
+
         settingImg.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
         sortImg.setOnClickListener(view -> FolderSort.showSortOptionsDialog(MainActivity.this, MainActivity.this));
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshLayout.setRefreshing(true);
-                mHandler.postDelayed(mRunnable, 500);
-            }
+
+        mHandler = new Handler();
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(true);
+
+            mHandler.postDelayed(mRunnable, 500);
         });
 
-        mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                loadVideoFolders();
-            }
+        mRunnable = () -> {
+            bottomBar.setVisibility(View.GONE);
+            loadVideoFolders();
         };
     }
 
     @Override
     public void onSortOptionSelected() {
         sortPref = preferences.getString("sort", "sortName");
-        Log.d("SortPreference", "Selected sort preference: " + sortPref);
         loadVideoFolders();
     }
-    private boolean isVideoFoldersEmpty() {
-        List<VideoFolder> videoFolders = getVideoFolders();
-        return videoFolders.isEmpty();
-    }
-    private void redirectToAllowAccessActivity() {
-        // Update shared preference to "default"
-        updateAllowAccessPreference("default");
 
-        // Redirect to AllowAccessActivity
-        Intent intent = new Intent(MainActivity.this, AllowAccessActivity.class);
-        startActivity(intent);
-        finish();
-    }
-    private void updateAllowAccessPreference(String value) {
-        SharedPreferences preferences = getSharedPreferences("AllowAccess", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("Allow", value);
-        editor.apply();
-    }
+
     private void loadVideoFolders() {
-        videoFolders.clear();
-        videoFolders.addAll(getVideoFolders());
-        videoFolders.sort(new FolderSort.VideoFolderComparator(MainActivity.this));
-        // Create a sorted copy of the FolderPath list based on the sorted videoFolders list
-
-        ArrayList<String> fPath = getFolpath();
-        sortedFPath.clear();
-        for (VideoFolder folder : videoFolders) {
-            String folderPath = folder.getFolderPath();
-            if (fPath.contains(folderPath)) {
-                sortedFPath.add(folderPath);
-            }
-        }
+        sortedFolder.clear();
+        sortedFolder.addAll(getVideoFolders());
+        sortedFolder.sort(new FolderSort.VideoFolderComparator(MainActivity.this));
         refreshLayout.setRefreshing(false);
         adapter.notifyDataSetChanged();
     }
 
-
-    private List<VideoFolder> getVideoFolders() {
+    public List<VideoFolder> getVideoFolders() {
         List<VideoFolder> videoFolders = new ArrayList<>();
         Set<String> uniqueFolderPaths = new HashSet<>();
-        String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.BUCKET_DISPLAY_NAME,MediaStore.Video.Media.DATE_ADDED};
-        Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null,null);
+        String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.BUCKET_DISPLAY_NAME, MediaStore.Video.Media.DATE_ADDED};
+        Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
         if (cursor != null) {
             int pathColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
             int folderColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
-            int dateAddedColumn=cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED);
+            int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED);
             while (cursor.moveToNext()) {
                 String path = cursor.getString(pathColumn);
                 String folderName = cursor.getString(folderColumn);
@@ -154,32 +131,34 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
                 String folderPath = new File(path).getParent();
                 String uniqueKey = lowercaseFolderName + folderPath;
                 if (!path.startsWith("/0") && uniqueFolderPaths.add(uniqueKey)) {
-
-                    if (!FolderPath.contains(folderPath)) {
-                        FolderPath.add(folderPath);
-                    }
-                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000));
-
-                    videoFolder.setDateAdded(new Date(dateAddedTimeStamp*1000));
-
-                       // Log.d("MainActivity", "Folder Name: " + folderName);
-
-                        videoFolders.add(videoFolder);
+                    int videoCount = noOfFiles(folderPath);
+                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000),videoCount);
+                    videoFolder.setDateAdded(new Date(dateAddedTimeStamp * 1000));
+                    videoFolders.add(videoFolder);
 
                 }
             }
             cursor.close();
         }
-
         return videoFolders;
     }
 
-
-    private ArrayList<String> getFolpath() {
-        ArrayList<String> fPath;
-        fPath = FolderPath;
-        Log.d("FolderPath", "Folder Path: " + fPath);
-        return fPath;
+// To get Count Of Videos In Particular Folder
+    private static int noOfFiles(String folderPath) {
+        int fileCount = 0;
+        File folder = new File(folderPath);
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (isVideoFile(file.getPath())) {
+                        fileCount++;
+                    }
+                }
+            }
+        }
+        return fileCount;
     }
+
 
 }
