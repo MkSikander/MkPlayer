@@ -13,14 +13,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Activities.VideosListActivity;
+import com.mbytes.mkplayer.Utils.FolderUtils;
+
 import java.util.ArrayList;
 
-public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapter.ViewHolder> {
+public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapter.ViewHolder> implements FolderUtils.AdapterCallback {
 
     private final ArrayList<VideoFolder> videoFolders;
     public VideoFoldersAdapter(ArrayList<VideoFolder> videoFolders) {
         this.videoFolders = videoFolders;
     }
+    public interface VideoLoadListener {
+        void onVideoLoadRequested();
+    }
+    private VideoLoadListener videoLoadListener;
+    public void setVideoLoadListener(VideoLoadListener listener) {
+        this.videoLoadListener = listener;
+    }
+
+    @Override
+    public void onAdapterMethodCalled() {
+        if (videoLoadListener != null) {
+            videoLoadListener.onVideoLoadRequested();
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
         public TextView folderNameTextView,folderVideoCount;
@@ -63,6 +80,10 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
                 intent.putExtra("nameOfFolder", videoFolder.getFolderName());
                 context.startActivity(intent);
 
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            FolderUtils.showMenu(view.getContext(),videoFolder);
+            return false;
         });
     }
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/info_title"
+        android:layout_width="match_parent"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:text="@string/file_info"
+        android:textSize="18sp"
+        android:textColor="#000"/>
+
+    <TextView
+        android:id="@+id/info_name"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/file_name"/>
+
+    <TextView
+        android:id="@+id/info_size"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/size"/>
+
+    <TextView
+        android:id="@+id/info_path"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/path"/>
+
+
+
+    <TextView
+        android:id="@+id/info_date_added"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
+        android:layout_height="wrap_content"
+        android:text="@string/date_added"/>
+
+
+
+
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/info_audio_codec"-->
+    <!--        android:layout_marginTop="10dp"-->
+    <!--        android:layout_marginStart="10dp"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:textSize="15sp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Audio Codec: "/>-->
+
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content">-->
+    <!--    <Button-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:background="@drawable/chip_button"-->
+    <!--        android:text="@string/okay"-->
+    <!--        android:id="@+id/ok_btn"-->
+    <!--        android:layout_alignParentEnd="true"-->
+    <!--        android:layout_marginTop="20dp"-->
+    <!--        android:layout_marginEnd="10dp"-->
+    <!--        android:textColor="?attr/colorTertiary"-->
+    <!--        android:layout_height="wrap_content"/>-->
+
+
+    <!--    </RelativeLayout>-->
+</LinearLayout>
