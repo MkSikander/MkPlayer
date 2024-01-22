@@ -8,19 +8,14 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +28,6 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
@@ -51,7 +45,7 @@ public class PlayerActivity extends AppCompatActivity {
     public enum ControlsMode{
         LOCK,FULLSCREEN;
     }
-    String videoPath, videoTitle;
+    String  videoTitle;
     ArrayList<VideoItem> playerVideos = new ArrayList<>();
     TextView title;
     int position;
@@ -100,7 +94,6 @@ public class PlayerActivity extends AppCompatActivity {
                     case RESIZE_MODE_ZOOM:
                         newMode = RESIZE_MODE_FIXED_HEIGHT;
                         break;
-
                 }
                 playerView.setResizeMode(newMode);
             }
