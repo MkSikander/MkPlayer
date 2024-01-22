@@ -1,20 +1,29 @@
 package com.mbytes.mkplayer.Player;
 
 
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
+
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
-import android.media.browse.MediaBrowser;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,19 +32,11 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.common.util.Util;
-import androidx.media3.datasource.DefaultDataSource;
-import androidx.media3.datasource.DefaultDataSourceFactory;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.source.ConcatenatingMediaSource;
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
-import androidx.media3.exoplayer.source.MediaSource;
-import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
-
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -46,12 +47,16 @@ public class PlayerActivity extends AppCompatActivity {
 
     private ExoPlayer player;
     private PlayerView playerView;
+    private ControlsMode controlsMode;
+    public enum ControlsMode{
+        LOCK,FULLSCREEN;
+    }
     String videoPath, videoTitle;
     ArrayList<VideoItem> playerVideos = new ArrayList<>();
     TextView title;
     int position;
-    ConcatenatingMediaSource concatenatingMediaSource;
-    ImageView nextBtn, prevBtn,backBtn;
+    RelativeLayout root;
+    ImageView nextBtn, prevBtn,backBtn,scalingBtn,lockBtn,unlockBtn;
 
 
     @SuppressLint("MissingInflatedId")
@@ -61,20 +66,62 @@ public class PlayerActivity extends AppCompatActivity {
         setFullScreen();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
+        initial();
+        position = getIntent().getIntExtra("position", 1);
+        videoTitle = getIntent().getStringExtra("video_title");
+        playerVideos = getIntent().getExtras().getParcelableArrayList("videoArrayList");
+        nextBtn.setOnClickListener(view -> PlayNext());
+        prevBtn.setOnClickListener(view -> PlayPrev());
+        backBtn.setOnClickListener(view -> finish());
+        lockBtn.setOnClickListener(view -> {
+            controlsMode=ControlsMode.LOCK;
+            root.setVisibility(View.INVISIBLE);
+            unlockBtn.setVisibility(View.VISIBLE);
+
+        });
+        unlockBtn.setOnClickListener(view -> {
+            controlsMode=ControlsMode.FULLSCREEN;
+            root.setVisibility(View.VISIBLE);
+            unlockBtn.setVisibility(View.INVISIBLE);
+        });
+
+        scalingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentMode = playerView.getResizeMode();
+                int newMode = RESIZE_MODE_FIT; // Default to fit
+                switch (currentMode) {
+                    case RESIZE_MODE_FIT:
+                        newMode = RESIZE_MODE_FILL;
+                        break;
+                    case RESIZE_MODE_FILL:
+                        newMode = RESIZE_MODE_ZOOM;
+                        break;
+                    case RESIZE_MODE_ZOOM:
+                        newMode = RESIZE_MODE_FIXED_HEIGHT;
+                        break;
+
+                }
+                playerView.setResizeMode(newMode);
+            }
+        });
+
+
+
+        initializePlayer();
+    }
+
+    private void initial() {
+
         playerView = findViewById(R.id.player_view);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
         backBtn =findViewById(R.id.video_back);
-        position = getIntent().getIntExtra("position", 1);
-        videoTitle = getIntent().getStringExtra("video_title");
-        playerVideos = getIntent().getExtras().getParcelableArrayList("videoArrayList");
         title = findViewById(R.id.video_title);
-        nextBtn.setOnClickListener(view -> PlayNext());
-        prevBtn.setOnClickListener(view -> PlayPrev());
-        backBtn.setOnClickListener(view -> finish());
-
-        initializePlayer();
-
+        scalingBtn=findViewById(R.id.scaling);
+        lockBtn=findViewById(R.id.lock);
+        unlockBtn=findViewById(R.id.unlock);
+        root=findViewById(R.id.root_layout);
 
     }
 
@@ -91,7 +138,6 @@ public class PlayerActivity extends AppCompatActivity {
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         player = new ExoPlayer.Builder(this).build();
-
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
         playerView.setPlayer(player);
@@ -157,7 +203,6 @@ public class PlayerActivity extends AppCompatActivity {
         // Pause the player when the activity is not visible
         if (player != null) {
             player.setPlayWhenReady(false);
-
             player.release();
             // Release the player here
             player = null; // Set player to null to indicate it's released
@@ -210,7 +255,6 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
     }
-
     private void PlayPrev() {
         try {
             player.stop();

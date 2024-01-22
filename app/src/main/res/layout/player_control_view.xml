@@ -122,7 +122,7 @@
                 android:weightSum="7">
 
                 <ImageView
-                    android:id="@+id/unlock"
+                    android:id="@+id/lock"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
@@ -149,12 +149,6 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_play" />
 
-<!--                <ImageView-->
-<!--                    android:id="@+id/exo_pause"-->
-<!--                    android:layout_width="50dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:src="@drawable/ic_pause" />-->
 
                 <ImageView
                     android:id="@+id/exo_next_btn"
@@ -181,13 +175,12 @@
     </RelativeLayout>
 
     <ImageView
-        android:id="@+id/lock"
+        android:id="@+id/unlock"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-
         android:scaleType="centerInside"
         android:src="@drawable/ic_lock"
         android:visibility="gone" />

@@ -4,6 +4,7 @@
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorPrimaryDark</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" >shortEdges</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/white</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
@@ -12,5 +13,10 @@
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_app</item>
+    </style>
+    <style name="activity_player">
+        <item name="android:windowLayoutInDisplayCutoutMode">
+            shortEdges <!-- default, shortEdges, or never -->
+        </item>
     </style>
 </resources>
