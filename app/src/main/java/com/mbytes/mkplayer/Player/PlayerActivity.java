@@ -8,6 +8,7 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -29,6 +30,8 @@ import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
+
+import com.google.gson.Gson;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import java.io.File;
@@ -45,12 +48,15 @@ public class PlayerActivity extends AppCompatActivity {
     public enum ControlsMode{
         LOCK,FULLSCREEN;
     }
-    String  videoTitle;
+    private SharedPreferences lastPlayingPrefrence;
+    private static final String MYPREF = "mypref";
+    String  videoTitle,path;
     ArrayList<VideoItem> playerVideos = new ArrayList<>();
     TextView title;
     int position;
     RelativeLayout root;
     ImageView nextBtn, prevBtn,backBtn,scalingBtn,lockBtn,unlockBtn;
+    SharedPreferences.Editor editor;
 
 
     @SuppressLint("MissingInflatedId")
@@ -105,8 +111,9 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void initial() {
-
+        lastPlayingPrefrence=getSharedPreferences(MYPREF,MODE_PRIVATE);
         playerView = findViewById(R.id.player_view);
+        editor=lastPlayingPrefrence.edit();
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
         backBtn =findViewById(R.id.video_back);
@@ -127,13 +134,19 @@ public class PlayerActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
 
+
         setRequestedOrientation(getVideoRotation(playerVideos.get(position).getVideoPath()));
-        String path = playerVideos.get(position).getVideoPath();
+        path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         player = new ExoPlayer.Builder(this).build();
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
         playerView.setPlayer(player);
+        editor.putString("title",playerVideos.get(position).getVideoName());
+        editor.putInt("current_position", position);
+        editor.putString("current_video_path", path);
+        editor.apply();
+        saveVideoArrayListToPrefs(playerVideos, editor);
         // Build the media item.
         playerView.setKeepScreenOn(true);
         player.seekTo(position, C.TIME_UNSET);
@@ -147,9 +160,7 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
-                Log.d("Player Activity", "State Ended" + playbackState);
                 if (playbackState == Player.STATE_ENDED) {
-                    Log.d("Player Activity", "State Ended" + playbackState);
                     if (position == playerVideos.size() - 1) {
                         position = 0;
                         finish();
@@ -159,6 +170,13 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void saveVideoArrayListToPrefs(ArrayList<VideoItem> videoArrayList, SharedPreferences.Editor editor) {
+        Gson gson = new Gson();
+        String json = gson.toJson(videoArrayList);
+        editor.putString("video_array_list", json);
+        editor.apply();
     }
 
     //getting video Orientation
@@ -207,6 +225,7 @@ public class PlayerActivity extends AppCompatActivity {
         super.onRestart();
         if (player != null) {
             player.setPlayWhenReady(true);
+
         }
         player.getPlaybackState();
     }
