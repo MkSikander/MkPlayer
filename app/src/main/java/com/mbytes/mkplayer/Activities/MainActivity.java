@@ -6,29 +6,24 @@ import static com.mbytes.mkplayer.Utils.MainActivityHelper.isVideoFile;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Adapter.VideoFoldersAdapter;
 import com.mbytes.mkplayer.Model.VideoFolder;
+import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.FolderSort;
 import com.mbytes.mkplayer.Utils.FolderUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,12 +37,14 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private static final String MYPREF = "mypref";
     private RecyclerView foldersRecyclerview;
     private long tempSize;
-    private String sortPref = "sortName";
+    private String sortPref = "sortName",path,videoTitle,json;
+    private int position;
     private SharedPreferences preferences;
+    ArrayList<VideoItem> playerVideos = new ArrayList<>();
     private LinearLayout renameLayout, deleteLayout, shareLayout, infoLayout;
-    ImageView settingImg, sortImg;
+    ImageView settingImg, sortImg, play_last;
     SwipeRefreshLayout refreshLayout;
-    private ConstraintLayout bottomBar;
+
     private VideoFoldersAdapter adapter;
     private ArrayList<VideoFolder> sortedFolder;
     private Handler mHandler;
@@ -69,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         infoLayout = findViewById(R.id.info_layout);
         refreshLayout = findViewById(R.id.refresh_folder);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
-        bottomBar = findViewById(R.id.bottomBar);
+        play_last = findViewById(R.id.play_last_playing);
         renameLayout = findViewById(R.id.rename_layout);
         sortedFolder = new ArrayList<>();
         foldersRecyclerview = findViewById(R.id.folders_recyclerview);
@@ -81,9 +78,11 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         FolderUtils.setAdapterCallback(adapter);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     void onCreateHelper() {
 
         loadVideoFolders();
+
 
         settingImg.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -98,10 +97,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
             mHandler.postDelayed(mRunnable, 500);
         });
 
-        mRunnable = () -> {
-            bottomBar.setVisibility(View.GONE);
-            loadVideoFolders();
-        };
+        mRunnable = this::loadVideoFolders;
     }
 
     @Override
@@ -122,18 +118,18 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     public List<VideoFolder> getVideoFolders() {
         List<VideoFolder> videoFolders = new ArrayList<>();
         Set<String> uniqueFolderPaths = new HashSet<>();
-        String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.BUCKET_DISPLAY_NAME, MediaStore.Video.Media.DATE_ADDED,MediaStore.Video.Media.SIZE};
+        String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.BUCKET_DISPLAY_NAME, MediaStore.Video.Media.DATE_ADDED, MediaStore.Video.Media.SIZE};
         Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
         if (cursor != null) {
             int pathColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
             int folderColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
-            int videoSizeColumn =cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE);
+            int videoSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE);
             int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED);
             while (cursor.moveToNext()) {
                 String path = cursor.getString(pathColumn);
                 String folderName = cursor.getString(folderColumn);
                 long dateAddedTimeStamp = cursor.getLong(dateAddedColumn);
-                long videoSize=cursor.getLong(videoSizeColumn);
+                long videoSize = cursor.getLong(videoSizeColumn);
                 String effectiveFolderName = (folderName != null && !folderName.trim().isEmpty()) ? folderName : "Internal Storage";
                 String lowercaseFolderName = effectiveFolderName.toLowerCase();
                 String folderPath = new File(path).getParent();
@@ -141,8 +137,8 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
                 if (!path.startsWith("/0") && uniqueFolderPaths.add(uniqueKey)) {
                     int videoCount = noOfFiles(folderPath);
                     long folderSize = calculateFolderSize(folderPath);
-                    Log.d("Folder Size ","folder Size in Cursor"+folderSize);
-                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000),videoCount,folderSize);
+                    Log.d("Folder Size ", "folder Size in Cursor" + folderSize);
+                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000), videoCount, folderSize);
                     videoFolder.setDateAdded(new Date(dateAddedTimeStamp * 1000));
                     videoFolders.add(videoFolder);
                 }
@@ -187,10 +183,14 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     }
 
 
-
-
     @Override
     public void onVideoLoadRequested() {
-       loadVideoFolders();
+        loadVideoFolders();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 }

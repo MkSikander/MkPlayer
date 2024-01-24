@@ -4,6 +4,7 @@
         <!-- Light theme -->
         <item name="colorPrimary">@color/colorPrimaryLight</item>
         <item name="colorPrimaryContainer">@color/white</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" >shortEdges</item>
         <item name="colorTertiaryContainer">@color/colorPrimaryLight</item>
         <item name="colorAccent">@color/colorLightDark</item>
         <item name="colorPrimaryDark">@color/colorLightDark1</item>
@@ -14,6 +15,11 @@
         <!-- Add other light theme attributes -->
 
 
+    </style>
+    <style name="activity_player">
+        <item name="android:windowLayoutInDisplayCutoutMode">
+            shortEdges <!-- default, shortEdges, or never -->
+        </item>
     </style>
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/colorPrimaryDark</item>

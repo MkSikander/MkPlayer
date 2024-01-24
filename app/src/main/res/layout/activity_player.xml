@@ -9,9 +9,13 @@
     tools:context=".Player.PlayerActivity">
   <androidx.media3.ui.PlayerView
       android:layout_width="match_parent"
+      android:fitsSystemWindows="false"
       android:layout_height="match_parent"
       app:use_controller="true"
-      app:show_timeout="4000"
+      app:shutter_background_color="@color/black"
+      app:show_timeout="1500"
+      app:animation_enabled="false"
+      app:surface_type="surface_view"
       app:controller_layout_id="@layout/player_control_view"
       android:id="@+id/player_view"/>
 </RelativeLayout>

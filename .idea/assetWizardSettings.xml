@@ -33,8 +33,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_check" />
-                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\skip-next-svgrepo-com (2).svg" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="scrubber" />
+                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\scrubber.svg" />
                           </map>
                         </option>
                       </PersistentState>

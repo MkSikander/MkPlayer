@@ -1,41 +1,35 @@
 package com.mbytes.mkplayer.Player;
 
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
-import android.media.browse.MediaBrowser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.common.util.Log;
+import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.common.util.Util;
-import androidx.media3.datasource.DefaultDataSource;
-import androidx.media3.datasource.DefaultDataSourceFactory;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.source.ConcatenatingMediaSource;
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
-import androidx.media3.exoplayer.source.MediaSource;
-import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.PlayerView;
-
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -46,12 +40,26 @@ public class PlayerActivity extends AppCompatActivity {
 
     private ExoPlayer player;
     private PlayerView playerView;
-    String videoPath, videoTitle;
+    private ControlsMode controlsMode;
+    private boolean startAutoPlay;
+    private int startItemIndex;
+    private long startPosition;
+    private TrackSelectionParameters trackSelectionParameters;
+
+    public enum ControlsMode {
+        LOCK, FULLSCREEN
+    }
+
+    private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
+    private static final String KEY_ITEM_INDEX = "item_index";
+    private static final String KEY_POSITION = "position";
+    private static final String KEY_AUTO_PLAY = "auto_play";
+    String videoTitle, path;
     ArrayList<VideoItem> playerVideos = new ArrayList<>();
     TextView title;
     int position;
-    ConcatenatingMediaSource concatenatingMediaSource;
-    ImageView nextBtn, prevBtn,backBtn;
+    RelativeLayout root;
+    ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn;
 
 
     @SuppressLint("MissingInflatedId")
@@ -61,20 +69,78 @@ public class PlayerActivity extends AppCompatActivity {
         setFullScreen();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
-        playerView = findViewById(R.id.player_view);
-        nextBtn = findViewById(R.id.exo_next_btn);
-        prevBtn = findViewById(R.id.exo_prev);
-        backBtn =findViewById(R.id.video_back);
+        initial();
         position = getIntent().getIntExtra("position", 1);
         videoTitle = getIntent().getStringExtra("video_title");
-        playerVideos = getIntent().getExtras().getParcelableArrayList("videoArrayList");
-        title = findViewById(R.id.video_title);
+        playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
         prevBtn.setOnClickListener(view -> PlayPrev());
         backBtn.setOnClickListener(view -> finish());
+        lockBtn.setOnClickListener(view -> {
+            controlsMode = ControlsMode.LOCK;
+            root.setVisibility(View.INVISIBLE);
+            unlockBtn.setVisibility(View.VISIBLE);
+
+        });
+        unlockBtn.setOnClickListener(view -> {
+            controlsMode = ControlsMode.FULLSCREEN;
+            root.setVisibility(View.VISIBLE);
+            unlockBtn.setVisibility(View.INVISIBLE);
+        });
+        if (savedInstanceState != null) {
+            trackSelectionParameters =
+                    TrackSelectionParameters.fromBundle(
+                            Objects.requireNonNull(savedInstanceState.getBundle(KEY_TRACK_SELECTION_PARAMETERS)));
+            startAutoPlay = savedInstanceState.getBoolean(KEY_AUTO_PLAY);
+            position = savedInstanceState.getInt(KEY_ITEM_INDEX);
+            startPosition = savedInstanceState.getLong(KEY_POSITION);
+
+        } else {
+            trackSelectionParameters = new TrackSelectionParameters.Builder(/* context= */ this).build();
+            clearStartPosition();
+        }
+        scalingBtn.setOnClickListener(v -> {
+            int currentMode = playerView.getResizeMode();
+            int newMode = RESIZE_MODE_FIT; // Default to fit
+            switch (currentMode) {
+                case RESIZE_MODE_FIT:
+                    newMode = RESIZE_MODE_FILL;
+                    break;
+                case RESIZE_MODE_FILL:
+                    newMode = RESIZE_MODE_ZOOM;
+                    break;
+                case RESIZE_MODE_ZOOM:
+                    newMode = RESIZE_MODE_FIXED_HEIGHT;
+                    break;
+            }
+            playerView.setResizeMode(newMode);
+        });
+
 
         initializePlayer();
+    }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        updateTrackSelectorParameters();
+        updateStartPosition();
+        outState.putBundle(KEY_TRACK_SELECTION_PARAMETERS, trackSelectionParameters.toBundle());
+        outState.putInt(KEY_ITEM_INDEX, startItemIndex);
+        outState.putBoolean(KEY_AUTO_PLAY, startAutoPlay);
+        outState.putLong(KEY_POSITION, startPosition);
+    }
+
+    private void initial() {
+        playerView = findViewById(R.id.player_view);
+        nextBtn = findViewById(R.id.exo_next_btn);
+        prevBtn = findViewById(R.id.exo_prev);
+        backBtn = findViewById(R.id.video_back);
+        title = findViewById(R.id.video_title);
+        scalingBtn = findViewById(R.id.scaling);
+        lockBtn = findViewById(R.id.lock);
+        unlockBtn = findViewById(R.id.unlock);
+        root = findViewById(R.id.root_layout);
 
     }
 
@@ -84,20 +150,24 @@ public class PlayerActivity extends AppCompatActivity {
     private void initializePlayer() {
         try {
             player.release();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
-
         setRequestedOrientation(getVideoRotation(playerVideos.get(position).getVideoPath()));
-        String path = playerVideos.get(position).getVideoPath();
+        path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         player = new ExoPlayer.Builder(this).build();
-
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
         playerView.setPlayer(player);
+
         // Build the media item.
         playerView.setKeepScreenOn(true);
-        player.seekTo(position, C.TIME_UNSET);
+        boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
+        if (haveStartPosition) {
+            player.seekTo(startItemIndex, startPosition);
+        } else {
+            player.seekTo(C.TIME_UNSET);
+        }
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
         player.play();
@@ -108,9 +178,7 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
-                Log.d("Player Activity", "State Ended" + playbackState);
                 if (playbackState == Player.STATE_ENDED) {
-                    Log.d("Player Activity", "State Ended" + playbackState);
                     if (position == playerVideos.size() - 1) {
                         position = 0;
                         finish();
@@ -121,6 +189,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
     }
+
 
     //getting video Orientation
     private int getVideoRotation(String videoPath) {
@@ -143,50 +212,43 @@ public class PlayerActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
-        if (player != null) {
-            player.release();
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        // Pause the player when the activity is not visible
-        if (player != null) {
-            player.setPlayWhenReady(false);
-
-            player.release();
-            // Release the player here
-            player = null; // Set player to null to indicate it's released
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (player != null) {
-            player.setPlayWhenReady(true);
-        }
-        player.getPlaybackState();
-    }
-
-    @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-        // Restore the saved video position
 
-        // Start playback
-        player.setPlayWhenReady(true);
+        if (playerView != null) {
+            playerView.onResume();
+        }
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        player.setPlayWhenReady(true);
-        player.getPlaybackState();
+        if (player == null) {
+            initializePlayer();
+            if (playerView != null) {
+                playerView.onResume();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+
     }
 
     private void setFullScreen() {
@@ -208,7 +270,6 @@ public class PlayerActivity extends AppCompatActivity {
             Toast.makeText(this, "No More Videos", Toast.LENGTH_SHORT).show();
             finish();
         }
-
     }
 
     private void PlayPrev() {
@@ -222,5 +283,34 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    protected void releasePlayer() {
+        if (player != null) {
+            updateTrackSelectorParameters();
+            updateStartPosition();
+            player.release();
+            player = null;
+            playerView.setPlayer(/* player= */ null);
+        }
+    }
 
+    private void updateTrackSelectorParameters() {
+        if (player != null) {
+            trackSelectionParameters = player.getTrackSelectionParameters();
+        }
+    }
+
+    private void updateStartPosition() {
+        if (player != null) {
+            startAutoPlay = player.getPlayWhenReady();
+            startItemIndex = player.getCurrentMediaItemIndex();
+            startPosition = Math.max(0, player.getContentPosition());
+
+        }
+    }
+
+    protected void clearStartPosition() {
+        startAutoPlay = true;
+        startItemIndex = C.INDEX_UNSET;
+        startPosition = C.TIME_UNSET;
+    }
 }
