@@ -6,37 +6,25 @@ import static com.mbytes.mkplayer.Utils.MainActivityHelper.isVideoFile;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.mbytes.mkplayer.Adapter.VideoFoldersAdapter;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.Model.VideoItem;
-import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.FolderSort;
 import com.mbytes.mkplayer.Utils.FolderUtils;
-
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
