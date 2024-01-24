@@ -12,6 +12,7 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
     private final String videoName;
     private final String videoPath;
     private final boolean isVideoPlayed;
+    private long lastPosition;
     private final String videoDuration;
     private Date dateAdded;
 
@@ -34,9 +35,15 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         this.videoResolution=videoResolution;
         this.videoType=videoType;
 
-
     }
 
+    public long getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(long lastPosition) {
+        this.lastPosition = lastPosition;
+    }
 
     protected VideoItem(Parcel in) {
         videoName = in.readString();
@@ -100,19 +107,17 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         return videoPath;
     }
 
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoItem videoItem = (VideoItem) o;
-        return isVideoPlayed == videoItem.isVideoPlayed && Objects.equals(videoResolution, videoItem.videoResolution) && videoSize == videoItem.videoSize && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded) && Objects.equals(videoType, videoItem.videoType);
+        return isVideoPlayed == videoItem.isVideoPlayed && lastPosition == videoItem.lastPosition && videoSize == videoItem.videoSize && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded) && Objects.equals(videoType, videoItem.videoType) && Objects.equals(videoResolution, videoItem.videoResolution);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration, dateAdded, videoType, videoResolution, videoSize);
+        return Objects.hash(videoName, videoPath, isVideoPlayed, lastPosition, videoDuration, dateAdded, videoType, videoResolution, videoSize);
     }
 
     @NonNull
@@ -122,6 +127,7 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
                 "videoName='" + videoName + '\'' +
                 ", videoPath='" + videoPath + '\'' +
                 ", isVideoPlayed=" + isVideoPlayed +
+                ", lastPosition=" + lastPosition +
                 ", videoDuration='" + videoDuration + '\'' +
                 ", dateAdded=" + dateAdded +
                 ", videoType='" + videoType + '\'' +

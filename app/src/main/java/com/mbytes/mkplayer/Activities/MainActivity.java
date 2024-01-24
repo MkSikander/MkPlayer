@@ -95,29 +95,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
 
         loadVideoFolders();
 
-         position = preferences.getInt("current_position", 0);
-         videoTitle = preferences.getString("title", "");
-         path = preferences.getString("current_video_path", "");
-         json = preferences.getString("video_array_list", "");
-        if (!json.isEmpty()) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<ArrayList<VideoItem>>() {
-            }.getType();
-            playerVideos = gson.fromJson(json, type);
-        }
-        play_last.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!path.isEmpty()) {
-                    Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
-                    intent.putExtra("position", position);
-                    intent.putExtra("video_title", videoTitle);
-                    intent.putParcelableArrayListExtra("videoArrayList", playerVideos);
-                    startActivity(intent);
-                }
-            }
-        });
-
 
         settingImg.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -226,9 +203,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     @Override
     protected void onResume() {
         super.onResume();
-        position = preferences.getInt("current_position", 0);
-        videoTitle = preferences.getString("title", "");
-        path = preferences.getString("current_video_path", "");
-        json = preferences.getString("video_array_list", "");
+
     }
 }
