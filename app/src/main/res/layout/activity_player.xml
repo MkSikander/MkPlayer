@@ -13,7 +13,8 @@
       android:layout_height="match_parent"
       app:use_controller="true"
       app:shutter_background_color="@color/black"
-      app:show_timeout="1500"
+      app:show_timeout="2000"
+
       app:animation_enabled="false"
       app:surface_type="surface_view"
       app:controller_layout_id="@layout/player_control_view"

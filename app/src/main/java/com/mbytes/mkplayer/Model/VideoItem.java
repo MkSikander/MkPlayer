@@ -14,12 +14,9 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
     private final boolean isVideoPlayed;
     private final String videoDuration;
     private Date dateAdded;
-
     private final String videoType;
     private final String videoResolution;
     private final long videoSize;
-
-
 
     public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration,Date dateAdded,long videoSize,String videoType,String videoResolution) {
         this.videoName = videoName;
@@ -30,7 +27,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         this.videoSize=videoSize;
         this.videoResolution=videoResolution;
         this.videoType=videoType;
-
     }
 
     protected VideoItem(Parcel in) {

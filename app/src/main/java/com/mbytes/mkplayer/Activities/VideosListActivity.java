@@ -1,7 +1,6 @@
 package com.mbytes.mkplayer.Activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -9,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.mbytes.mkplayer.Adapter.VideoListAdapter;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoSort;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
@@ -35,7 +36,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private ArrayList<VideoItem> videosList;
     private Handler mHandler;
     private Runnable mRunnable;
-    private SharedPreferences sharedPreferences;
+    private Preferences sharedPreferences;
     ImageView sortImg;
     ImageButton backBtn;
 
@@ -54,7 +55,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         videosList = new ArrayList<>();
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         videosRecyclerview.setHasFixedSize(true);
-        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = new Preferences(this);
         adapter = new VideoListAdapter(videosList, sharedPreferences);
         adapter.setVideoLoadListener(this);
         videosRecyclerview.setAdapter(adapter);
@@ -63,10 +64,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             swipeRefreshLayout.setRefreshing(true);
             mHandler.postDelayed(mRunnable, 500);
         });
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         mRunnable = this::loadVideos;
-
-
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
     }
@@ -132,13 +133,13 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             swipeRefreshLayout.setRefreshing(true);
             super.onPreExecute();
         }
-
         @Override
         protected List<VideoItem> doInBackground(Void... params) {
             String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
             return getVideosInFolder(folderPath);
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(List<VideoItem> result) {
             videosList.clear();
@@ -159,11 +160,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         loadVideos();
         super.onResume();
     }
-
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         String videoKey = "played_" + videoPath;
-        return sharedPreferences.getBoolean(videoKey, false);
+        return sharedPreferences.getBoolean(videoKey);
     }
 
     @Override

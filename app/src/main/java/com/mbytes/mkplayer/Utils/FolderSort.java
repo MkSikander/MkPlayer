@@ -1,7 +1,6 @@
 package com.mbytes.mkplayer.Utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
@@ -23,14 +22,13 @@ import java.util.Comparator;
 
 public class FolderSort {
 
-    private static final String MY_PREF = "my_pref";
+
 
     public static void showSortOptionsDialog(Context context, OnSortOptionSelectedListener listener) {
-        SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        Preferences preferences = new Preferences(context);
 
         final String[] items = {"Name (A-Z)", "Name (Z - A)", "Date (New - Old)", "Date (Old - New)"};
-        int checkedItemIndex = getCheckedItemIndex(preferences.getString("sort", "abc"));
+        int checkedItemIndex = getCheckedItemIndex(preferences.getFolderSortPref("sort"));
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Sort Options")
@@ -38,19 +36,19 @@ public class FolderSort {
                     // Handle the selected sorting option
                     switch (which) {
                         case 0:
-                            editor.putString("sort", "sortName");
+                            preferences.setFolderSortPref("sort", "sortName");
                             break;
                         case 1:
-                            editor.putString("sort", "sortNamer");
+                            preferences.setFolderSortPref("sort", "sortNamer");
                             break;
                         case 2:
-                            editor.putString("sort", "sortDate");
+                            preferences.setFolderSortPref("sort", "sortDate");
                             break;
                         case 3:
-                            editor.putString("sort", "sortDater");
+                            preferences.setFolderSortPref("sort", "sortDater");
                             break;
                     }
-                    editor.apply();
+
 
                     // Notify the listener that the sorting preference has been updated
                     if (listener != null) {
@@ -154,14 +152,12 @@ public class FolderSort {
             private final String sortBy;
 
             public VideoFolderComparator(Context context) {
-                SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-                if (!preferences.contains("sort")) {
+               Preferences preferences = new Preferences(context);
+                if (preferences.contains("sort")) {
                     // Set a default sort preference (e.g., "sortName")
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("sort", "sortName");
-                    editor.apply();
+                    preferences.setFolderSortPref("sort", "sortName");
                 }
-                sortBy = preferences.getString("sort", "sortName");
+                sortBy = preferences.getFolderSortPref("sort");
             }
 
             @Override
@@ -175,7 +171,6 @@ public class FolderSort {
                 } else if ("sortNamer".equals(sortBy)) {
                     return folder2.getFolderName().compareToIgnoreCase(folder1.getFolderName());
                 }
-
                 return 0;
             }
         }

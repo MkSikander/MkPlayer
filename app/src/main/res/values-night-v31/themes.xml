@@ -7,7 +7,7 @@
         <!-- Dark theme -->
         <item name="colorPrimary">@color/colorSecondaryDark</item>
         <item name="colorPrimaryContainer">#151717</item>
-        <item name="android:windowLayoutInDisplayCutoutMode" >shortEdges</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="colorTertiaryContainer">@color/colorSecondaryDark</item>
         <item name="colorTertiary">@color/colorPrimaryLight</item>
         <item name="android:statusBarColor">#151717</item>

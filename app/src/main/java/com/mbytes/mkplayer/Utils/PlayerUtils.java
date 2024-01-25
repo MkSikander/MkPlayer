@@ -2,6 +2,11 @@ package com.mbytes.mkplayer.Utils;
 
 import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
+
+import com.google.gson.Gson;
+import com.mbytes.mkplayer.Model.VideoItem;
+
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class PlayerUtils {
@@ -24,6 +29,9 @@ public class PlayerUtils {
         }
         return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
-
+    public static String convertVideoListToJson(ArrayList<VideoItem> videoList) {
+        Gson gson = new Gson();
+        return gson.toJson(videoList);
+    }
 
 }

@@ -2,7 +2,6 @@ package com.mbytes.mkplayer.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +17,11 @@ import com.bumptech.glide.Glide;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+
 
 
 
@@ -36,10 +35,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
-    private final SharedPreferences sharedPreferences;
+    private final Preferences sharedPreferences;
     private final ArrayList<VideoItem> videos;
 
-    public VideoListAdapter(ArrayList<VideoItem> videos, SharedPreferences sharedPreferences) {
+    public VideoListAdapter(ArrayList<VideoItem> videos, Preferences sharedPreferences) {
         this.videos = videos;
         this.sharedPreferences = sharedPreferences;
 
@@ -51,7 +50,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         public ImageView thumbnail, moreMenu;
         Context context;
         CheckBox checkBox;
-        VideoItem videoItem;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -83,9 +81,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
          VideoItem videoItem = videos.get(position);
 
-        holder.itemView.setOnClickListener(view -> {
-         onItemViewClicked(view,videoItem,position);
-        });
+        holder.itemView.setOnClickListener(view -> onItemViewClicked(view,videoItem,position));
         holder.itemView.setOnLongClickListener(view -> {
             VideoUtils.showMenu(view.getContext(), videoItem);
             return false;
@@ -109,7 +105,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         setVideoPlayedStatus(videoItem.getVideoPath());
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra("position", position);
-        intent.putExtra("video_title",videoItem.getVideoName());
         Bundle bundle=new Bundle();
         bundle.putParcelableArrayList("videoArrayList",videos);
         intent.putExtras(bundle);
@@ -130,16 +125,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         // Save video playback status to SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(videoKey, true);
-        editor.apply();
+       sharedPreferences.setBoolean(videoKey, true);
+
     }
 
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
-        return sharedPreferences.getBoolean(videoKey, false);
+        return sharedPreferences.getBoolean(videoKey);
     }
 
 

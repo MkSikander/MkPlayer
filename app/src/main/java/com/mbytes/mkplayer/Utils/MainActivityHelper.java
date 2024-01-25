@@ -1,6 +1,14 @@
 package com.mbytes.mkplayer.Utils;
 
 import android.webkit.MimeTypeMap;
+
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.mbytes.mkplayer.Model.VideoItem;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 public class MainActivityHelper {
 
     public static boolean isVideoFile(String filePath) {
@@ -49,6 +57,10 @@ public class MainActivityHelper {
         return null;
     }
 
-
+   public static ArrayList<VideoItem> convertJsonToGson(String json) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<VideoItem>>(){}.getType();
+        return gson.fromJson(json, type);
+    }
 
 }
