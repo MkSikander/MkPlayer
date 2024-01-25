@@ -1,6 +1,7 @@
 package com.mbytes.mkplayer.Adapter;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -51,7 +52,6 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             // Add other views if needed
         }
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -64,12 +64,15 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Get the data model based on position
         VideoFolder videoFolder = videoFolders.get(position);
         // Set item views based on the data model
-        holder.folderNameTextView.setText(videoFolder.getFolderName());
+        String fname= videoFolder.getFolderName();
+        fname=(fname.length() > 25) ? fname.substring(0, 25) + "..." : fname;
+        holder.folderNameTextView.setText(fname);
         holder.folderVideoCount.setText(videoFolder.getVideoCount() +" videos");
         // Bind other data if needed
         holder.itemView.setOnClickListener(view -> {
@@ -79,14 +82,12 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
                 intent.putExtra("folderPath", videoFolder.getFolderPath());
                 intent.putExtra("nameOfFolder", videoFolder.getFolderName());
                 context.startActivity(intent);
-
         });
         holder.itemView.setOnLongClickListener(view -> {
             FolderUtils.showMenu(view.getContext(),videoFolder);
             return false;
         });
     }
-
     @Override
     public int getItemCount() {
         return videoFolders.size();

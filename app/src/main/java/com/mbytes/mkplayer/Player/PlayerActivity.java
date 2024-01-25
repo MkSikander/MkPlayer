@@ -4,7 +4,7 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
-
+import static com.mbytes.mkplayer.Utils.PlayerUtils.convertVideoListToJson;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +29,7 @@ import androidx.media3.ui.PlayerView;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.PlayerUtils;
+import com.mbytes.mkplayer.Utils.Preferences;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -53,9 +54,10 @@ public class PlayerActivity extends AppCompatActivity {
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
-    String videoTitle, path;
+    String  path;
     ArrayList<VideoItem> playerVideos = new ArrayList<>();
     TextView title;
+    Preferences preferences;
     int position;
     RelativeLayout root;
     ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn;
@@ -70,7 +72,6 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player);
         initViews();
         position = getIntent().getIntExtra("position", 1);
-        videoTitle = getIntent().getStringExtra("video_title");
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
         prevBtn.setOnClickListener(view -> PlayPrev());
@@ -115,7 +116,6 @@ public class PlayerActivity extends AppCompatActivity {
             playerView.setResizeMode(newMode);
         });
 
-
         initializePlayer();
     }
 
@@ -131,6 +131,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        preferences = new Preferences(PlayerActivity.this);
         playerView = findViewById(R.id.player_view);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
@@ -141,6 +142,7 @@ public class PlayerActivity extends AppCompatActivity {
         unlockBtn = findViewById(R.id.unlock);
         root = findViewById(R.id.root_layout);
 
+
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -149,6 +151,7 @@ public class PlayerActivity extends AppCompatActivity {
             player.release();
         } catch (Exception ignored) {
         }
+        Long skipPosition=preferences.getLong(playerVideos.get(position).getVideoPath());
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
@@ -156,15 +159,12 @@ public class PlayerActivity extends AppCompatActivity {
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
         playerView.setPlayer(player);
-
-        // Build the media item.
         playerView.setKeepScreenOn(true);
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
+        //check for skip position
         if (haveStartPosition) {
             player.seekTo(startItemIndex, startPosition);
-        } else {
-            player.seekTo(C.TIME_UNSET);
-        }
+        } else player.seekTo(skipPosition);
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
         player.play();
@@ -222,6 +222,9 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             updateTrackSelectorParameters();
             updateStartPosition();
+            String key=playerVideos.get(position).getVideoPath();
+            Long currentPosition=Math.max(0,player.getContentPosition());
+            preferences.setLong(key,currentPosition);
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
@@ -234,6 +237,7 @@ public class PlayerActivity extends AppCompatActivity {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
     }
+
     private void updateStartPosition() {
         if (player != null) {
             startAutoPlay = player.getPlayWhenReady();
@@ -242,6 +246,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         }
     }
+
     protected void clearStartPosition() {
         startAutoPlay = true;
         startItemIndex = C.INDEX_UNSET;
@@ -279,6 +284,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        setLastVideos();
         releasePlayer();
     }
 
@@ -288,5 +294,11 @@ public class PlayerActivity extends AppCompatActivity {
         releasePlayer();
 
     }
+
+    private void setLastVideos() {
+        String videoListJson = convertVideoListToJson(playerVideos);
+        preferences.setLastVideos("lastVideos", "lastPosition", position,videoListJson);
+    }
+
 
 }

@@ -1,6 +1,5 @@
 package com.mbytes.mkplayer.Utils;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
@@ -19,14 +18,12 @@ import com.mbytes.mkplayer.R;
 import java.util.Comparator;
 public class VideoSort {
 
-    private static final String MY_PREF = "my_pref";
 
     public static void showVideoSortOptionsDialog(Context context,VideoSort.OnSortOptionSelectedListener listener) {
-        SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        Preferences preferences = new Preferences(context);
 
         final String[] items = {"Name (A-Z)", "Name (Z - A)", "Date (New - Old)", "Date (Old - New)"};
-        int checkedItemIndex = getCheckedItemIndex(preferences.getString("sortVideo", "abc"));
+        int checkedItemIndex = getCheckedItemIndex(preferences.getVideoSortPref("sortVideo"));
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Sort Options")
@@ -34,19 +31,19 @@ public class VideoSort {
                     // Handle the selected sorting option
                     switch (which) {
                         case 0:
-                            editor.putString("sortVideo", "sortName");
+                           preferences.setVideoSortPref("sortVideo", "sortName");
                             break;
                         case 1:
-                            editor.putString("sortVideo", "sortNamer");
+                            preferences.setVideoSortPref("sortVideo", "sortNamer");
                             break;
                         case 2:
-                            editor.putString("sortVideo", "sortDate");
+                            preferences.setVideoSortPref("sortVideo", "sortDate");
                             break;
                         case 3:
-                            editor.putString("sortVideo", "sortDater");
+                            preferences.setVideoSortPref("sortVideo", "sortDater");
                             break;
                     }
-                    editor.apply();
+
 
                     // Notify the listener that the sorting preference has been updated
                     if (listener != null) {
@@ -150,14 +147,14 @@ public class VideoSort {
         private final String sortBy;
 
         public VideoFilesComparator(Context context) {
-            SharedPreferences preferences = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-            if (!preferences.contains("sortVideo")) {
+            Preferences preferences = new Preferences(context);
+            if (preferences.contains("sortVideo")) {
                 // Set a default sort preference (e.g., "sortName")
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("sortVideo", "sortName");
-                editor.apply();
+
+                preferences.setVideoSortPref("sortVideo", "sortName");
+
             }
-            sortBy = preferences.getString("sortVideo", "sortName");
+            sortBy = preferences.getVideoSortPref("sortVideo");
         }
 
         @Override
