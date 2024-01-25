@@ -6,8 +6,6 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 
 import android.annotation.SuppressLint;
-import android.content.pm.ActivityInfo;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -30,6 +28,7 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.PlayerUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -69,7 +68,7 @@ public class PlayerActivity extends AppCompatActivity {
         setFullScreen();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
-        initial();
+        initViews();
         position = getIntent().getIntExtra("position", 1);
         videoTitle = getIntent().getStringExtra("video_title");
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
@@ -131,7 +130,7 @@ public class PlayerActivity extends AppCompatActivity {
         outState.putLong(KEY_POSITION, startPosition);
     }
 
-    private void initial() {
+    private void initViews() {
         playerView = findViewById(R.id.player_view);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
@@ -145,14 +144,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     @OptIn(markerClass = UnstableApi.class)
-
-
     private void initializePlayer() {
         try {
             player.release();
         } catch (Exception ignored) {
         }
-        setRequestedOrientation(getVideoRotation(playerVideos.get(position).getVideoPath()));
+        setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         player = new ExoPlayer.Builder(this).build();
@@ -171,8 +168,6 @@ public class PlayerActivity extends AppCompatActivity {
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
         player.play();
-
-
         player.addListener(new Player.Listener() {
 
             @Override
@@ -190,66 +185,6 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-
-    //getting video Orientation
-    private int getVideoRotation(String videoPath) {
-        try {
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(videoPath);
-            // Swap width and height for portrait videos
-            int width = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
-            int height = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
-            if (width > height) {
-                return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-            }
-            return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        if (playerView != null) {
-            playerView.onResume();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (player == null) {
-            initializePlayer();
-            if (playerView != null) {
-                playerView.onResume();
-            }
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        releasePlayer();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        releasePlayer();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
-
-    }
 
     private void setFullScreen() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -293,12 +228,12 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    //for bundle instances To resume video where it was left (during Calls and Interrupt)
     private void updateTrackSelectorParameters() {
         if (player != null) {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
     }
-
     private void updateStartPosition() {
         if (player != null) {
             startAutoPlay = player.getPlayWhenReady();
@@ -307,10 +242,51 @@ public class PlayerActivity extends AppCompatActivity {
 
         }
     }
-
     protected void clearStartPosition() {
         startAutoPlay = true;
         startItemIndex = C.INDEX_UNSET;
         startPosition = C.TIME_UNSET;
     }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (playerView != null) {
+            playerView.onResume();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (player == null) {
+            initializePlayer();
+            if (playerView != null) {
+                playerView.onResume();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+
+    }
+
 }
