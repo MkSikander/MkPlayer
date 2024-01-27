@@ -147,24 +147,23 @@ public class PlayerActivity extends AppCompatActivity {
 
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
-        try {
-            player.release();
-        } catch (Exception ignored) {
-        }
         Long skipPosition=preferences.getLong(playerVideos.get(position).getVideoPath());
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
-        player = new ExoPlayer.Builder(this).build();
+        if (player==null) {
+            player = new ExoPlayer.Builder(this).build();
+            playerView.setPlayer(player);
+        }
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
-        playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
         //check for skip position
         if (haveStartPosition) {
             player.seekTo(startItemIndex, startPosition);
         } else player.seekTo(skipPosition);
+
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
         player.play();
@@ -183,6 +182,7 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+        setVideoPlayedStatus(playerVideos.get(position).getVideoPath());
     }
 
 
@@ -276,16 +276,26 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+
+        if (player!=null)
+        {
+            player.pause();
+        }
         super.onPause();
 
-        releasePlayer();
+
     }
 
     @Override
     public void onStop() {
-        super.onStop();
+        if (player!=null)
+        {
+            player.stop();
+        }
         setLastVideos();
-        releasePlayer();
+        super.onStop();
+
+
     }
 
     @Override
@@ -299,6 +309,12 @@ public class PlayerActivity extends AppCompatActivity {
         String videoListJson = convertVideoListToJson(playerVideos);
         preferences.setLastVideos("lastVideos", "lastPosition", position,videoListJson);
     }
+    private void setVideoPlayedStatus(String videoPath) {
+        // Save video playback status to SharedPreferences
+        // Use a unique key for each video
+        String videoKey = "played_" + videoPath;
+        preferences.setBoolean(videoKey, true);
 
+    }
 
 }
