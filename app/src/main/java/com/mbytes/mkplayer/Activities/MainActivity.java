@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private int position;
     private Preferences preferences;
 
-    private LinearLayout renameLayout, deleteLayout, shareLayout, infoLayout;
+    private LinearLayout deleteLayout;
+    private LinearLayout shareLayout;
     ImageView settingImg, sortImg, play_last;
     SwipeRefreshLayout refreshLayout;
 
@@ -71,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
-        infoLayout = findViewById(R.id.info_layout);
+        LinearLayout infoLayout = findViewById(R.id.info_layout);
         refreshLayout = findViewById(R.id.refresh_folder);
         preferences = new Preferences(this);
         play_last = findViewById(R.id.play_last_playing);
-        renameLayout = findViewById(R.id.rename_layout);
+        LinearLayout renameLayout = findViewById(R.id.rename_layout);
         sortedFolder = new ArrayList<>();
         RecyclerView foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
