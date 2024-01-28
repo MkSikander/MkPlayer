@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private int position;
     private Preferences preferences;
 
-    private LinearLayout renameLayout, deleteLayout, shareLayout, infoLayout;
+    private LinearLayout deleteLayout;
+    private LinearLayout shareLayout;
     ImageView settingImg, sortImg, play_last;
     SwipeRefreshLayout refreshLayout;
 
@@ -69,19 +70,17 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
 
     void init() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
-        infoLayout = findViewById(R.id.info_layout);
+        LinearLayout infoLayout = findViewById(R.id.info_layout);
         refreshLayout = findViewById(R.id.refresh_folder);
         preferences = new Preferences(this);
         play_last = findViewById(R.id.play_last_playing);
-        renameLayout = findViewById(R.id.rename_layout);
+        LinearLayout renameLayout = findViewById(R.id.rename_layout);
         sortedFolder = new ArrayList<>();
         RecyclerView foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         foldersRecyclerview.setHasFixedSize(true);
-        getLastVideos();
         adapter = new VideoFoldersAdapter(sortedFolder);
         adapter.setVideoLoadListener(this);
         foldersRecyclerview.setAdapter(adapter);
@@ -99,18 +98,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
 
     @OptIn(markerClass = UnstableApi.class)
     void onCreateHelper() {
-        if (!videoItem.isEmpty())
-        {
-            play_last.setVisibility(View.VISIBLE);
-            play_last.setOnClickListener(view -> {
-                Intent intent =new Intent(this, PlayerActivity.class);
-                intent.putExtra("position", position);
-                Bundle bundle=new Bundle();
-                bundle.putParcelableArrayList("videoArrayList",videoItem);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            });
-        }
+
         loadVideoFolders();
         settingImg.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -211,10 +199,22 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         loadVideoFolders();
     }
 
-    @Override
+    @OptIn(markerClass = UnstableApi.class) @Override
     protected void onResume() {
         super.onResume();
         getLastVideos();
+        if (!videoItem.isEmpty())
+        {
+            play_last.setVisibility(View.VISIBLE);
+            play_last.setOnClickListener(view -> {
+                Intent intent =new Intent(this, PlayerActivity.class);
+                intent.putExtra("position", position);
+                Bundle bundle=new Bundle();
+                bundle.putParcelableArrayList("videoArrayList",videoItem);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            });
+        }
 
     }
 }

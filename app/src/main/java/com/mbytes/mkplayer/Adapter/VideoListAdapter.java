@@ -22,11 +22,7 @@ import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
 import java.util.ArrayList;
 
-
-
-
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> implements VideoUtils.AdapterCallback {
-
 
     public interface VideoLoadListener {
         void onVideoLoadRequested();
@@ -41,9 +37,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public VideoListAdapter(ArrayList<VideoItem> videos, Preferences sharedPreferences) {
         this.videos = videos;
         this.sharedPreferences = sharedPreferences;
-
     }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
         public TextView videoName, videoDuration, newText;
@@ -60,12 +54,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoDuration = itemView.findViewById(R.id.video_duration);
             moreMenu = itemView.findViewById(R.id.video_menu_more);
             context = itemView.getContext();
-
-
-            // Add other views if needed
         }
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -80,7 +70,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
          VideoItem videoItem = videos.get(position);
-
         holder.itemView.setOnClickListener(view -> onItemViewClicked(view,videoItem,position));
         holder.itemView.setOnLongClickListener(view -> {
             VideoUtils.showMenu(view.getContext(), videoItem);
@@ -102,7 +91,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     @OptIn(markerClass = UnstableApi.class)
     private void onItemViewClicked(View view , VideoItem videoItem, int position) {
         Context context = view.getContext();
-        setVideoPlayedStatus(videoItem.getVideoPath());
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra("position", position);
         Bundle bundle=new Bundle();
@@ -120,21 +108,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoLoadListener.onVideoLoadRequested();
         }
     }
-
-    private void setVideoPlayedStatus(String videoPath) {
-        // Save video playback status to SharedPreferences
-        // Use a unique key for each video
-        String videoKey = "played_" + videoPath;
-       sharedPreferences.setBoolean(videoKey, true);
-
-    }
-
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
         return sharedPreferences.getBoolean(videoKey);
     }
-
-
 }
