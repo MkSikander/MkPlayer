@@ -75,8 +75,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             VideoUtils.showMenu(view.getContext(), videoItem);
             return false;
         });
-        double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
-        boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
+
+            double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
+            boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
+
         if (isVideoPlayed) {
             holder.newText.setVisibility(View.GONE);
         } else {
