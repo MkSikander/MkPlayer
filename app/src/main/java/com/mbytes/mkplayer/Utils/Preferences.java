@@ -22,6 +22,13 @@ public class Preferences {
         editor.apply();
     }
 
+    public int getInt(String key){
+        return preferences.getInt(key,0);
+    }
+    public void setInt(String key,int value){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key, value);
+    }
 
     public String getString(String key) {
         return preferences.getString(key, "");
@@ -34,7 +41,7 @@ public class Preferences {
     public Long getLong(String key){
         return preferences.getLong(key,0);
     }
-    public Boolean getBoolean(String key){
+    public boolean getBoolean(String key){
         return preferences.getBoolean(key,false);
     }
     public void setBoolean(String key,boolean value){

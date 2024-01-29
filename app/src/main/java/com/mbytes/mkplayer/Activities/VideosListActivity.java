@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class VideosListActivity extends AppCompatActivity implements VideoListAdapter.VideoLoadListener, VideoSort.OnSortOptionSelectedListener {
 
@@ -108,9 +109,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 String format = cursor.getString(typeColumn);
                 String videoType = format.substring(format.lastIndexOf("/") + 1);
                 String videoResolution = cursor.getString(resolutionColumn);
-                if (videoPath.lastIndexOf(File.separator) == folderPath.length()) {
+                if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration!=null) {
                     VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDuration, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
                     videoItem.setDateAdded(new Date(dateAddedTimeStamp * 1000));
+
                     videosInFolder.add(videoItem);
                 }
             }

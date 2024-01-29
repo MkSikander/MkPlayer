@@ -6,6 +6,9 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 import static com.google.gson.internal.$Gson$Types.arrayOf;
 import static com.mbytes.mkplayer.Utils.PlayerUtils.convertVideoListToJson;
+import static com.mbytes.mkplayer.Utils.PlayerUtils.setAudioTrack;
+import static com.mbytes.mkplayer.Utils.PlayerUtils.setSubTrack;
+
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.net.Uri;
@@ -15,9 +18,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -42,6 +47,7 @@ import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.PlayerUtils;
 import com.mbytes.mkplayer.Utils.Preferences;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,15 +75,16 @@ public class PlayerActivity extends AppCompatActivity {
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
-    String  path;
-    ArrayList<VideoItem> playerVideos = new ArrayList<>();
-    TextView title;
+    private String path;
+    private ArrayList<VideoItem> playerVideos = new ArrayList<>();
+    private TextView title;
     private DefaultTrackSelector trackSelector;
-    Preferences preferences;
+    private Preferences preferences;
+    private ProgressBar progressBar;
 
     int position;
-    RelativeLayout root;
-    ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn,audioTrack,subTitleTrack;
+    private RelativeLayout root;
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
 
 
     @SuppressLint("MissingInflatedId")
@@ -134,7 +141,6 @@ public class PlayerActivity extends AppCompatActivity {
         });
 
 
-
         initializePlayer();
     }
 
@@ -153,7 +159,8 @@ public class PlayerActivity extends AppCompatActivity {
     private void initViews() {
         preferences = new Preferences(PlayerActivity.this);
         playerView = findViewById(R.id.player_view);
-        trackSelector=new DefaultTrackSelector(this);
+        progressBar = findViewById(R.id.exo_mid_progress);
+        trackSelector = new DefaultTrackSelector(this);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
         backBtn = findViewById(R.id.video_back);
@@ -162,19 +169,17 @@ public class PlayerActivity extends AppCompatActivity {
         lockBtn = findViewById(R.id.lock);
         unlockBtn = findViewById(R.id.unlock);
         root = findViewById(R.id.root_layout);
-        audioTrack=findViewById(R.id.audio_track);
-
-
-
+        audioTrack = findViewById(R.id.audio_track);
+        subTitleTrack=findViewById(R.id.exo_subtitle_track);
     }
-
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
-        Long skipPosition=preferences.getLong(playerVideos.get(position).getVideoPath());
+
+        Long skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
-        if (player==null) {
+        if (player == null) {
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector).build();
             playerView.setPlayer(player);
         }
@@ -186,13 +191,30 @@ public class PlayerActivity extends AppCompatActivity {
         if (haveStartPosition) {
             player.seekTo(startItemIndex, startPosition);
         } else player.seekTo(skipPosition);
-
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Player.Listener.super.onPlaybackStateChanged(playbackState);
+                if (playbackState != Player.STATE_READY) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         player.prepare();
+
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Player.Listener.super.onPlaybackStateChanged(playbackState);
+                if (playbackState == Player.STATE_READY) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
         player.play();
 
         player.addListener(new Player.Listener() {
-
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
@@ -207,96 +229,26 @@ public class PlayerActivity extends AppCompatActivity {
             }
 
         });
-
-        audioTrack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                player.pause();
-                ArrayList<String> audioTrack = new ArrayList<>();
-                ArrayList<String> audioList = new ArrayList<>();
-                int selectedTrackIndex=-1;
-                int a=0;
-                Tracks tracks=player.getCurrentTracks();
-                for (Tracks.Group trackGroup : tracks.getGroups()) {
-                    // Group level information.
-                    boolean trackInGroupIsSupported = trackGroup.isSupported();
-                    if(trackGroup.getType()==C.TRACK_TYPE_AUDIO && trackInGroupIsSupported) {
-                        for (int m = 0; m < trackGroup.length; m++ ) {
-                            // Individual track information.
-                            audioTrack.add(trackGroup.getTrackFormat(m).language.toString());
-                            audioList.add(getName(trackGroup.getMediaTrackGroup(),m));
-                            boolean isSelected = trackGroup.isTrackSelected(m);
-                            a++;
-                           if (isSelected){
-                               selectedTrackIndex=a-1;
-                           }
-                        }
-                    }
-                }
-
-
-          // If no track is selected, use the size of the list
-                if (selectedTrackIndex==-1)
-                {
-                    selectedTrackIndex=0;
-                }
-                if (audioList.get(0).contains("null")) {
-                    audioList.set(0, "Default Track");
-                }
-                boolean isAudioDisabled=trackSelector.getParameters().getRendererDisabled(C.TRACK_TYPE_AUDIO);
-                if(isAudioDisabled)
-                {
-                    selectedTrackIndex =audioList.size();
-                }
-
-                audioList.add("Disable Audio");
-                CharSequence[] tempTracks = audioList.toArray(new CharSequence[audioList.size()]);
-                MaterialAlertDialogBuilder dialogBuilder=new MaterialAlertDialogBuilder(PlayerActivity.this);
-                dialogBuilder.setTitle("Select Audio Track");
-                dialogBuilder.setOnCancelListener(dialogInterface -> player.play());
-                dialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
-                    if (i!=audioList.size()-1) {
-                        trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_AUDIO, false));
-                        trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredAudioLanguage(audioTrack.get(i)));
-                    }
-                    else {
-                        trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_AUDIO,true));
-                    }
-                    player.play();
-                    dialogInterface.dismiss();
-                });
-                dialogBuilder.show();
-            }
+        audioTrack.setOnClickListener(v -> {
+            player.pause();
+            setAudioTrack(player, trackSelector, PlayerActivity.this);
         });
+        subTitleTrack.setOnClickListener(view -> {
+            player.pause();
+            setSubTrack(player,trackSelector,PlayerActivity.this);
+        });
+        String videoPath= playerVideos.get(position).getVideoPath();
+        if (!getVideoPlayedStatus(videoPath)) {
+            setVideoPlayedStatus(videoPath);
+//            File videoFile = new File(videoPath);
+//            String folderPath = videoFile.getParent();
+//            preferences.setInt(folderPath, playerVideos.size()-1);
+//            String keyForCount="count_"+folderPath;
+//            preferences.setInt(keyForCount,playerVideos.size());
+        }
 
-        setVideoPlayedStatus(playerVideos.get(position).getVideoPath());
+
     }
-
-
-    public String getName(TrackGroup trackGroup, int index) {
-        Format format = trackGroup.getFormat(0);
-        String language = format.language;
-        String label = format.label;
-
-        StringBuilder builder = new StringBuilder();
-        if (label != null) {
-            builder.append(label);
-        }
-
-        if (builder.length() == 0) {
-
-                builder.append("Audio Track #").append(index + 1);
-
-        }
-
-        if (language != null && !language.equals("und")) {
-            builder.append(" - ");
-            builder.append(Locale.forLanguageTag(language).getDisplayLanguage());
-        }
-
-        return builder.toString();
-    }
-
 
     private void setFullScreen() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -334,9 +286,9 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             updateTrackSelectorParameters();
             updateStartPosition();
-            String key=playerVideos.get(position).getVideoPath();
-            Long currentPosition=Math.max(0,player.getContentPosition());
-            preferences.setLong(key,currentPosition);
+            String key = playerVideos.get(position).getVideoPath();
+            Long currentPosition = Math.max(0, player.getContentPosition());
+            preferences.setLong(key, currentPosition);
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
@@ -389,8 +341,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onPause() {
 
-        if (player!=null)
-        {
+        if (player != null) {
             player.pause();
         }
         super.onPause();
@@ -400,8 +351,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     public void onStop() {
-        if (player!=null)
-        {
+        if (player != null) {
             player.stop();
         }
         setLastVideos();
@@ -419,13 +369,21 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void setLastVideos() {
         String videoListJson = convertVideoListToJson(playerVideos);
-        preferences.setLastVideos("lastVideos", "lastPosition", position,videoListJson);
+        preferences.setLastVideos("lastVideos", "lastPosition", position, videoListJson);
     }
+
     private void setVideoPlayedStatus(String videoPath) {
         // Save video playback status to SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
         preferences.setBoolean(videoKey, true);
+
+    }
+    private boolean getVideoPlayedStatus(String videoPath) {
+        // Save video playback status to SharedPreferences
+        // Use a unique key for each video
+        String videoKey = "played_" + videoPath;
+       return preferences.getBoolean(videoKey);
 
     }
 
