@@ -78,7 +78,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         // Get the data model based on position
         VideoFolder videoFolder = videoFolders.get(position);
         // Set item views based on the data model
-        String folderPath=videoFolder.getFolderPath();
+
         String fname= videoFolder.getFolderName();
         int videoCount=videoFolder.getVideoCount();
         fname=(fname.length() > 25) ? fname.substring(0, 25) + "..." : fname;
@@ -97,36 +97,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             FolderUtils.showMenu(view.getContext(),videoFolder);
             return false;
         });
-//        String keyForCount="count_"+folderPath;
-//        if (preferences.getInt(keyForCount)<0){
-//            preferences.setBoolean("first_run",true);
-//            preferences.setInt(folderPath,videoCount);
-//            preferences.setInt(keyForCount,videoCount);
-//
-//        }
-//        int noOfNewVideos = preferences.getInt(folderPath);
-//        int totalVideos= preferences.getInt(keyForCount);
-//        if (noOfNewVideos>0) {
-//            if (videoCount == totalVideos) {
-//                holder.NewVideoCount.setText(noOfNewVideos);
-//                holder.NewVideoCount.setVisibility(View.VISIBLE);
-//            }
-//            else if (videoCount<totalVideos && noOfNewVideos>=videoCount){
-//                preferences.setInt(keyForCount,videoCount);
-//                int tempCount=totalVideos-videoCount;
-//                preferences.setInt(folderPath,(noOfNewVideos-tempCount));
-//                holder.NewVideoCount.setText(noOfNewVideos-tempCount);
-//                holder.NewVideoCount.setVisibility(View.VISIBLE);
-//            } else if (videoCount>totalVideos) {
-//
-//                noOfNewVideos=noOfNewVideos+(videoCount-totalVideos);
-//                holder.NewVideoCount.setText(noOfNewVideos);
-//                holder.NewVideoCount.setVisibility(View.VISIBLE);
-//
-//
-//
-//            }
-//        }
+
 
     }
     @Override

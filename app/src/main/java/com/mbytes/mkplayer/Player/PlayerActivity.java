@@ -240,13 +240,7 @@ public class PlayerActivity extends AppCompatActivity {
         String videoPath= playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
-//            File videoFile = new File(videoPath);
-//            String folderPath = videoFile.getParent();
-//            preferences.setInt(folderPath, playerVideos.size()-1);
-//            String keyForCount="count_"+folderPath;
-//            preferences.setInt(keyForCount,playerVideos.size());
         }
-
 
     }
 
