@@ -50,6 +50,7 @@ public class Preferences {
         editor.apply();
     }
 
+
     public void setLastVideos(String key,String key1,int position,String json){
         SharedPreferences.Editor editor=preferences.edit();
         editor.putInt(key1,position);
@@ -90,4 +91,6 @@ public class Preferences {
         editor.putString(key, SortOption);
         editor.apply();
     }
+
+
 }

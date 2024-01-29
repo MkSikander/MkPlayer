@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     protected void onResume() {
         super.onResume();
         getLastVideos();
+
         if (!(videoItem ==null))
         {
             play_last.setVisibility(View.VISIBLE);
