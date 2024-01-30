@@ -140,4 +140,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         parcel.writeString(videoResolution);
         parcel.writeLong(videoSize);
     }
+
+
 }

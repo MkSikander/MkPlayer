@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         refreshLayout.setRefreshing(false);
         adapter.notifyDataSetChanged();
     }
-
     public List<VideoFolder> getVideoFolders() {
         List<VideoFolder> videoFolders = new ArrayList<>();
         Set<String> uniqueFolderPaths = new HashSet<>();

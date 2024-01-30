@@ -11,13 +11,18 @@ import static com.mbytes.mkplayer.Utils.PlayerUtils.setSubTrack;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -77,17 +82,20 @@ public class PlayerActivity extends AppCompatActivity {
     private static final String KEY_AUTO_PLAY = "auto_play";
     private String path;
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
-    private TextView title;
+    private TextView title,volume_text,brightness_text;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
-    private ProgressBar progressBar;
-
+    private ProgressBar progressBar,volProgress,briProgress;
+    private LinearLayout vol_layout,bri_layout;
+   private AudioManager audioManager;
     int position;
-    private RelativeLayout root;
+    private RelativeLayout root,zoomLayout;
+    private ScaleGestureDetector scaleGestureDetector;
+    private GestureDetector gestureDetector;
     private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
 
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +103,7 @@ public class PlayerActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
         initViews();
+
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
@@ -144,7 +153,6 @@ public class PlayerActivity extends AppCompatActivity {
         initializePlayer();
     }
 
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -159,6 +167,13 @@ public class PlayerActivity extends AppCompatActivity {
     private void initViews() {
         preferences = new Preferences(PlayerActivity.this);
         playerView = findViewById(R.id.player_view);
+        bri_layout=findViewById(R.id.brightness_gesture_layout);
+        vol_layout=findViewById(R.id.volume_gesture_layout);
+        volProgress=findViewById(R.id.volume_progress_bar);
+        briProgress=findViewById(R.id.brightness_progress_bar);
+        volume_text=findViewById(R.id.volume_progress_text);
+        brightness_text=findViewById(R.id.brightness_progress_text);
+        zoomLayout=findViewById(R.id.zoomLayout);
         progressBar = findViewById(R.id.exo_mid_progress);
         trackSelector = new DefaultTrackSelector(this);
         nextBtn = findViewById(R.id.exo_next_btn);
@@ -380,5 +395,6 @@ public class PlayerActivity extends AppCompatActivity {
        return preferences.getBoolean(videoKey);
 
     }
+
 
 }

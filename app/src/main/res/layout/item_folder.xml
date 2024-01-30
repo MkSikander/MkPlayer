@@ -20,6 +20,7 @@
         android:id="@+id/no_of_new_videos"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:visibility="gone"
         android:layout_marginTop="11dp"
         android:background="@drawable/circle_background"
         android:gravity="center"

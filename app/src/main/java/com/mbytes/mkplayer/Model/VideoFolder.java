@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class VideoFolder implements Comparable<VideoFolder>, Serializable {
@@ -13,6 +14,7 @@ public class VideoFolder implements Comparable<VideoFolder>, Serializable {
     private Date dateAdded;
     private long folderSize;
 
+    private List<VideoItem> videos;
 
 
 
@@ -23,7 +25,9 @@ public class VideoFolder implements Comparable<VideoFolder>, Serializable {
         this.folderSize=folderSize;
         this.videoCount=videoCount;
 
+
     }
+
 
     public long getFolderSize() {
         return folderSize;

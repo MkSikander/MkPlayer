@@ -15,12 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.mbytes.mkplayer.Model.VideoFolder;
+import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Activities.VideosListActivity;
 import com.mbytes.mkplayer.Utils.FolderUtils;
 import com.mbytes.mkplayer.Utils.Preferences;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapter.ViewHolder> implements FolderUtils.AdapterCallback {
     Preferences preferences;
@@ -100,8 +102,11 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
 
 
     }
+
     @Override
     public int getItemCount() {
         return videoFolders.size();
     }
+
+
 }
