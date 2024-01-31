@@ -4,20 +4,14 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
-import static com.google.gson.internal.$Gson$Types.arrayOf;
 import static com.mbytes.mkplayer.Utils.PlayerUtils.convertVideoListToJson;
 import static com.mbytes.mkplayer.Utils.PlayerUtils.setAudioTrack;
 import static com.mbytes.mkplayer.Utils.PlayerUtils.setSubTrack;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,21 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.C;
-import androidx.media3.common.Format;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.common.TrackGroup;
 import androidx.media3.common.TrackSelectionParameters;
-import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
-import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
-import androidx.media3.exoplayer.trackselection.TrackSelection;
-import androidx.media3.extractor.mp4.Track;
 import androidx.media3.ui.PlayerView;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.PlayerUtils;
@@ -55,9 +41,6 @@ import com.mbytes.mkplayer.Utils.Preferences;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 @UnstableApi
@@ -87,13 +70,11 @@ public class PlayerActivity extends AppCompatActivity {
     private Preferences preferences;
     private ProgressBar progressBar,volProgress,briProgress;
     private LinearLayout vol_layout,bri_layout;
-   private AudioManager audioManager;
-    int position;
+    private AudioManager audioManager;
+    private int position;
     private RelativeLayout root,zoomLayout;
-    private ScaleGestureDetector scaleGestureDetector;
-    private GestureDetector gestureDetector;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
 
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
 
     @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -102,8 +83,46 @@ public class PlayerActivity extends AppCompatActivity {
         setFullScreen();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
-        initViews();
+        initViews(savedInstanceState);
+        initializePlayer();
 
+
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        updateTrackSelectorParameters();
+        updateStartPosition();
+        outState.putBundle(KEY_TRACK_SELECTION_PARAMETERS, trackSelectionParameters.toBundle());
+        outState.putInt(KEY_ITEM_INDEX, startItemIndex);
+        outState.putBoolean(KEY_AUTO_PLAY, startAutoPlay);
+        outState.putLong(KEY_POSITION, startPosition);
+    }
+
+    private void initViews(Bundle savedInstanceState) {
+        preferences = new Preferences(PlayerActivity.this);
+        playerView = findViewById(R.id.player_view);
+        bri_layout=findViewById(R.id.brightness_gesture_layout);
+        vol_layout=findViewById(R.id.volume_gesture_layout);
+        volProgress=findViewById(R.id.volume_progress_bar);
+        briProgress=findViewById(R.id.brightness_progress_bar);
+        volume_text=findViewById(R.id.volume_progress_text);
+        brightness_text=findViewById(R.id.brightness_progress_text);
+        zoomLayout=findViewById(R.id.zoomLayout);
+        progressBar = findViewById(R.id.exo_mid_progress);
+        trackSelector = new DefaultTrackSelector(this);
+        nextBtn = findViewById(R.id.exo_next_btn);
+        prevBtn = findViewById(R.id.exo_prev);
+        backBtn = findViewById(R.id.video_back);
+        title = findViewById(R.id.video_title);
+        scalingBtn = findViewById(R.id.scaling);
+        lockBtn = findViewById(R.id.lock);
+        unlockBtn = findViewById(R.id.unlock);
+        root = findViewById(R.id.root_layout);
+        audioTrack = findViewById(R.id.audio_track);
+        subTitleTrack=findViewById(R.id.exo_subtitle_track);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
@@ -148,44 +167,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
             playerView.setResizeMode(newMode);
         });
-
-
-        initializePlayer();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        updateTrackSelectorParameters();
-        updateStartPosition();
-        outState.putBundle(KEY_TRACK_SELECTION_PARAMETERS, trackSelectionParameters.toBundle());
-        outState.putInt(KEY_ITEM_INDEX, startItemIndex);
-        outState.putBoolean(KEY_AUTO_PLAY, startAutoPlay);
-        outState.putLong(KEY_POSITION, startPosition);
-    }
-
-    private void initViews() {
-        preferences = new Preferences(PlayerActivity.this);
-        playerView = findViewById(R.id.player_view);
-        bri_layout=findViewById(R.id.brightness_gesture_layout);
-        vol_layout=findViewById(R.id.volume_gesture_layout);
-        volProgress=findViewById(R.id.volume_progress_bar);
-        briProgress=findViewById(R.id.brightness_progress_bar);
-        volume_text=findViewById(R.id.volume_progress_text);
-        brightness_text=findViewById(R.id.brightness_progress_text);
-        zoomLayout=findViewById(R.id.zoomLayout);
-        progressBar = findViewById(R.id.exo_mid_progress);
-        trackSelector = new DefaultTrackSelector(this);
-        nextBtn = findViewById(R.id.exo_next_btn);
-        prevBtn = findViewById(R.id.exo_prev);
-        backBtn = findViewById(R.id.video_back);
-        title = findViewById(R.id.video_title);
-        scalingBtn = findViewById(R.id.scaling);
-        lockBtn = findViewById(R.id.lock);
-        unlockBtn = findViewById(R.id.unlock);
-        root = findViewById(R.id.root_layout);
-        audioTrack = findViewById(R.id.audio_track);
-        subTitleTrack=findViewById(R.id.exo_subtitle_track);
     }
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {

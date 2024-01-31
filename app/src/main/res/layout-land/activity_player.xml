@@ -12,6 +12,7 @@
         android:fitsSystemWindows="false"
         android:layout_height="match_parent"
         app:use_controller="true"
+        app:player_layout_id="@layout/exo_layout_view"
         app:animation_enabled="false"
         app:shutter_background_color="@color/black"
         app:show_timeout="2000"
@@ -25,6 +26,7 @@
         android:visibility="gone"
         android:id="@+id/exo_mid_progress"
         />
+
 
     <LinearLayout
         android:id="@+id/volume_gesture_layout"
