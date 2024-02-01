@@ -14,6 +14,7 @@
         app:use_controller="true"
         app:player_layout_id="@layout/exo_layout_view"
         app:animation_enabled="false"
+        android:background="@color/black"
         app:shutter_background_color="@color/black"
         app:show_timeout="2000"
         app:surface_type="surface_view"

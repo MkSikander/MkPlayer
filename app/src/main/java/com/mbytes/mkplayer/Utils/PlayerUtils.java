@@ -2,6 +2,7 @@ package com.mbytes.mkplayer.Utils;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
 
 import androidx.annotation.OptIn;
@@ -46,6 +47,13 @@ public class PlayerUtils {
     public static String convertVideoListToJson(ArrayList<VideoItem> videoList) {
         Gson gson = new Gson();
         return gson.toJson(videoList);
+    }
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    public static float pxToDp(float px) {
+        return px / Resources.getSystem().getDisplayMetrics().density;
     }
 
     @OptIn(markerClass = UnstableApi.class)
