@@ -4,20 +4,22 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
-import static com.google.gson.internal.$Gson$Types.arrayOf;
-import static com.mbytes.mkplayer.Utils.PlayerUtils.convertVideoListToJson;
-import static com.mbytes.mkplayer.Utils.PlayerUtils.setAudioTrack;
-import static com.mbytes.mkplayer.Utils.PlayerUtils.setSubTrack;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJson;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,73 +30,130 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.C;
-import androidx.media3.common.Format;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.common.TrackGroup;
 import androidx.media3.common.TrackSelectionParameters;
-import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
-import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
-import androidx.media3.exoplayer.trackselection.TrackSelection;
-import androidx.media3.extractor.mp4.Track;
 import androidx.media3.ui.PlayerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
+import com.mbytes.mkplayer.Player.Utils.BrightnessManager;
+import com.mbytes.mkplayer.Player.Utils.PlayerGestureHelper;
+import com.mbytes.mkplayer.Player.Utils.VolumeManager;
 import com.mbytes.mkplayer.R;
-import com.mbytes.mkplayer.Utils.PlayerUtils;
+import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.Utils.Preferences;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 @UnstableApi
 public class PlayerActivity extends AppCompatActivity {
 
-
     private ExoPlayer player;
-    private PlayerView playerView;
+    public PlayerView playerView;
     private ControlsMode controlsMode;
+    public static boolean isControlLocked=false;
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
     private TrackSelectionParameters trackSelectionParameters;
-
     public enum ControlsMode {
         LOCK, FULLSCREEN
     }
-
     private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
     private String path;
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
-    private TextView title;
+    private TextView title,volume_text,brightness_text,seek_duration,seek_change;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
-    private ProgressBar progressBar;
-
-    int position;
-    private RelativeLayout root;
+    private int position;
     private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
+    //Gesture Related import
+    private ProgressBar progressBar,volProgress,briProgress;
+    private LinearLayout bri_layout,vol_layout;
+    private AudioManager audioManager;
+    private RelativeLayout root;
+    private BrightnessManager brightnessManager;
+    private VolumeManager volumeManager;
+    private PlayerGestureHelper playerGestureHelper;
+    private GestureDetector gestureDetector;
+    private Long currentPosition;
 
 
-    @SuppressLint("MissingInflatedId")
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setFullScreen();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_player);
-        initViews();
+        initViews(savedInstanceState);
+        initializePlayer();
+
+        playerView.setOnTouchListener((view, motionEvent) -> {
+            int Action= motionEvent.getAction();
+            if (Action== MotionEvent.ACTION_UP){
+                hideProgressBar();
+            } else if (Action==MotionEvent.ACTION_DOWN) {
+                if(player!=null){
+                   currentPosition= player.getCurrentPosition();
+                }
+            }
+            gestureDetector.onTouchEvent(motionEvent);
+            return true;
+        });
+
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        updateTrackSelectorParameters();
+        updateStartPosition();
+        outState.putBundle(KEY_TRACK_SELECTION_PARAMETERS, trackSelectionParameters.toBundle());
+        outState.putInt(KEY_ITEM_INDEX, startItemIndex);
+        outState.putBoolean(KEY_AUTO_PLAY, startAutoPlay);
+        outState.putLong(KEY_POSITION, startPosition);
+    }
+
+    private void initViews(Bundle savedInstanceState) {
+        preferences = new Preferences(PlayerActivity.this);
+        playerView = findViewById(R.id.player_view);
+        progressBar = findViewById(R.id.exo_mid_progress);
+        trackSelector = new DefaultTrackSelector(this);
+        nextBtn = findViewById(R.id.exo_next_btn);
+        prevBtn = findViewById(R.id.exo_prev);
+        backBtn = findViewById(R.id.video_back);
+        title = findViewById(R.id.video_title);
+        scalingBtn = findViewById(R.id.scaling);
+        lockBtn = findViewById(R.id.lock);
+        unlockBtn = findViewById(R.id.unlock);
+        root = findViewById(R.id.root_layout);
+        audioTrack = findViewById(R.id.audio_track);
+        subTitleTrack=findViewById(R.id.exo_subtitle_track);
+        bri_layout=findViewById(R.id.brightness_gesture_layout);
+        vol_layout=findViewById(R.id.volume_gesture_layout);
+        volProgress=findViewById(R.id.volume_progress_bar);
+        seek_duration=findViewById(R.id.seek_duration);
+        seek_change=findViewById(R.id.seek_change);
+        briProgress=findViewById(R.id.brightness_progress_bar);
+        volume_text=findViewById(R.id.volume_progress_text);
+        brightness_text=findViewById(R.id.brightness_progress_text);
+        audioManager=(AudioManager)getSystemService(AUDIO_SERVICE);
+        volumeManager=new VolumeManager(audioManager);
+        brightnessManager=new BrightnessManager(this);
+        playerGestureHelper=new PlayerGestureHelper(this,audioManager,brightnessManager,volumeManager);
+        gestureDetector=new GestureDetector(this,playerGestureHelper);
+
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
@@ -104,12 +163,14 @@ public class PlayerActivity extends AppCompatActivity {
             controlsMode = ControlsMode.LOCK;
             root.setVisibility(View.INVISIBLE);
             unlockBtn.setVisibility(View.VISIBLE);
+            isControlLocked=true;
 
         });
         unlockBtn.setOnClickListener(view -> {
             controlsMode = ControlsMode.FULLSCREEN;
             root.setVisibility(View.VISIBLE);
             unlockBtn.setVisibility(View.INVISIBLE);
+            isControlLocked=false;
         });
         if (savedInstanceState != null) {
             trackSelectionParameters =
@@ -139,38 +200,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
             playerView.setResizeMode(newMode);
         });
-
-
-        initializePlayer();
-    }
-
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        updateTrackSelectorParameters();
-        updateStartPosition();
-        outState.putBundle(KEY_TRACK_SELECTION_PARAMETERS, trackSelectionParameters.toBundle());
-        outState.putInt(KEY_ITEM_INDEX, startItemIndex);
-        outState.putBoolean(KEY_AUTO_PLAY, startAutoPlay);
-        outState.putLong(KEY_POSITION, startPosition);
-    }
-
-    private void initViews() {
-        preferences = new Preferences(PlayerActivity.this);
-        playerView = findViewById(R.id.player_view);
-        progressBar = findViewById(R.id.exo_mid_progress);
-        trackSelector = new DefaultTrackSelector(this);
-        nextBtn = findViewById(R.id.exo_next_btn);
-        prevBtn = findViewById(R.id.exo_prev);
-        backBtn = findViewById(R.id.video_back);
-        title = findViewById(R.id.video_title);
-        scalingBtn = findViewById(R.id.scaling);
-        lockBtn = findViewById(R.id.lock);
-        unlockBtn = findViewById(R.id.unlock);
-        root = findViewById(R.id.root_layout);
-        audioTrack = findViewById(R.id.audio_track);
-        subTitleTrack=findViewById(R.id.exo_subtitle_track);
     }
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
@@ -219,6 +248,10 @@ public class PlayerActivity extends AppCompatActivity {
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
                 if (playbackState == Player.STATE_ENDED) {
+                    String key = playerVideos.get(position).getVideoPath();
+                    Long currentPosition = 0L;
+                    preferences.setLong(key, currentPosition);
+
                     if (position == playerVideos.size() - 1) {
                         position = 0;
                         finish();
@@ -374,11 +407,72 @@ public class PlayerActivity extends AppCompatActivity {
 
     }
     private boolean getVideoPlayedStatus(String videoPath) {
-        // Save video playback status to SharedPreferences
+        // Get video playback status from SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
        return preferences.getBoolean(videoKey);
 
     }
+    public void hideProgressBar() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Your existing code here
+                if (vol_layout.getVisibility() == View.VISIBLE) {
+                    vol_layout.setVisibility(View.GONE);
+                }
+                if (bri_layout.getVisibility() == View.VISIBLE) {
+                    bri_layout.setVisibility(View.GONE);
+                }
+                if (seek_change.getVisibility() == View.VISIBLE) {
+                    seek_change.setVisibility(View.GONE);
+                    seek_duration.setVisibility(View.GONE);
+                }
+            }
+        }, 800);
+    }
+    public float getCurrentBrightness() {
+        return getWindow().getAttributes().screenBrightness;
+
+    }
+    public boolean isControlLocked() {
+        return isControlLocked;
+    }
+    public int getVolLayoutVisibility() {
+        return vol_layout.getVisibility();
+    }
+    public int getBriLayoutVisibility() {
+        return bri_layout.getVisibility();
+    }
+    public void setSeekTextVisible() {
+        seek_change.setVisibility(View.VISIBLE);
+        seek_duration.setVisibility(View.VISIBLE);
+    }
+
+    public void setBriVisible() {
+        bri_layout.setVisibility(View.VISIBLE);
+    }
+    public void setVolVisible() {
+        vol_layout.setVisibility(View.VISIBLE);
+    }
+    public void showBriGestureLayout(){
+        brightness_text.setText(String.valueOf(brightnessManager.getBrightnessPercentage()));
+        briProgress.setMax((int) (brightnessManager.maxBrightness * 100));
+        briProgress.setProgress((int) (brightnessManager.getCurrentBrightness() * 100));
+    }
+    public void showVolGestureLayout(){
+        volume_text.setText(String.valueOf(volumeManager.getVolumePercentage()));
+        volProgress.setMax((int) (volumeManager.getMaxVolume() * 100));
+        volProgress.setProgress((int) (volumeManager.getCurrentVolume() * 100));
+    }
+    public void showSeekInfo(String s, String s1) {
+        seek_duration.setText(s);
+        seek_change.setText(s1);
+    }
+    public long getCurrentPP(){
+        return currentPosition;
+    }
+
 
 }

@@ -16,5 +16,7 @@
     <color name="colorPrimaryDynamic">?attr/colorPrimary</color>
     <color name="colorSecondaryDynamic">?attr/colorSecondary</color>
     <color name="colorAccent">#4E9597</color>
+    <color name="player_background">#4D000000</color>
+    <color name="transparent_white_300">#4DFFFFFF</color>
 
 </resources>
