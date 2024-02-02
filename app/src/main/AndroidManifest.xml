@@ -35,7 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".Player.PlayerActivity"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection|uiMode"
             android:exported="true" />
         <activity
             android:name=".Activities.VideosListActivity"

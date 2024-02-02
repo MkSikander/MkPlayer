@@ -14,7 +14,6 @@
         app:use_controller="true"
         app:player_layout_id="@layout/exo_layout_view"
         app:animation_enabled="false"
-        android:background="@color/black"
         app:shutter_background_color="@color/black"
         app:show_timeout="2000"
         app:surface_type="surface_view"
@@ -27,8 +26,19 @@
         android:visibility="gone"
         android:id="@+id/exo_mid_progress"
         />
-
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seek_text"
+        android:text="@string/seek_text"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="30sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_centerInParent="true"
+        >
+    </TextView>
     <LinearLayout
         android:id="@+id/volume_gesture_layout"
         android:layout_width="54dp"
@@ -52,7 +62,6 @@
             android:gravity="center"
             android:textColor="@android:color/white"
             tools:text="58%" />
-
         <ProgressBar
             android:id="@+id/volume_progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -60,7 +69,6 @@
             android:layout_height="125dp"
             android:progressDrawable="@drawable/progress_scale_drawable"
             tools:progress="58" />
-
         <ImageView
             android:id="@+id/volume_image"
             android:layout_width="24dp"

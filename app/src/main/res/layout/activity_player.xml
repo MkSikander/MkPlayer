@@ -13,7 +13,6 @@
       android:fitsSystemWindows="false"
       android:layout_height="match_parent"
       app:use_controller="true"
-      android:background="@color/black"
       app:shutter_background_color="@color/black"
       app:show_timeout="2000"
       app:animation_enabled="false"
@@ -33,13 +32,13 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:id="@+id/seek_text"
-      android:text="+0:30"
+      android:text="@string/seek_text"
       android:textColor="@color/white"
       android:textStyle="bold"
       android:textSize="30sp"
       android:visibility="gone"
+      tools:visibility="visible"
       android:layout_centerInParent="true"
-      android:layout_marginBottom="10dp"
       >
   </TextView>
 
@@ -72,7 +71,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="6dp"
         android:layout_height="125dp"
-        android:max="16"
+        android:max="200"
         android:progressDrawable="@drawable/progress_scale_drawable"
         tools:progress="10" />
 
@@ -113,7 +112,6 @@
         android:id="@+id/brightness_progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="6dp"
-        android:max="16"
         android:layout_height="125dp"
         android:progressDrawable="@drawable/progress_scale_drawable"
         tools:progress="15" />
