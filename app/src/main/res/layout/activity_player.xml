@@ -14,11 +14,12 @@
       app:use_controller="true"
       app:shutter_background_color="@color/black"
       app:show_timeout="2000"
-
+     app:player_layout_id="@layout/exo_player_layout"
       app:animation_enabled="false"
-      app:surface_type="surface_view"
+      app:surface_type="texture_view"
       app:controller_layout_id="@layout/player_control_view"
-      android:id="@+id/player_view"/>
+      android:id="@+id/player_view"
+      tools:ignore="PrivateResource" />
 
   <ProgressBar
       android:layout_width="wrap_content"
@@ -54,6 +55,20 @@
       tools:visibility="visible"
       android:layout_below="@id/seek_duration"
       android:layout_centerHorizontal="true"
+      >
+  </TextView>
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/zoom_perc"
+      android:text="@string/percent"
+      android:textColor="@color/white"
+      android:textStyle="bold"
+      android:layout_marginTop="5dp"
+      android:textSize="30sp"
+      android:visibility="gone"
+      tools:visibility="visible"
+      android:layout_centerInParent="true"
       >
   </TextView>
 

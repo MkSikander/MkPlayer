@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -33,9 +34,11 @@ import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.TrackSelectionParameters;
+import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -60,7 +63,10 @@ public class PlayerActivity extends AppCompatActivity {
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
+    private AspectRatioFrameLayout exoContentFrameLayout;
     private TrackSelectionParameters trackSelectionParameters;
+
+
 
     public enum ControlsMode {
         LOCK, FULLSCREEN
@@ -70,7 +76,7 @@ public class PlayerActivity extends AppCompatActivity {
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
-    private String path;
+
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
     private TextView title, volume_text, brightness_text, seek_duration, seek_change, startOver;
     private DefaultTrackSelector trackSelector;
@@ -87,6 +93,7 @@ public class PlayerActivity extends AppCompatActivity {
     private PlayerGestureHelper playerGestureHelper;
     private GestureDetector gestureDetector;
     private Long currentPosition;
+    private FrameLayout zoomLayout;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,18 +106,7 @@ public class PlayerActivity extends AppCompatActivity {
         initViews(savedInstanceState);
         initializePlayer();
 
-        playerView.setOnTouchListener((view, motionEvent) -> {
-            int Action = motionEvent.getAction();
-            if (Action == MotionEvent.ACTION_UP) {
-                hideProgressBar();
-            } else if (Action == MotionEvent.ACTION_DOWN) {
-                if (player != null) {
-                    currentPosition = player.getCurrentPosition();
-                }
-            }
-            gestureDetector.onTouchEvent(motionEvent);
-            return true;
-        });
+
 
     }
 
@@ -133,10 +129,12 @@ public class PlayerActivity extends AppCompatActivity {
         trackSelector = new DefaultTrackSelector(this);
         nextBtn = findViewById(R.id.exo_next_btn);
         prevBtn = findViewById(R.id.exo_prev);
+        zoomLayout=findViewById(R.id.zoom_layout);
         backBtn = findViewById(R.id.video_back);
         title = findViewById(R.id.video_title);
         scalingBtn = findViewById(R.id.scaling);
         lockBtn = findViewById(R.id.lock);
+        exoContentFrameLayout=findViewById(R.id.exo_content_frame);
         unlockBtn = findViewById(R.id.unlock);
         startOver = findViewById(R.id.start_over);
         cancelStartOver = findViewById(R.id.start_over_cancel);
@@ -189,6 +187,9 @@ public class PlayerActivity extends AppCompatActivity {
             clearStartPosition();
         }
         scalingBtn.setOnClickListener(v -> {
+                zoomLayout.setScaleX(1f);
+                zoomLayout.setScaleY(1f);
+               playerGestureHelper.resetScaleFactor();
             int currentMode = playerView.getResizeMode();
             int newMode = RESIZE_MODE_FIT; // Default to fit
             switch (currentMode) {
@@ -218,7 +219,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         Long skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
-        path = playerVideos.get(position).getVideoPath();
+        String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         if (player == null) {
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector).build();
@@ -228,7 +229,6 @@ public class PlayerActivity extends AppCompatActivity {
         player.setMediaItem(mediaItem);
         playerView.setKeepScreenOn(true);
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
-
         //check for skip position
         if (haveStartPosition) {
             showStartOverLayout();
@@ -260,6 +260,7 @@ public class PlayerActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 }
             }
+
         });
         player.play();
 
@@ -281,6 +282,7 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+
         audioTrack.setOnClickListener(v -> {
             player.pause();
             setAudioTrack(player, trackSelector, PlayerActivity.this);

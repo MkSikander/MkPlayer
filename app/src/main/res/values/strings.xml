@@ -206,4 +206,5 @@
     <string name="seek_text">+00:30</string>
     <string name="start_over">Start Over</string>
     <string name="continue_from_where_you_left">Continue from where you left</string>
+    <string name="percent">150%</string>
 </resources>
