@@ -14,11 +14,12 @@
       app:use_controller="true"
       app:shutter_background_color="@color/black"
       app:show_timeout="2000"
-
+     app:player_layout_id="@layout/exo_player_layout"
       app:animation_enabled="false"
-      app:surface_type="surface_view"
+      app:surface_type="texture_view"
       app:controller_layout_id="@layout/player_control_view"
-      android:id="@+id/player_view"/>
+      android:id="@+id/player_view"
+      tools:ignore="PrivateResource" />
 
   <ProgressBar
       android:layout_width="wrap_content"
@@ -54,6 +55,20 @@
       tools:visibility="visible"
       android:layout_below="@id/seek_duration"
       android:layout_centerHorizontal="true"
+      >
+  </TextView>
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/zoom_perc"
+      android:text="@string/percent"
+      android:textColor="@color/white"
+      android:textStyle="bold"
+      android:layout_marginTop="5dp"
+      android:textSize="30sp"
+      android:visibility="gone"
+      tools:visibility="visible"
+      android:layout_centerInParent="true"
       >
   </TextView>
 
@@ -141,4 +156,42 @@
         android:src="@drawable/ic_brightness"
         tools:ignore="ContentDescription" />
   </LinearLayout>
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_marginBottom="75dp"
+      android:layout_marginStart="10dp"
+      android:visibility="gone"
+      tools:visibility="visible"
+      android:paddingStart="10dp"
+      android:id="@+id/start_over_layout"
+      android:paddingEnd="10dp"
+      android:paddingTop="4dp"
+      android:paddingBottom="4dp"
+      android:background="@drawable/rounded_background"
+      android:layout_alignParentBottom="true"
+      android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:src="@drawable/ic_cancel"
+        android:id="@+id/start_over_cancel"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="@color/white"
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:text="@string/continue_from_where_you_left"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_over"
+        android:id="@+id/start_over"
+        android:layout_marginStart="5dp"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:textColor="#0BBCA7"
+        />
+  </LinearLayout>
+
 </RelativeLayout>
