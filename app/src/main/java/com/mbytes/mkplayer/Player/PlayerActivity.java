@@ -56,28 +56,30 @@ public class PlayerActivity extends AppCompatActivity {
     private ExoPlayer player;
     public PlayerView playerView;
     private ControlsMode controlsMode;
-    public static boolean isControlLocked=false;
+    public static boolean isControlLocked = false;
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
     private TrackSelectionParameters trackSelectionParameters;
+
     public enum ControlsMode {
         LOCK, FULLSCREEN
     }
+
     private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
     private String path;
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
-    private TextView title,volume_text,brightness_text,seek_duration,seek_change;
+    private TextView title, volume_text, brightness_text, seek_duration, seek_change, startOver;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
     private int position;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack;
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver;
     //Gesture Related import
-    private ProgressBar progressBar,volProgress,briProgress;
-    private LinearLayout bri_layout,vol_layout;
+    private ProgressBar progressBar, volProgress, briProgress;
+    private LinearLayout bri_layout, vol_layout, startOverLayout;
     private AudioManager audioManager;
     private RelativeLayout root;
     private BrightnessManager brightnessManager;
@@ -85,7 +87,6 @@ public class PlayerActivity extends AppCompatActivity {
     private PlayerGestureHelper playerGestureHelper;
     private GestureDetector gestureDetector;
     private Long currentPosition;
-
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,12 +100,12 @@ public class PlayerActivity extends AppCompatActivity {
         initializePlayer();
 
         playerView.setOnTouchListener((view, motionEvent) -> {
-            int Action= motionEvent.getAction();
-            if (Action== MotionEvent.ACTION_UP){
+            int Action = motionEvent.getAction();
+            if (Action == MotionEvent.ACTION_UP) {
                 hideProgressBar();
-            } else if (Action==MotionEvent.ACTION_DOWN) {
-                if(player!=null){
-                   currentPosition= player.getCurrentPosition();
+            } else if (Action == MotionEvent.ACTION_DOWN) {
+                if (player != null) {
+                    currentPosition = player.getCurrentPosition();
                 }
             }
             gestureDetector.onTouchEvent(motionEvent);
@@ -137,22 +138,25 @@ public class PlayerActivity extends AppCompatActivity {
         scalingBtn = findViewById(R.id.scaling);
         lockBtn = findViewById(R.id.lock);
         unlockBtn = findViewById(R.id.unlock);
+        startOver = findViewById(R.id.start_over);
+        cancelStartOver = findViewById(R.id.start_over_cancel);
+        startOverLayout = findViewById(R.id.start_over_layout);
         root = findViewById(R.id.root_layout);
         audioTrack = findViewById(R.id.audio_track);
-        subTitleTrack=findViewById(R.id.exo_subtitle_track);
-        bri_layout=findViewById(R.id.brightness_gesture_layout);
-        vol_layout=findViewById(R.id.volume_gesture_layout);
-        volProgress=findViewById(R.id.volume_progress_bar);
-        seek_duration=findViewById(R.id.seek_duration);
-        seek_change=findViewById(R.id.seek_change);
-        briProgress=findViewById(R.id.brightness_progress_bar);
-        volume_text=findViewById(R.id.volume_progress_text);
-        brightness_text=findViewById(R.id.brightness_progress_text);
-        audioManager=(AudioManager)getSystemService(AUDIO_SERVICE);
-        volumeManager=new VolumeManager(audioManager);
-        brightnessManager=new BrightnessManager(this);
-        playerGestureHelper=new PlayerGestureHelper(this,audioManager,brightnessManager,volumeManager);
-        gestureDetector=new GestureDetector(this,playerGestureHelper);
+        subTitleTrack = findViewById(R.id.exo_subtitle_track);
+        bri_layout = findViewById(R.id.brightness_gesture_layout);
+        vol_layout = findViewById(R.id.volume_gesture_layout);
+        volProgress = findViewById(R.id.volume_progress_bar);
+        seek_duration = findViewById(R.id.seek_duration);
+        seek_change = findViewById(R.id.seek_change);
+        briProgress = findViewById(R.id.brightness_progress_bar);
+        volume_text = findViewById(R.id.volume_progress_text);
+        brightness_text = findViewById(R.id.brightness_progress_text);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        volumeManager = new VolumeManager(audioManager);
+        brightnessManager = new BrightnessManager(this);
+        playerGestureHelper = new PlayerGestureHelper(this, audioManager, brightnessManager, volumeManager);
+        gestureDetector = new GestureDetector(this, playerGestureHelper);
 
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
@@ -163,14 +167,14 @@ public class PlayerActivity extends AppCompatActivity {
             controlsMode = ControlsMode.LOCK;
             root.setVisibility(View.INVISIBLE);
             unlockBtn.setVisibility(View.VISIBLE);
-            isControlLocked=true;
+            isControlLocked = true;
 
         });
         unlockBtn.setOnClickListener(view -> {
             controlsMode = ControlsMode.FULLSCREEN;
             root.setVisibility(View.VISIBLE);
             unlockBtn.setVisibility(View.INVISIBLE);
-            isControlLocked=false;
+            isControlLocked = false;
         });
         if (savedInstanceState != null) {
             trackSelectionParameters =
@@ -200,7 +204,15 @@ public class PlayerActivity extends AppCompatActivity {
             }
             playerView.setResizeMode(newMode);
         });
+        startOver.setOnClickListener(view -> {
+            player.seekTo(0L);
+            startOverLayout.setVisibility(View.GONE);
+        });
+        cancelStartOver.setOnClickListener(view -> {
+            startOverLayout.setVisibility(View.VISIBLE);
+        });
     }
+
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
 
@@ -216,10 +228,18 @@ public class PlayerActivity extends AppCompatActivity {
         player.setMediaItem(mediaItem);
         playerView.setKeepScreenOn(true);
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
+
         //check for skip position
         if (haveStartPosition) {
+            showStartOverLayout();
             player.seekTo(startItemIndex, startPosition);
-        } else player.seekTo(skipPosition);
+        } else if (skipPosition > 0L) {
+            showStartOverLayout();
+            player.seekTo(skipPosition);
+        } else {
+            player.seekTo(skipPosition);
+        }
+
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.addListener(new Player.Listener() {
             @Override
@@ -260,7 +280,6 @@ public class PlayerActivity extends AppCompatActivity {
                     }
                 }
             }
-
         });
         audioTrack.setOnClickListener(v -> {
             player.pause();
@@ -268,12 +287,33 @@ public class PlayerActivity extends AppCompatActivity {
         });
         subTitleTrack.setOnClickListener(view -> {
             player.pause();
-            setSubTrack(player,trackSelector,PlayerActivity.this);
+            setSubTrack(player, trackSelector, PlayerActivity.this);
         });
-        String videoPath= playerVideos.get(position).getVideoPath();
+        String videoPath = playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
         }
+
+    }
+
+    private void showStartOverLayout() {
+
+        Handler startOverShow = new Handler();
+        Handler startOverHide = new Handler();
+        //show StartOverLayout
+        startOverShow.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startOverLayout.setVisibility(View.VISIBLE);
+            }
+        }, 1000);
+//hide startOverLayout
+        startOverHide.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startOverLayout.setVisibility(View.GONE);
+            }
+        }, 6000);
 
     }
 
@@ -406,13 +446,15 @@ public class PlayerActivity extends AppCompatActivity {
         preferences.setBoolean(videoKey, true);
 
     }
+
     private boolean getVideoPlayedStatus(String videoPath) {
         // Get video playback status from SharedPreferences
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
-       return preferences.getBoolean(videoKey);
+        return preferences.getBoolean(videoKey);
 
     }
+
     public void hideProgressBar() {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -432,19 +474,24 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }, 800);
     }
+
     public float getCurrentBrightness() {
         return getWindow().getAttributes().screenBrightness;
 
     }
+
     public boolean isControlLocked() {
         return isControlLocked;
     }
+
     public int getVolLayoutVisibility() {
         return vol_layout.getVisibility();
     }
+
     public int getBriLayoutVisibility() {
         return bri_layout.getVisibility();
     }
+
     public void setSeekTextVisible() {
         seek_change.setVisibility(View.VISIBLE);
         seek_duration.setVisibility(View.VISIBLE);
@@ -453,26 +500,34 @@ public class PlayerActivity extends AppCompatActivity {
     public void setBriVisible() {
         bri_layout.setVisibility(View.VISIBLE);
     }
+
     public void setVolVisible() {
         vol_layout.setVisibility(View.VISIBLE);
     }
-    public void showBriGestureLayout(){
+
+    public void showBriGestureLayout() {
         brightness_text.setText(String.valueOf(brightnessManager.getBrightnessPercentage()));
         briProgress.setMax((int) (brightnessManager.maxBrightness * 100));
         briProgress.setProgress((int) (brightnessManager.getCurrentBrightness() * 100));
     }
-    public void showVolGestureLayout(){
+
+    public void showVolGestureLayout() {
         volume_text.setText(String.valueOf(volumeManager.getVolumePercentage()));
         volProgress.setMax((int) (volumeManager.getMaxVolume() * 100));
         volProgress.setProgress((int) (volumeManager.getCurrentVolume() * 100));
     }
+
     public void showSeekInfo(String s, String s1) {
         seek_duration.setText(s);
         seek_change.setText(s1);
     }
-    public long getCurrentPP(){
+
+    public long getCurrentPP() {
         return currentPosition;
     }
 
+    public void setStartOverVisibility() {
+        startOverLayout.setVisibility(View.GONE);
+    }
 
 }

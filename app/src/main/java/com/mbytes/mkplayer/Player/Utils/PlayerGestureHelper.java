@@ -56,6 +56,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
         boolean isControlLocked=activity.isControlLocked();
         if (!isControlLocked) {
+            activity.setStartOverVisibility();
             float deltaX = e2.getX() - e1.getX();
             float deltaY = e2.getY() - e1.getY();
             if (Math.abs(deltaX) > Math.abs(deltaY)&&activity.getBriLayoutVisibility()== View.GONE&&activity.getVolLayoutVisibility()==View.GONE) {
