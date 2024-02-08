@@ -47,6 +47,7 @@
                 android:id="@+id/playback_speed"
                 android:padding="10dp"
                 android:src="@drawable/ic_speed"
+                android:background="@drawable/transparent_circle_background"
                 />
             <ImageView
                 android:layout_width="wrap_content"
@@ -63,8 +64,18 @@
                 android:background="@drawable/transparent_circle_background"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_subtitle_track"
+
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_playlist"
+                android:id="@+id/playlist"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
                 android:layout_marginEnd="10dp"
                 />
+
 
 
 <!--            <ImageView-->

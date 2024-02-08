@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.OptIn;
@@ -16,10 +17,15 @@ import androidx.media3.common.TrackGroup;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.mbytes.mkplayer.Model.VideoItem;
+import com.mbytes.mkplayer.Player.PlayerActivity;
+import com.mbytes.mkplayer.R;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -27,8 +33,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerUtils {
-    private static float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
+    private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex = 3; //
+    private static BottomSheetDialog bottomSheetDialog;
     //getting video Orientation
     public static int getVideoRotation(String videoPath) {
         try {
@@ -111,16 +118,13 @@ public class PlayerUtils {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle("Select Playback Speed");
 
-        builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                selectedSpeedIndex = which;
-                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
-                Toast.makeText(context, "Selected speed: " + selectedSpeed, Toast.LENGTH_SHORT).show();
-                player.setPlaybackSpeed(selectedSpeed);
-                player.play();
-                dialog.dismiss();
-            }
+        builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, (dialog, which) -> {
+            selectedSpeedIndex = which;
+            float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+            Toast.makeText(context, "Selected speed: " + selectedSpeed, Toast.LENGTH_SHORT).show();
+            player.setPlaybackSpeed(selectedSpeed);
+            player.play();
+            dialog.dismiss();
         });
         builder.setOnCancelListener(dialogInterface -> player.play());
         builder.show();
@@ -134,6 +138,22 @@ public class PlayerUtils {
             labels[i] = String.valueOf(playbackSpeeds[i]+" x");
         }
         return labels;
+    }
+
+    public static void showPlaylistVideos(ArrayList<VideoItem> videos,int position,Context context){
+         bottomSheetDialog = new BottomSheetDialog(context);
+        bottomSheetDialog.setContentView(R.layout.playlist_bottom_sheet);
+        TextView bottomSheetTitle = bottomSheetDialog.findViewById(R.id.bottom_sheet_title);
+        bottomSheetTitle.setText("Playlist");
+        RecyclerView recyclerView = bottomSheetDialog.findViewById(R.id.playlist_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(context,videos, position);
+        recyclerView.setAdapter(adapter);
+
+        bottomSheetDialog.show();
+    }
+    public static void hideBottomSheet(){
+        bottomSheetDialog.dismiss();
     }
 
 
