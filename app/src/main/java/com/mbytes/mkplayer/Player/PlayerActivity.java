@@ -260,14 +260,7 @@ public class PlayerActivity extends AppCompatActivity {
                 playerView.setKeepScreenOn(false);
         }
         player.play();
-//        player.addListener(new Player.Listener() {
-//            @Override
-//            public void onEvents(Player player, Player.Events events) {
-//                Player.Listener.super.onEvents(player, events);
-//
-//
-//            }
-//        });
+
 
         player.addListener(new Player.Listener() {
             @Override
