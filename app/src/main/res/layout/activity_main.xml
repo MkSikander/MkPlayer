@@ -2,22 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:orientation="vertical"
-    android:paddingTop="30dp"
     android:layout_width="match_parent"
-    android:background="?attr/colorPrimaryContainer"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
+    android:background="?attr/colorPrimaryContainer"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".Activities.MainActivity">
+
     <TextView
         android:id="@+id/heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:paddingBottom="5dp"
-        android:layout_marginTop="18dp"
+        android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingBottom="5dp"
         android:text="@string/folders"
         android:textAlignment="center"
         android:textColor="?attr/colorTertiary"
@@ -25,66 +25,56 @@
         android:textStyle="bold"
         tools:ignore="RelativeOverlap" />
 
-<ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:layout_marginEnd="20dp"
-    android:id="@+id/img_setting"
-    android:src="@drawable/ic_setting"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:clipToPadding="false"
-    android:layout_alignParentEnd="true"
-    android:contentDescription="@string/permission_text"
-  />
-    <CheckBox
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:clipToPadding="false"
-        android:visibility="gone"
+    <ImageView
+        android:id="@+id/img_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_horizontal"
-        />
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clipToPadding="false"
+        android:contentDescription="@string/permission_text"
+        android:src="@drawable/ic_setting" />
 
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/img_sort"
-            android:src="@drawable/ic_sort"
-            android:layout_marginEnd="55dp"
-            android:layout_marginTop="20dp"
-         android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clipToPadding="false"
-            android:layout_gravity="start"
-            android:contentDescription="@string/todo" />
+        android:id="@+id/img_sort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="start"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="55dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clipToPadding="false"
+        android:contentDescription="@string/todo"
+        android:src="@drawable/ic_sort" />
 
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:layout_width="match_parent"
-    android:id="@+id/refresh_folder"
-    android:layout_below="@+id/heading"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/folders_recyclerview"
-        android:layout_below="@+id/img_setting"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_folder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        android:layout_below="@+id/heading">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/folders_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/img_setting"
+
+            />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
-        android:layout_width="45dp"
         android:id="@+id/play_last_playing"
+        android:layout_width="45dp"
         android:layout_height="45dp"
-        android:visibility="gone"
-        android:src="@drawable/icon_app"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="30dp"
-        android:layout_alignParentEnd="true"
-        />
+        android:src="@drawable/icon_app"
+        android:visibility="gone"
+        android:contentDescription="@string/desc" />
 
 </RelativeLayout>

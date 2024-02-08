@@ -35,9 +35,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private static  float scaleFactor=1f;
     private TextView zoomPercent;
     private FrameLayout zoomlayout;
-    @UnstableApi
-    private AspectRatioFrameLayout exoPlayerFrameLayout;
-   private long prevP;
+    private long prevP;
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
 
 
@@ -59,7 +57,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     }
 
    private class scaleGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener{
-
        @SuppressLint("SetTextI18n")
        @Override
        public boolean onScale(@NonNull ScaleGestureDetector detector) {
@@ -70,7 +67,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
            zoomlayout.setScaleY(scaleFactor);
            zoomPercent.setText(" "+(int) (scaleFactor*100)+" % ");
            return true;
-
        }
 
        @Override
@@ -82,18 +78,14 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                    zoomPercent.setVisibility(View.GONE);
                }
            },1000);
-
            super.onScaleEnd(detector);
-
        }
    }
 
     @Override
     public boolean onDown(@NonNull MotionEvent e) {
-
         return false;
     }
-
     @Override
     public void onShowPress(@NonNull MotionEvent motionEvent) {
 
@@ -148,7 +140,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                     );
                     return true;
                 }
-
                 return false;
 
             } else {
@@ -160,10 +151,11 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                     activity.setBriVisible();
                     float maxBrightness= brightnessManager.maxBrightness;
                     float change=ratioChange*maxBrightness;
-                    brightnessManager.setBrightness(brightnessManager.currentBrightness+change);
+                    brightnessManager.setBrightness(brightnessManager.getCurrentBrightness()+change);
                     activity.showBriGestureLayout();
 
                 } else {
+                    //Right half of the Screen (volume)
                     int maxVolume = 0;
                     activity.setVolVisible();
                     if (audioManager != null) {
@@ -214,7 +206,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                     prevP = playerView.getPlayer().getCurrentPosition();
                 }
             }
-
             return true;
         });
     }

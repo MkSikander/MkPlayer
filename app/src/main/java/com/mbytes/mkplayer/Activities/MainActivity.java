@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.util.UnstableApi;
@@ -59,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         init();
         onCreateHelper();
 
@@ -69,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     }
 
     void init() {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
         LinearLayout infoLayout = findViewById(R.id.info_layout);

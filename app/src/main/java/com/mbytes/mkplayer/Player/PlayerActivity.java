@@ -6,13 +6,17 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJson;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setPlaybackSpeed;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,7 +41,11 @@ import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.SeekParameters;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.media3.extractor.DefaultExtractorsFactory;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
@@ -63,26 +71,20 @@ public class PlayerActivity extends AppCompatActivity {
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
-    private AspectRatioFrameLayout exoContentFrameLayout;
     private TrackSelectionParameters trackSelectionParameters;
-
-
-
     public enum ControlsMode {
         LOCK, FULLSCREEN
     }
-
     private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
-
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
     private TextView title, volume_text, brightness_text, seek_duration, seek_change, startOver;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
     private int position;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver;
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed;
     //Gesture Related import
     private ProgressBar progressBar, volProgress, briProgress;
     private LinearLayout bri_layout, vol_layout, startOverLayout;
@@ -91,10 +93,7 @@ public class PlayerActivity extends AppCompatActivity {
     private BrightnessManager brightnessManager;
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
-    private GestureDetector gestureDetector;
-    private Long currentPosition;
     private FrameLayout zoomLayout;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -105,11 +104,7 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player);
         initViews(savedInstanceState);
         initializePlayer();
-
-
-
     }
-
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -134,7 +129,6 @@ public class PlayerActivity extends AppCompatActivity {
         title = findViewById(R.id.video_title);
         scalingBtn = findViewById(R.id.scaling);
         lockBtn = findViewById(R.id.lock);
-        exoContentFrameLayout=findViewById(R.id.exo_content_frame);
         unlockBtn = findViewById(R.id.unlock);
         startOver = findViewById(R.id.start_over);
         cancelStartOver = findViewById(R.id.start_over_cancel);
@@ -142,6 +136,7 @@ public class PlayerActivity extends AppCompatActivity {
         root = findViewById(R.id.root_layout);
         audioTrack = findViewById(R.id.audio_track);
         subTitleTrack = findViewById(R.id.exo_subtitle_track);
+        playbackSpeed=findViewById(R.id.playback_speed);
         bri_layout = findViewById(R.id.brightness_gesture_layout);
         vol_layout = findViewById(R.id.volume_gesture_layout);
         volProgress = findViewById(R.id.volume_progress_bar);
@@ -154,8 +149,6 @@ public class PlayerActivity extends AppCompatActivity {
         volumeManager = new VolumeManager(audioManager);
         brightnessManager = new BrightnessManager(this);
         playerGestureHelper = new PlayerGestureHelper(this, audioManager, brightnessManager, volumeManager);
-        gestureDetector = new GestureDetector(this, playerGestureHelper);
-
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view -> PlayNext());
@@ -166,7 +159,6 @@ public class PlayerActivity extends AppCompatActivity {
             root.setVisibility(View.INVISIBLE);
             unlockBtn.setVisibility(View.VISIBLE);
             isControlLocked = true;
-
         });
         unlockBtn.setOnClickListener(view -> {
             controlsMode = ControlsMode.FULLSCREEN;
@@ -181,7 +173,6 @@ public class PlayerActivity extends AppCompatActivity {
             startAutoPlay = savedInstanceState.getBoolean(KEY_AUTO_PLAY);
             position = savedInstanceState.getInt(KEY_ITEM_INDEX);
             startPosition = savedInstanceState.getLong(KEY_POSITION);
-
         } else {
             trackSelectionParameters = new TrackSelectionParameters.Builder(/* context= */ this).build();
             clearStartPosition();
@@ -213,21 +204,28 @@ public class PlayerActivity extends AppCompatActivity {
             startOverLayout.setVisibility(View.VISIBLE);
         });
     }
-
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
-
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
         Long skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
+        DefaultExtractorsFactory extractorsFactory =
+                new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
         if (player == null) {
-            player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector).build();
+            player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector)
+                    .setMediaSourceFactory(new DefaultMediaSourceFactory(this,extractorsFactory))
+                    .setSeekParameters(SeekParameters.CLOSEST_SYNC)
+                    .build();
             playerView.setPlayer(player);
         }
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
-        playerView.setKeepScreenOn(true);
+
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
         //check for skip position
         if (haveStartPosition) {
@@ -239,6 +237,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else {
             player.seekTo(skipPosition);
         }
+        playerView.setKeepScreenOn(true);
 
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.addListener(new Player.Listener() {
@@ -251,7 +250,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
         player.prepare();
-
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -259,9 +257,17 @@ public class PlayerActivity extends AppCompatActivity {
                 if (playbackState == Player.STATE_READY) {
                     progressBar.setVisibility(View.GONE);
                 }
+
+
             }
 
         });
+        if (!player.isPlaying())
+        {
+
+                playerView.setKeepScreenOn(false);
+
+        }
         player.play();
 
         player.addListener(new Player.Listener() {
@@ -291,10 +297,16 @@ public class PlayerActivity extends AppCompatActivity {
             player.pause();
             setSubTrack(player, trackSelector, PlayerActivity.this);
         });
+        playbackSpeed.setOnClickListener(view -> {
+            player.pause();
+            setPlaybackSpeed(player,PlayerActivity.this);
+        });
+
         String videoPath = playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
         }
+
 
     }
 
@@ -509,23 +521,19 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void showBriGestureLayout() {
         brightness_text.setText(String.valueOf(brightnessManager.getBrightnessPercentage()));
-        briProgress.setMax((int) (brightnessManager.maxBrightness * 100));
-        briProgress.setProgress((int) (brightnessManager.getCurrentBrightness() * 100));
+        briProgress.setMax((int) (brightnessManager.maxBrightness * 16));
+        briProgress.setProgress((int) (brightnessManager.getCurrentBrightness() * 16));
     }
 
     public void showVolGestureLayout() {
         volume_text.setText(String.valueOf(volumeManager.getVolumePercentage()));
-        volProgress.setMax((int) (volumeManager.getMaxVolume() * 100));
-        volProgress.setProgress((int) (volumeManager.getCurrentVolume() * 100));
+        volProgress.setMax((int) (volumeManager.getMaxVolume() * 16));
+        volProgress.setProgress((int) (volumeManager.getCurrentVolume() * 16));
     }
 
     public void showSeekInfo(String s, String s1) {
         seek_duration.setText(s);
         seek_change.setText(s1);
-    }
-
-    public long getCurrentPP() {
-        return currentPosition;
     }
 
     public void setStartOverVisibility() {
