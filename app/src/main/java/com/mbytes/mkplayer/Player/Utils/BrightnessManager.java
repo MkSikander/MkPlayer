@@ -16,6 +16,7 @@ public class BrightnessManager {
     public BrightnessManager(PlayerActivity activity) {
         this.activity = activity;
         this.currentBrightness = activity.getCurrentBrightness();
+
     }
 
     public float getCurrentBrightness() {
@@ -23,7 +24,7 @@ public class BrightnessManager {
     }
 
     public int getBrightnessPercentage() {
-        return (int) ((currentBrightness / maxBrightness) * 100);
+        return (int) ((currentBrightness / maxBrightness) * 16);
     }
     public float getMaxBrightness(){
         return maxBrightness;

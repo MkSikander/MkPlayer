@@ -2,9 +2,11 @@ package com.mbytes.mkplayer.Player.Utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.C;
@@ -25,7 +27,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerUtils {
-
+    private static float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
+    private static int selectedSpeedIndex = 3; //
     //getting video Orientation
     public static int getVideoRotation(String videoPath) {
         try {
@@ -103,6 +106,34 @@ public class PlayerUtils {
             dialogInterface.dismiss();
         });
         dialogBuilder.show();
+    }
+    public static void setPlaybackSpeed(Player player,Context context){
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+        builder.setTitle("Select Playback Speed");
+
+        builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectedSpeedIndex = which;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                Toast.makeText(context, "Selected speed: " + selectedSpeed, Toast.LENGTH_SHORT).show();
+                player.setPlaybackSpeed(selectedSpeed);
+                player.play();
+                dialog.dismiss();
+            }
+        });
+        builder.setOnCancelListener(dialogInterface -> player.play());
+        builder.show();
+    }
+
+
+    // Method to get labels for playback speeds
+    private static CharSequence[] getPlaybackSpeedLabels() {
+        CharSequence[] labels = new CharSequence[playbackSpeeds.length];
+        for (int i = 0; i < playbackSpeeds.length; i++) {
+            labels[i] = String.valueOf(playbackSpeeds[i]+" x");
+        }
+        return labels;
     }
 
 

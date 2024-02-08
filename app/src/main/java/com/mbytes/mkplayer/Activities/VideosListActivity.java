@@ -12,6 +12,8 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,10 +43,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     ImageView sortImg;
     ImageButton backBtn;
 
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videos_list);
         RecyclerView videosRecyclerview = findViewById(R.id.videos_recyclerview);
@@ -65,8 +67,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             swipeRefreshLayout.setRefreshing(true);
             mHandler.postDelayed(mRunnable, 500);
         });
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
 
         mRunnable = this::loadVideos;
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));

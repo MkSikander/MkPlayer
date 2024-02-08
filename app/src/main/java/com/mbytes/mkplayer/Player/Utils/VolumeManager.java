@@ -51,11 +51,11 @@ public class VolumeManager {
     }
 
     private float getCurrentLoudnessGain() {
-        return (getCurrentVolume() - getMaxStreamVolume()) * (MAX_VOLUME_BOOST / getMaxStreamVolume());
+        return (getCurrentVolume() - getMaxStreamVolume()) * ((float) MAX_VOLUME_BOOST / getMaxStreamVolume());
     }
 
     public int getVolumePercentage() {
-        return (int) ((getCurrentVolume() / getMaxStreamVolume()) * 100);
+        return (int) ((getCurrentVolume() / getMaxStreamVolume()) * 16);
     }
 
     @SuppressWarnings("deprecation")

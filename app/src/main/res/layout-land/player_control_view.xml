@@ -40,20 +40,29 @@
                 android:text="@string/title"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
-
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/playback_speed"
+                android:padding="10dp"
+                android:src="@drawable/ic_speed"
+                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:id="@+id/audio_track"
+                android:padding="10dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_audio_track"
-                android:layout_marginEnd="20dp"
+                android:background="@drawable/transparent_circle_background"
                 />
             <ImageView
                 android:layout_width="wrap_content"
                 android:id="@+id/exo_subtitle_track"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
                 android:src="@drawable/ic_subtitle_track"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="10dp"
                 />
             <!--            <ImageView-->
             <!--                android:id="@+id/video_list"-->
@@ -137,6 +146,7 @@
                 <ImageView
                     android:id="@+id/lock"
                     android:layout_width="24dp"
+                    android:background="@drawable/transparent_circle_background"
                     android:layout_height="24dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_lock_open" />
@@ -195,6 +205,8 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         tools:visibility="visible"
+        android:padding="10dp"
+        android:background="@drawable/transparent_circle_background"
         android:scaleType="centerInside"
         android:src="@drawable/ic_lock"
         android:visibility="gone" />

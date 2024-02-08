@@ -16,7 +16,7 @@
       app:show_timeout="2000"
      app:player_layout_id="@layout/exo_player_layout"
       app:animation_enabled="false"
-      app:surface_type="texture_view"
+      app:surface_type="surface_view"
       app:controller_layout_id="@layout/player_control_view"
       android:id="@+id/player_view"
       tools:ignore="PrivateResource" />
@@ -190,7 +190,7 @@
         android:layout_marginStart="5dp"
         android:layout_gravity="center_vertical"
         android:textStyle="bold"
-        android:textColor="#0BBCA7"
+        android:textColor="?attr/colorPrimary"
         />
   </LinearLayout>
 
