@@ -248,6 +248,7 @@ public class PlayerActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                 }
                 else {
+                    player.play();
                     progressBar.setVisibility(View.GONE);
                 }
             }
@@ -259,7 +260,7 @@ public class PlayerActivity extends AppCompatActivity {
         {
                 playerView.setKeepScreenOn(false);
         }
-        player.play();
+
 
 
         player.addListener(new Player.Listener() {
@@ -333,6 +334,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void PlayNext() {
         try {
+            setCurrentPosition();
             player.stop();
             position++;
             if (position < playerVideos.size()) {
@@ -349,18 +351,18 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void playThis(int newPosition){
         try {
+            setCurrentPosition();
             player.stop();
             position=newPosition;
             hideBottomSheet();
             initializePlayer();
         }
         catch (Exception ignored){
-
         }
-
     }
     private void PlayPrev() {
         try {
+            setCurrentPosition();
             player.stop();
             position--;
             initializePlayer();
@@ -374,15 +376,18 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             updateTrackSelectorParameters();
             updateStartPosition();
-            String key = playerVideos.get(position).getVideoPath();
-            Long currentPosition = Math.max(0, player.getContentPosition());
-            preferences.setLong(key, currentPosition);
+            setCurrentPosition();
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
         }
     }
 
+    private void setCurrentPosition(){
+        String key = playerVideos.get(position).getVideoPath();
+        Long currentPosition = Math.max(0, player.getContentPosition());
+        preferences.setLong(key, currentPosition);
+    }
     //for bundle instances To resume video where it was left (during Calls and Interrupt)
     private void updateTrackSelectorParameters() {
         if (player != null) {
@@ -409,7 +414,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
         if (playerView != null) {
             playerView.onResume();
         }
