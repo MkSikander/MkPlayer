@@ -155,7 +155,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                     float change=ratioChange*maxBrightness;
                     brightnessManager.setBrightness(brightnessManager.getCurrentBrightness()+change);
                     activity.showBriGestureLayout();
-
                 } else {
                     //Right half of the Screen (volume)
                     int maxVolume = 0;

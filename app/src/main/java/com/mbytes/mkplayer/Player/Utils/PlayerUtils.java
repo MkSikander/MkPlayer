@@ -36,6 +36,7 @@ public class PlayerUtils {
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex = 3; //
     private static BottomSheetDialog bottomSheetDialog;
+   private static MaterialAlertDialogBuilder subDialogBuilder;
     //getting video Orientation
     public static int getVideoRotation(String videoPath) {
         try {
@@ -117,7 +118,6 @@ public class PlayerUtils {
     public static void setPlaybackSpeed(Player player,Context context){
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle("Select Playback Speed");
-
         builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, (dialog, which) -> {
             selectedSpeedIndex = which;
             float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
@@ -157,6 +157,7 @@ public class PlayerUtils {
     }
 
 
+
     @OptIn(markerClass = UnstableApi.class)
     public static void setSubTrack(Player player , DefaultTrackSelector trackSelector, Context context){
         ArrayList<String> subTrack = new ArrayList<>();
@@ -193,10 +194,10 @@ public class PlayerUtils {
         }
         subList.add("Disable Subtitle");
         CharSequence[] tempTracks = subList.toArray(new CharSequence[subList.size()]);
-        MaterialAlertDialogBuilder dialogBuilder=new MaterialAlertDialogBuilder(context);
-        dialogBuilder.setTitle("Select Subtitle Track");
-        dialogBuilder.setOnCancelListener(dialogInterface -> player.play());
-        dialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
+        subDialogBuilder=new MaterialAlertDialogBuilder(context);
+        subDialogBuilder.setTitle("Select Subtitle Track");
+        subDialogBuilder.setOnCancelListener(dialogInterface -> player.play());
+        subDialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
             if (i!=subList.size()-1) {
                 trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_VIDEO, false));
                 trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredTextLanguage(subTrack.get(i)));
@@ -207,7 +208,7 @@ public class PlayerUtils {
             player.play();
             dialogInterface.dismiss();
         });
-        dialogBuilder.show();
+        subDialogBuilder.show();
     }
 
 
@@ -278,5 +279,10 @@ public class PlayerUtils {
 
     public static float pxToDp(float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static void hideEveryThing(){
+        bottomSheetDialog.dismiss();
+
     }
 }

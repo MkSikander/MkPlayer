@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -470,8 +471,14 @@ public class PlayerActivity extends AppCompatActivity {
         }, 800);
     }
 
-    public float getCurrentBrightness() {
-        return getWindow().getAttributes().screenBrightness;
+    public float getCurrentBrightness()  {
+        try {
+            int systemBri= Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS);
+            return systemBri/255.0f;
+        }
+        catch (Exception e){
+            return -1.0f;
+        }
     }
 
     public boolean isControlLocked() {

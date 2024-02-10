@@ -62,21 +62,17 @@
                 android:padding="10dp"
                 android:background="@drawable/transparent_circle_background"
                 android:src="@drawable/ic_subtitle_track"
-                android:layout_marginEnd="10dp"
                 />
-            <!--            <ImageView-->
-            <!--                android:id="@+id/video_list"-->
-            <!--                android:layout_width="40dp"-->
-            <!--                android:layout_height="40dp"-->
-            <!--                android:layout_gravity="center_vertical"-->
-            <!--                android:src="@drawable/ic_playlist" />-->
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_playlist"
+                android:id="@+id/playlist"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/todo" />
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/video_more"-->
-            <!--                android:layout_width="30dp"-->
-            <!--                android:layout_height="30dp"-->
-            <!--                android:layout_gravity="center_vertical"-->
-            <!--                android:src="@drawable/ic_more_wight" />-->
 
         </LinearLayout>
 
