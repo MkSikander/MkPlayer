@@ -4,17 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_round_remove_24"
+        android:layout_gravity="center|top"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/todo" />
     <TextView
         android:id="@+id/bottom_sheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Playlist"
+        android:text="@string/playlist"
         android:padding="16dp"
         android:textAppearance="?android:textAppearanceMedium"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/playlist_recycler_view"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

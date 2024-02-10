@@ -238,14 +238,15 @@ public class PlayerActivity extends AppCompatActivity {
             player.seekTo(skipPosition);
         }
         playerView.setKeepScreenOn(true);
-
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        player.prepare();
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
                 if (playbackState != Player.STATE_READY) {
                     progressBar.setVisibility(View.VISIBLE);
+
                 }
                 else {
                     player.play();
@@ -253,16 +254,6 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
-        player.prepare();
-
-
-        if (!player.isPlaying())
-        {
-                playerView.setKeepScreenOn(false);
-        }
-
-
-
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -302,29 +293,14 @@ public class PlayerActivity extends AppCompatActivity {
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
         }
-
-
     }
 
     private void showStartOverLayout() {
-
         Handler startOverShow = new Handler();
         Handler startOverHide = new Handler();
         //show StartOverLayout
-        startOverShow.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startOverLayout.setVisibility(View.VISIBLE);
-            }
-        }, 1000);
-//hide startOverLayout
-        startOverHide.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startOverLayout.setVisibility(View.GONE);
-            }
-        }, 6000);
-
+        startOverShow.postDelayed(() -> startOverLayout.setVisibility(View.VISIBLE), 1000);
+        startOverHide.postDelayed(() -> startOverLayout.setVisibility(View.GONE), 6000);
     }
 
     private void setFullScreen() {
@@ -359,6 +335,10 @@ public class PlayerActivity extends AppCompatActivity {
         }
         catch (Exception ignored){
         }
+    }
+    public void updateList(ArrayList<VideoItem> videosList){
+        playerVideos=videosList;
+        hideBottomSheet();
     }
     private void PlayPrev() {
         try {
@@ -422,25 +402,20 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (player == null) {
-            initializePlayer();
-            if (playerView != null) {
-                playerView.onResume();
-            }
+        initializePlayer();
+        if (playerView != null) {
+            playerView.onResume();
         }
+        player.setPlayWhenReady(true);
     }
 
     @Override
     public void onPause() {
-
         if (player != null) {
             player.pause();
         }
         super.onPause();
-
-
     }
-
     @Override
     public void onStop() {
         if (player != null) {
@@ -448,15 +423,11 @@ public class PlayerActivity extends AppCompatActivity {
         }
         setLastVideos();
         super.onStop();
-
-
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
-
     }
 
     private void setLastVideos() {
@@ -469,7 +440,6 @@ public class PlayerActivity extends AppCompatActivity {
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
         preferences.setBoolean(videoKey, true);
-
     }
 
     private boolean getVideoPlayedStatus(String videoPath) {
@@ -502,7 +472,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     public float getCurrentBrightness() {
         return getWindow().getAttributes().screenBrightness;
-
     }
 
     public boolean isControlLocked() {

@@ -67,6 +67,12 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
           ((PlayerActivity) mContext).playThis(position);
 
       });
+        holder.removeVideoFromList.setOnClickListener(view -> {
+            if (position>=0&&position<mVideos.size()){
+                mVideos.remove(position);
+                ((PlayerActivity)mContext).updateList(mVideos);
+            }
+        });
     }
 
 
@@ -76,7 +82,7 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView videoImage;
+        ImageView videoImage,removeVideoFromList;
         TextView videoName;
         Context context;
         @UnstableApi
@@ -86,6 +92,7 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             videoImage = itemView.findViewById(R.id.playlist_video_image);
+            removeVideoFromList=itemView.findViewById(R.id.remove_vid_from_playlist);
             videoName = itemView.findViewById(R.id.playlist_video_name);
             context= itemView.getContext();
 
