@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
@@ -115,30 +120,74 @@ public class PlayerUtils {
         });
         dialogBuilder.show();
     }
-    public static void setPlaybackSpeed(Player player,Context context){
+    public static void setPlaybackSpeed(Player player, Context context) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle("Select Playback Speed");
-        builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, (dialog, which) -> {
-            selectedSpeedIndex = which;
-            float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
-            Toast.makeText(context, "Selected speed: " + selectedSpeed, Toast.LENGTH_SHORT).show();
-            player.setPlaybackSpeed(selectedSpeed);
-            player.play();
-            dialog.dismiss();
+
+        // Set up the layout for the dialog
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
+        builder.setView(dialogView);
+
+        // Find the slider in the dialog layout
+        Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
+        TextView speedText=dialogView.findViewById(R.id.speed_text);
+        ImageView increaseImg=dialogView.findViewById(R.id.increase);
+        ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
+
+        // Set up the slider
+        slider.setValue(selectedSpeedIndex); // Set initial value
+        slider.setStepSize(1); // Set step size
+        float Speed = playbackSpeeds[selectedSpeedIndex];
+        speedText.setText((Speed) + " X");
+        slider.setLabelFormatter(value -> {
+            // Format the label (e.g., "1x")
+            float speed = playbackSpeeds[(int) value];
+            return String.format(Locale.getDefault(), "%.1fx", speed);
         });
+        increaseImg.setOnClickListener(view -> {
+            if (selectedSpeedIndex<7) {
+                selectedSpeedIndex = selectedSpeedIndex + 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                speedText.setText((selectedSpeed) + " X");
+                slider.setValue(selectedSpeedIndex);
+                player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+                player.play(); // Start playback
+                increaseImg.setEnabled(true);
+                increaseImg.setAlpha(1f);
+            }
+
+        });
+
+        decreaseImg.setOnClickListener(view -> {
+            if (selectedSpeedIndex>0) {
+                selectedSpeedIndex = selectedSpeedIndex - 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                slider.setValue(selectedSpeedIndex);
+                speedText.setText((selectedSpeed) + " X");
+                player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+                player.play(); // Start playback
+                decreaseImg.setEnabled(true);
+                decreaseImg.setAlpha(1f);
+            }
+
+        });
+
+        // Set listener for slider value changes
+        slider.addOnChangeListener((slider1, value, fromUser) -> {
+            selectedSpeedIndex = (int) value; // Update selected speed index
+            float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
+            speedText.setText((selectedSpeed)+" X");
+            player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+            player.play(); // Start playback
+        });
+
+        // Set listener for cancel action
         builder.setOnCancelListener(dialogInterface -> player.play());
+
+        // Show the dialog
         builder.show();
     }
 
-
-    // Method to get labels for playback speeds
-    private static CharSequence[] getPlaybackSpeedLabels() {
-        CharSequence[] labels = new CharSequence[playbackSpeeds.length];
-        for (int i = 0; i < playbackSpeeds.length; i++) {
-            labels[i] = String.valueOf(playbackSpeeds[i]+" x");
-        }
-        return labels;
-    }
 
     public static void showPlaylistVideos(ArrayList<VideoItem> videos,int position,Context context){
          bottomSheetDialog = new BottomSheetDialog(context);
