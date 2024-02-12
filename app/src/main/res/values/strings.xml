@@ -208,4 +208,6 @@
     <string name="continue_from_where_you_left">Continue from where you left</string>
     <string name="percent">150%</string>
     <string name="desc">desc</string>
+    <string name="playlist">Playlist</string>
+    <string name="player_settings">Player Settings</string>
 </resources>

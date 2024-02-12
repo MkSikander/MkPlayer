@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -178,10 +180,11 @@ public class VideoUtils {
     //Video Sharing
     private static void shareVideo(Context context, VideoItem videoItem) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        File video=new File(videoItem.getVideoPath());
         // Set the MIME type for the content you want to share
         shareIntent.setType("video/");
         // Add the video URI to the Intent
-        Uri videoUri = Uri.parse(videoItem.getVideoPath());
+        Uri videoUri = FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName() + ".provider",video);
         shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
         // Add a subject (optional)
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Sharing Video");

@@ -5,20 +5,19 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJson;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.hideBottomSheet;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setPlaybackSpeed;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
+import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.showPlaylistVideos;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,15 +37,12 @@ import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.common.TrackSelectionParameters;
-import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.SeekParameters;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
-import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.extractor.DefaultExtractorsFactory;
-import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -84,7 +80,8 @@ public class PlayerActivity extends AppCompatActivity {
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
     private int position;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed;
+    private int newPosition;
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed,playList,rotate;
     //Gesture Related import
     private ProgressBar progressBar, volProgress, briProgress;
     private LinearLayout bri_layout, vol_layout, startOverLayout;
@@ -94,6 +91,7 @@ public class PlayerActivity extends AppCompatActivity {
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
     private FrameLayout zoomLayout;
+    private static boolean orientation;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -128,6 +126,7 @@ public class PlayerActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.video_back);
         title = findViewById(R.id.video_title);
         scalingBtn = findViewById(R.id.scaling);
+        rotate=findViewById(R.id.rotate);
         lockBtn = findViewById(R.id.lock);
         unlockBtn = findViewById(R.id.unlock);
         startOver = findViewById(R.id.start_over);
@@ -137,6 +136,7 @@ public class PlayerActivity extends AppCompatActivity {
         audioTrack = findViewById(R.id.audio_track);
         subTitleTrack = findViewById(R.id.exo_subtitle_track);
         playbackSpeed=findViewById(R.id.playback_speed);
+        playList=findViewById(R.id.playlist);
         bri_layout = findViewById(R.id.brightness_gesture_layout);
         vol_layout = findViewById(R.id.volume_gesture_layout);
         volProgress = findViewById(R.id.volume_progress_bar);
@@ -148,6 +148,10 @@ public class PlayerActivity extends AppCompatActivity {
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         volumeManager = new VolumeManager(audioManager);
         brightnessManager = new BrightnessManager(this);
+        newPosition=getIntent().getIntExtra("VIDEO_POSITION",-1);
+        if (newPosition>-1){
+            playThis(newPosition);
+        }
         playerGestureHelper = new PlayerGestureHelper(this, audioManager, brightnessManager, volumeManager);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
@@ -203,7 +207,9 @@ public class PlayerActivity extends AppCompatActivity {
         cancelStartOver.setOnClickListener(view -> {
             startOverLayout.setVisibility(View.VISIBLE);
         });
+
     }
+    @SuppressLint("SourceLockedOrientationActivity")
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
         View decorView = getWindow().getDecorView();
@@ -238,38 +244,22 @@ public class PlayerActivity extends AppCompatActivity {
             player.seekTo(skipPosition);
         }
         playerView.setKeepScreenOn(true);
-
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        player.prepare();
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
                 if (playbackState != Player.STATE_READY) {
                     progressBar.setVisibility(View.VISIBLE);
+
                 }
-            }
-        });
-        player.prepare();
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onPlaybackStateChanged(int playbackState) {
-                Player.Listener.super.onPlaybackStateChanged(playbackState);
-                if (playbackState == Player.STATE_READY) {
+                else {
+                    player.play();
                     progressBar.setVisibility(View.GONE);
                 }
-
-
             }
-
         });
-        if (!player.isPlaying())
-        {
-
-                playerView.setKeepScreenOn(false);
-
-        }
-        player.play();
-
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -298,37 +288,34 @@ public class PlayerActivity extends AppCompatActivity {
             setSubTrack(player, trackSelector, PlayerActivity.this);
         });
         playbackSpeed.setOnClickListener(view -> {
-            player.pause();
             setPlaybackSpeed(player,PlayerActivity.this);
+        });
+        playList.setOnClickListener(view -> {
+            showPlaylistVideos(playerVideos,position,PlayerActivity.this);
         });
 
         String videoPath = playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
         }
-
-
+        rotate.setOnClickListener(view -> {
+            if (orientation){
+                orientation=false;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            }
+            else {
+                orientation=true;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            }
+        });
     }
 
     private void showStartOverLayout() {
-
         Handler startOverShow = new Handler();
         Handler startOverHide = new Handler();
         //show StartOverLayout
-        startOverShow.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startOverLayout.setVisibility(View.VISIBLE);
-            }
-        }, 1000);
-//hide startOverLayout
-        startOverHide.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startOverLayout.setVisibility(View.GONE);
-            }
-        }, 6000);
-
+        startOverShow.postDelayed(() -> startOverLayout.setVisibility(View.VISIBLE), 1000);
+        startOverHide.postDelayed(() -> startOverLayout.setVisibility(View.GONE), 6000);
     }
 
     private void setFullScreen() {
@@ -338,6 +325,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void PlayNext() {
         try {
+            setCurrentPosition();
             player.stop();
             position++;
             if (position < playerVideos.size()) {
@@ -352,8 +340,24 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    public void playThis(int newPosition){
+        try {
+            setCurrentPosition();
+            player.stop();
+            position=newPosition;
+            hideBottomSheet();
+            initializePlayer();
+        }
+        catch (Exception ignored){
+        }
+    }
+    public void updateList(ArrayList<VideoItem> videosList){
+        playerVideos=videosList;
+        hideBottomSheet();
+    }
     private void PlayPrev() {
         try {
+            setCurrentPosition();
             player.stop();
             position--;
             initializePlayer();
@@ -367,15 +371,18 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             updateTrackSelectorParameters();
             updateStartPosition();
-            String key = playerVideos.get(position).getVideoPath();
-            Long currentPosition = Math.max(0, player.getContentPosition());
-            preferences.setLong(key, currentPosition);
+            setCurrentPosition();
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
         }
     }
 
+    private void setCurrentPosition(){
+        String key = playerVideos.get(position).getVideoPath();
+        Long currentPosition = Math.max(0, player.getContentPosition());
+        preferences.setLong(key, currentPosition);
+    }
     //for bundle instances To resume video where it was left (during Calls and Interrupt)
     private void updateTrackSelectorParameters() {
         if (player != null) {
@@ -402,7 +409,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
         if (playerView != null) {
             playerView.onResume();
         }
@@ -411,25 +417,20 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (player == null) {
-            initializePlayer();
-            if (playerView != null) {
-                playerView.onResume();
-            }
+        initializePlayer();
+        if (playerView != null) {
+            playerView.onResume();
         }
+        player.setPlayWhenReady(true);
     }
 
     @Override
     public void onPause() {
-
         if (player != null) {
             player.pause();
         }
         super.onPause();
-
-
     }
-
     @Override
     public void onStop() {
         if (player != null) {
@@ -437,15 +438,11 @@ public class PlayerActivity extends AppCompatActivity {
         }
         setLastVideos();
         super.onStop();
-
-
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
-
     }
 
     private void setLastVideos() {
@@ -458,7 +455,6 @@ public class PlayerActivity extends AppCompatActivity {
         // Use a unique key for each video
         String videoKey = "played_" + videoPath;
         preferences.setBoolean(videoKey, true);
-
     }
 
     private boolean getVideoPlayedStatus(String videoPath) {
@@ -489,9 +485,14 @@ public class PlayerActivity extends AppCompatActivity {
         }, 800);
     }
 
-    public float getCurrentBrightness() {
-        return getWindow().getAttributes().screenBrightness;
-
+    public float getCurrentBrightness()  {
+        try {
+            int systemBri= Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS);
+            return systemBri/255.0f;
+        }
+        catch (Exception e){
+            return -1.0f;
+        }
     }
 
     public boolean isControlLocked() {
@@ -534,6 +535,9 @@ public class PlayerActivity extends AppCompatActivity {
     public void showSeekInfo(String s, String s1) {
         seek_duration.setText(s);
         seek_change.setText(s1);
+    }
+    public static void setOrientationBool(int a){
+        orientation= a == 6;
     }
 
     public void setStartOverVisibility() {

@@ -68,7 +68,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             mHandler.postDelayed(mRunnable, 500);
         });
 
-
         mRunnable = this::loadVideos;
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
@@ -141,7 +140,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
             return getVideosInFolder(folderPath);
         }
-
         @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(List<VideoItem> result) {

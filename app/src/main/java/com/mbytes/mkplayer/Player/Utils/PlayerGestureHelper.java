@@ -55,17 +55,19 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         onTouchListener(playerView,activity);
 
     }
-
+@UnstableApi
    private class scaleGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener{
        @SuppressLint("SetTextI18n")
        @Override
        public boolean onScale(@NonNull ScaleGestureDetector detector) {
-           scaleFactor*=detector.getScaleFactor();
-           zoomPercent.setVisibility(View.VISIBLE);
-           scaleFactor=Math.max(0.25f,Math.min(scaleFactor,4f));
-           zoomlayout.setScaleX(scaleFactor);
-           zoomlayout.setScaleY(scaleFactor);
-           zoomPercent.setText(" "+(int) (scaleFactor*100)+" % ");
+           if(!activity.isControlLocked()) {
+               scaleFactor *= detector.getScaleFactor();
+               zoomPercent.setVisibility(View.VISIBLE);
+               scaleFactor = Math.max(0.25f, Math.min(scaleFactor, 4f));
+               zoomlayout.setScaleX(scaleFactor);
+               zoomlayout.setScaleY(scaleFactor);
+               zoomPercent.setText(" " + (int) (scaleFactor * 100) + " % ");
+           }
            return true;
        }
 
@@ -153,7 +155,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                     float change=ratioChange*maxBrightness;
                     brightnessManager.setBrightness(brightnessManager.getCurrentBrightness()+change);
                     activity.showBriGestureLayout();
-
                 } else {
                     //Right half of the Screen (volume)
                     int maxVolume = 0;

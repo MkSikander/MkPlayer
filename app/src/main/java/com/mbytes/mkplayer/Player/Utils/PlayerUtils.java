@@ -5,7 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.OptIn;
@@ -16,10 +21,16 @@ import androidx.media3.common.TrackGroup;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.mbytes.mkplayer.Model.VideoItem;
+import com.mbytes.mkplayer.Player.PlayerActivity;
+import com.mbytes.mkplayer.R;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -27,9 +38,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerUtils {
-    private static float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
+    private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex = 3; //
+    private static BottomSheetDialog bottomSheetDialog;
+   private static MaterialAlertDialogBuilder subDialogBuilder;
     //getting video Orientation
+    @OptIn(markerClass = UnstableApi.class)
     public static int getVideoRotation(String videoPath) {
         try {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -38,8 +52,11 @@ public class PlayerUtils {
             int width = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
             int height = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
             if (width > height) {
+                PlayerActivity.setOrientationBool(6);
                 return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+
             }
+            PlayerActivity.setOrientationBool(7);
             return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
         } catch (Exception e) {
@@ -107,34 +124,91 @@ public class PlayerUtils {
         });
         dialogBuilder.show();
     }
-    public static void setPlaybackSpeed(Player player,Context context){
+    public static void setPlaybackSpeed(Player player, Context context) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle("Select Playback Speed");
 
-        builder.setSingleChoiceItems(getPlaybackSpeedLabels(), selectedSpeedIndex, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                selectedSpeedIndex = which;
-                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
-                Toast.makeText(context, "Selected speed: " + selectedSpeed, Toast.LENGTH_SHORT).show();
-                player.setPlaybackSpeed(selectedSpeed);
-                player.play();
-                dialog.dismiss();
-            }
+        // Set up the layout for the dialog
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
+        builder.setView(dialogView);
+
+        // Find the slider in the dialog layout
+        Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
+        TextView speedText=dialogView.findViewById(R.id.speed_text);
+        ImageView increaseImg=dialogView.findViewById(R.id.increase);
+        ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
+
+        // Set up the slider
+        slider.setValue(selectedSpeedIndex); // Set initial value
+        slider.setStepSize(1); // Set step size
+        float Speed = playbackSpeeds[selectedSpeedIndex];
+        speedText.setText((Speed) + " X");
+        slider.setLabelFormatter(value -> {
+            // Format the label (e.g., "1x")
+            float speed = playbackSpeeds[(int) value];
+            return String.format(Locale.getDefault(), "%.1fx", speed);
         });
+        increaseImg.setOnClickListener(view -> {
+            if (selectedSpeedIndex<7) {
+                selectedSpeedIndex = selectedSpeedIndex + 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                speedText.setText((selectedSpeed) + " X");
+                slider.setValue(selectedSpeedIndex);
+                player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+                player.play(); // Start playback
+                increaseImg.setEnabled(true);
+                increaseImg.setAlpha(1f);
+            }
+
+        });
+
+        decreaseImg.setOnClickListener(view -> {
+            if (selectedSpeedIndex>0) {
+                selectedSpeedIndex = selectedSpeedIndex - 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                slider.setValue(selectedSpeedIndex);
+                speedText.setText((selectedSpeed) + " X");
+                player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+                player.play(); // Start playback
+                decreaseImg.setEnabled(true);
+                decreaseImg.setAlpha(1f);
+            }
+
+        });
+
+        // Set listener for slider value changes
+        slider.addOnChangeListener((slider1, value, fromUser) -> {
+            selectedSpeedIndex = (int) value; // Update selected speed index
+            float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
+            speedText.setText((selectedSpeed)+" X");
+            player.setPlaybackSpeed(selectedSpeed); // Set playback speed
+            player.play(); // Start playback
+        });
+
+        // Set listener for cancel action
         builder.setOnCancelListener(dialogInterface -> player.play());
+
+        // Show the dialog
         builder.show();
     }
 
 
-    // Method to get labels for playback speeds
-    private static CharSequence[] getPlaybackSpeedLabels() {
-        CharSequence[] labels = new CharSequence[playbackSpeeds.length];
-        for (int i = 0; i < playbackSpeeds.length; i++) {
-            labels[i] = String.valueOf(playbackSpeeds[i]+" x");
-        }
-        return labels;
+    public static void showPlaylistVideos(ArrayList<VideoItem> videos,int position,Context context){
+         bottomSheetDialog = new BottomSheetDialog(context);
+        bottomSheetDialog.setContentView(R.layout.playlist_bottom_sheet);
+        TextView bottomSheetTitle = bottomSheetDialog.findViewById(R.id.bottom_sheet_title);
+        bottomSheetTitle.setText("Playlist");
+        RecyclerView recyclerView = bottomSheetDialog.findViewById(R.id.playlist_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(context,videos, position);
+        recyclerView.setAdapter(adapter);
+
+        bottomSheetDialog.show();
     }
+    public static void hideBottomSheet(){
+        bottomSheetDialog.dismiss();
+    }
+
 
 
     @OptIn(markerClass = UnstableApi.class)
@@ -173,10 +247,10 @@ public class PlayerUtils {
         }
         subList.add("Disable Subtitle");
         CharSequence[] tempTracks = subList.toArray(new CharSequence[subList.size()]);
-        MaterialAlertDialogBuilder dialogBuilder=new MaterialAlertDialogBuilder(context);
-        dialogBuilder.setTitle("Select Subtitle Track");
-        dialogBuilder.setOnCancelListener(dialogInterface -> player.play());
-        dialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
+        subDialogBuilder=new MaterialAlertDialogBuilder(context);
+        subDialogBuilder.setTitle("Select Subtitle Track");
+        subDialogBuilder.setOnCancelListener(dialogInterface -> player.play());
+        subDialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
             if (i!=subList.size()-1) {
                 trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_VIDEO, false));
                 trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredTextLanguage(subTrack.get(i)));
@@ -187,7 +261,7 @@ public class PlayerUtils {
             player.play();
             dialogInterface.dismiss();
         });
-        dialogBuilder.show();
+        subDialogBuilder.show();
     }
 
 
@@ -258,5 +332,10 @@ public class PlayerUtils {
 
     public static float pxToDp(float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static void hideEveryThing(){
+        bottomSheetDialog.dismiss();
+
     }
 }

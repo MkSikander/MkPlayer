@@ -47,6 +47,7 @@
                 android:id="@+id/playback_speed"
                 android:padding="10dp"
                 android:src="@drawable/ic_speed"
+                android:background="@drawable/transparent_circle_background"
                 />
             <ImageView
                 android:layout_width="wrap_content"
@@ -63,25 +64,36 @@
                 android:background="@drawable/transparent_circle_background"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_subtitle_track"
+
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_playlist"
+                android:id="@+id/playlist"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
                 android:layout_marginEnd="10dp"
                 />
 
 
-<!--            <ImageView-->
-<!--                android:id="@+id/video_list"-->
-<!--                android:layout_width="40dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_gravity="center_vertical"-->
-<!--                android:src="@drawable/ic_playlist" />-->
 
-<!--            <ImageView-->
-<!--                android:id="@+id/video_more"-->
-<!--                android:layout_width="30dp"-->
-<!--                android:layout_height="30dp"-->
-<!--                android:layout_gravity="center_vertical"-->
-<!--                android:src="@drawable/ic_more_wight" />-->
+
 
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottom_controls"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/rotate"
+            android:padding="10dp"
+            android:background="@drawable/transparent_circle_background"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_screen_rotation"
+            android:contentDescription="@string/todo" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_icon"
@@ -89,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/toolbar"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" />
+             />
 
 <!--        <include layout="@layout/swipe_zoom_design" />-->
 
@@ -98,6 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="#66000000"
+            android:id="@+id/bottom_controls"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -219,6 +232,8 @@
         android:src="@drawable/ic_lock"
         android:visibility="gone"
         android:contentDescription="@string/controls_unlock" />
+
+
 
 
 </RelativeLayout>
