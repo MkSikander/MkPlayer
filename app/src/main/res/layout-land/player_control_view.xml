@@ -75,6 +75,18 @@
 
 
         </LinearLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottom_controls"
+            android:padding="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:id="@+id/rotate"
+            android:background="@drawable/transparent_circle_background"
+            android:src="@drawable/ic_screen_rotation"
+            android:contentDescription="@string/todo" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_icon"
@@ -89,6 +101,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/bottom_controls"
             android:layout_alignParentBottom="true"
             android:background="#66000000"
             android:orientation="vertical">

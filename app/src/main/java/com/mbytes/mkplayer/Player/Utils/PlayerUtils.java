@@ -43,6 +43,7 @@ public class PlayerUtils {
     private static BottomSheetDialog bottomSheetDialog;
    private static MaterialAlertDialogBuilder subDialogBuilder;
     //getting video Orientation
+    @OptIn(markerClass = UnstableApi.class)
     public static int getVideoRotation(String videoPath) {
         try {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -51,8 +52,11 @@ public class PlayerUtils {
             int width = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
             int height = Integer.parseInt(Objects.requireNonNull(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
             if (width > height) {
+                PlayerActivity.setOrientationBool(6);
                 return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+
             }
+            PlayerActivity.setOrientationBool(7);
             return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
         } catch (Exception e) {

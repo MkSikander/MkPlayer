@@ -12,6 +12,7 @@ import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.showPlaylistVideos;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -80,7 +81,7 @@ public class PlayerActivity extends AppCompatActivity {
     private Preferences preferences;
     private int position;
     private int newPosition;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed,playList;
+    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed,playList,rotate;
     //Gesture Related import
     private ProgressBar progressBar, volProgress, briProgress;
     private LinearLayout bri_layout, vol_layout, startOverLayout;
@@ -90,6 +91,7 @@ public class PlayerActivity extends AppCompatActivity {
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
     private FrameLayout zoomLayout;
+    private static boolean orientation;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -124,6 +126,7 @@ public class PlayerActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.video_back);
         title = findViewById(R.id.video_title);
         scalingBtn = findViewById(R.id.scaling);
+        rotate=findViewById(R.id.rotate);
         lockBtn = findViewById(R.id.lock);
         unlockBtn = findViewById(R.id.unlock);
         startOver = findViewById(R.id.start_over);
@@ -204,7 +207,9 @@ public class PlayerActivity extends AppCompatActivity {
         cancelStartOver.setOnClickListener(view -> {
             startOverLayout.setVisibility(View.VISIBLE);
         });
+
     }
+    @SuppressLint("SourceLockedOrientationActivity")
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
         View decorView = getWindow().getDecorView();
@@ -283,7 +288,6 @@ public class PlayerActivity extends AppCompatActivity {
             setSubTrack(player, trackSelector, PlayerActivity.this);
         });
         playbackSpeed.setOnClickListener(view -> {
-            player.pause();
             setPlaybackSpeed(player,PlayerActivity.this);
         });
         playList.setOnClickListener(view -> {
@@ -294,6 +298,16 @@ public class PlayerActivity extends AppCompatActivity {
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
         }
+        rotate.setOnClickListener(view -> {
+            if (orientation){
+                orientation=false;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            }
+            else {
+                orientation=true;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            }
+        });
     }
 
     private void showStartOverLayout() {
@@ -521,6 +535,9 @@ public class PlayerActivity extends AppCompatActivity {
     public void showSeekInfo(String s, String s1) {
         seek_duration.setText(s);
         seek_change.setText(s1);
+    }
+    public static void setOrientationBool(int a){
+        orientation= a == 6;
     }
 
     public void setStartOverVisibility() {
