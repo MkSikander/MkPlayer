@@ -33,9 +33,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_minus" />
-                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\playlist-svgrepo-com.svg" />
+                            <entry key="outputName" value="swipe_seek" />
+                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\swipe_seek.svg" />
                           </map>
                         </option>
                       </PersistentState>
