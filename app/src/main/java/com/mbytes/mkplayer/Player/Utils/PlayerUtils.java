@@ -2,16 +2,13 @@ package com.mbytes.mkplayer.Player.Utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.C;
@@ -31,6 +28,7 @@ import com.google.gson.Gson;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -39,9 +37,11 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerUtils {
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
-    private static int selectedSpeedIndex = 3; //
+    private static int selectedSpeedIndex; //
+    @SuppressLint("StaticFieldLeak")
     private static BottomSheetDialog bottomSheetDialog;
-   private static MaterialAlertDialogBuilder subDialogBuilder;
+   private static Preferences preferences;
+
     //getting video Orientation
     @OptIn(markerClass = UnstableApi.class)
     public static int getVideoRotation(String videoPath) {
@@ -124,9 +124,11 @@ public class PlayerUtils {
         });
         dialogBuilder.show();
     }
+    @SuppressLint("SetTextI18n")
     public static void setPlaybackSpeed(Player player, Context context) {
+        preferences=new Preferences(context);
+        selectedSpeedIndex=preferences.getDefaultPlaybackSpeed();
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-
         // Set up the layout for the dialog
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
@@ -154,6 +156,7 @@ public class PlayerUtils {
                 float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
                 speedText.setText((selectedSpeed) + " X");
                 slider.setValue(selectedSpeedIndex);
+                preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
                 player.setPlaybackSpeed(selectedSpeed); // Set playback speed
                 player.play(); // Start playback
                 increaseImg.setEnabled(true);
@@ -247,7 +250,7 @@ public class PlayerUtils {
         }
         subList.add("Disable Subtitle");
         CharSequence[] tempTracks = subList.toArray(new CharSequence[subList.size()]);
-        subDialogBuilder=new MaterialAlertDialogBuilder(context);
+        MaterialAlertDialogBuilder subDialogBuilder = new MaterialAlertDialogBuilder(context);
         subDialogBuilder.setTitle("Select Subtitle Track");
         subDialogBuilder.setOnCancelListener(dialogInterface -> player.play());
         subDialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
@@ -334,8 +337,4 @@ public class PlayerUtils {
         return px / Resources.getSystem().getDisplayMetrics().density;
     }
 
-    public static void hideEveryThing(){
-        bottomSheetDialog.dismiss();
-
-    }
 }

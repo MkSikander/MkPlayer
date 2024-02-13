@@ -60,13 +60,13 @@
     <string name="quick_settings">Quick Settings</string>
     <string name="autoplay_settings">Autoplay</string>
     <string name="autoplay_settings_description">Automatically play the next video in the current folder</string>
-    <string name="remember_brightness_level">Remember brightness level</string>
+    <string name="remember_brightness_level">Remember brightness</string>
     <string name="remember_brightness_level_description">Remember brightness level between playback sessions</string>
     <string name="remember_selections">Remember selections</string>
     <string name="remember_selections_description">Remember selections for each file like audio track, subtitle track, etc</string>
     <string name="resume">Resume</string>
     <string name="resume_description">Select whether to resume played videos from the point where you stopped</string>
-    <string name="seek_gesture">Seek gesture</string>
+    <string name="seek_gesture">Seek Gesture</string>
     <string name="seek_gesture_description">Swipe horizontally to seek forwards or backwards</string>
     <string name="select_audio_track">Select audio track</string>
     <string name="select_subtitle_track">Select subtitle track</string>
@@ -91,7 +91,7 @@
     <string name="dynamic_theme_description">Apply colors from system wallpaper to the application theme</string>
     <string name="controls_lock">Lock controls</string>
     <string name="controls_unlock">Unlock controls</string>
-    <string name="select_playback_speed">Select playback speed</string>
+    <string name="select_playback_speed">Select Playback Speed</string>
     <string name="audio">Audio</string>
     <string name="preferred_audio_lang">Preferred audio language</string>
     <string name="preferred_audio_lang_description">Language of the audio track you want to use by default</string>
@@ -210,4 +210,7 @@
     <string name="desc">desc</string>
     <string name="playlist">Playlist</string>
     <string name="player_settings">Player Settings</string>
+    <string name="player_control_player_appearance">Player control,Player appearance</string>
+    <string name="player">Player</string>
+    <string name="_1x">1x</string>
 </resources>

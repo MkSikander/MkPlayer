@@ -33,6 +33,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
@@ -79,6 +80,7 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView title, volume_text, brightness_text, seek_duration, seek_change, startOver;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
+    private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private int position;
     private int newPosition;
     private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed,playList,rotate;
@@ -91,6 +93,8 @@ public class PlayerActivity extends AppCompatActivity {
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
     private FrameLayout zoomLayout;
+    private Long skipPosition=0L;
+    private int tempPlaybackSpeed;
     private static boolean orientation;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -117,6 +121,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void initViews(Bundle savedInstanceState) {
         preferences = new Preferences(PlayerActivity.this);
+        tempPlaybackSpeed=preferences.getDefaultPlaybackSpeed();
         playerView = findViewById(R.id.player_view);
         progressBar = findViewById(R.id.exo_mid_progress);
         trackSelector = new DefaultTrackSelector(this);
@@ -155,8 +160,8 @@ public class PlayerActivity extends AppCompatActivity {
         playerGestureHelper = new PlayerGestureHelper(this, audioManager, brightnessManager, volumeManager);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
-        nextBtn.setOnClickListener(view -> PlayNext());
-        prevBtn.setOnClickListener(view -> PlayPrev());
+        nextBtn.setOnClickListener(view ->{PlayNext();setCurrentPosition();});
+        prevBtn.setOnClickListener(view -> {PlayPrev();setCurrentPosition();});
         backBtn.setOnClickListener(view -> finish());
         lockBtn.setOnClickListener(view -> {
             controlsMode = ControlsMode.LOCK;
@@ -216,22 +221,37 @@ public class PlayerActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-        Long skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
+        if (preferences.getResumePref()){
+            skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
+        }
+
+        if (preferences.getBrightnessPref()){
+            brightnessManager.setBrightness(preferences.getPreviousBrightnessPref());
+        }
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         DefaultExtractorsFactory extractorsFactory =
                 new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
         if (player == null) {
+            int playbackSpeedIndex= preferences.getDefaultPlaybackSpeed();
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector)
                     .setMediaSourceFactory(new DefaultMediaSourceFactory(this,extractorsFactory))
-                    .setSeekParameters(SeekParameters.CLOSEST_SYNC)
+                    .setHandleAudioBecomingNoisy(true)
+                    .setAudioAttributes(getAudioAttributes(),true)
                     .build();
+            player.setPlaybackSpeed(playbackSpeeds[playbackSpeedIndex]);
             playerView.setPlayer(player);
+
         }
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
-
+        if (preferences.getFastSeekPref()){
+            player.setSeekParameters(SeekParameters.NEXT_SYNC);
+        }
+        else {
+            player.setSeekParameters(SeekParameters.DEFAULT);
+        }
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
         //check for skip position
         if (haveStartPosition) {
@@ -243,6 +263,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else {
             player.seekTo(skipPosition);
         }
+
         playerView.setKeepScreenOn(true);
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
@@ -268,13 +289,19 @@ public class PlayerActivity extends AppCompatActivity {
                     String key = playerVideos.get(position).getVideoPath();
                     Long currentPosition = 0L;
                     preferences.setLong(key, currentPosition);
-
                     if (position == playerVideos.size() - 1) {
                         position = 0;
                         finish();
-                    } else {
-                        PlayNext();
                     }
+                    else {
+                        if (preferences.getAutoPlayPref()) {
+                            PlayNext();
+                        }
+                        else {
+                            player.pause();
+                        }
+                    }
+
                 }
             }
         });
@@ -309,7 +336,12 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
     }
-
+    private AudioAttributes getAudioAttributes() {
+        return new AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+                .build();
+    }
     private void showStartOverLayout() {
         Handler startOverShow = new Handler();
         Handler startOverHide = new Handler();
@@ -325,7 +357,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void PlayNext() {
         try {
-            setCurrentPosition();
             player.stop();
             position++;
             if (position < playerVideos.size()) {
@@ -357,7 +388,6 @@ public class PlayerActivity extends AppCompatActivity {
     }
     private void PlayPrev() {
         try {
-            setCurrentPosition();
             player.stop();
             position--;
             initializePlayer();
@@ -372,6 +402,7 @@ public class PlayerActivity extends AppCompatActivity {
             updateTrackSelectorParameters();
             updateStartPosition();
             setCurrentPosition();
+            setCurrentBrightnessPref();
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
@@ -382,12 +413,16 @@ public class PlayerActivity extends AppCompatActivity {
         String key = playerVideos.get(position).getVideoPath();
         Long currentPosition = Math.max(0, player.getContentPosition());
         preferences.setLong(key, currentPosition);
+
     }
     //for bundle instances To resume video where it was left (during Calls and Interrupt)
     private void updateTrackSelectorParameters() {
         if (player != null) {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
+    }
+    private void setCurrentBrightnessPref(){
+        preferences.setCurrentBrightnessPref(brightnessManager.getChangedBrightness());
     }
 
     private void updateStartPosition() {
@@ -436,13 +471,15 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             player.stop();
         }
+        preferences.setDefaultPlaybackSpeed(tempPlaybackSpeed);
         setLastVideos();
         super.onStop();
     }
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        preferences.setDefaultPlaybackSpeed(tempPlaybackSpeed);
         releasePlayer();
+        super.onDestroy();
     }
 
     private void setLastVideos() {
