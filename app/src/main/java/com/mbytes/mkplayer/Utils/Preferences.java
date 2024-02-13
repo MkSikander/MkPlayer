@@ -172,7 +172,15 @@ public class Preferences {
         String key="previous_brightness";
         return preferences.getFloat(key,0f);
     }
-
-
+    public void setDefaultPlaybackSpeed(int value){
+        String key="default_playback_speed";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key,value);
+        editor.apply();
+    }
+    public int getDefaultPlaybackSpeed(){
+        String key="default_playback_speed";
+        return preferences.getInt(key,3);
+    }
 
 }
