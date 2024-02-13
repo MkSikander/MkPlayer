@@ -158,7 +158,7 @@
     <string name="embedded_styles">Embedded styles</string>
     <string name="embedded_styles_desc">Apply the embedded styles that are present in subtitle files, such as ASS and so on</string>
     <string name="controller_timeout">Controller timeout</string>
-    <string name="seek_increment">Seek increment</string>
+    <string name="seek_increment">Seek Increment/Decrement</string>
     <string name="seconds">%1$s seconds</string>
     <string name="delete_file">The following file will be deleted permanently</string>
     <string name="subtitle_text_encoding">Subtitle text encoding</string>
@@ -213,4 +213,6 @@
     <string name="player_control_player_appearance">Player control,Player appearance</string>
     <string name="player">Player</string>
     <string name="_1x">1x</string>
+    <string name="seek_increment_text">10 Sec</string>
+    <string name="_10_seconds">10 Seconds</string>
 </resources>
