@@ -72,6 +72,7 @@ public class PlayerActivity extends AppCompatActivity {
     public enum ControlsMode {
         LOCK, FULLSCREEN
     }
+    public static final Long[] seekIncrementTime={10000L,15000L,20000L,25000L,30000L,35000L,40000L,45000L,50000L};
     private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
@@ -231,6 +232,7 @@ public class PlayerActivity extends AppCompatActivity {
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
+        int seekIndex=preferences.getDefaultSeekSpeed();
         DefaultExtractorsFactory extractorsFactory =
                 new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
         if (player == null) {
@@ -238,6 +240,8 @@ public class PlayerActivity extends AppCompatActivity {
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector)
                     .setMediaSourceFactory(new DefaultMediaSourceFactory(this,extractorsFactory))
                     .setHandleAudioBecomingNoisy(true)
+                    .setSeekForwardIncrementMs(seekIncrementTime[seekIndex])
+                    .setSeekBackIncrementMs(seekIncrementTime[seekIndex])
                     .setAudioAttributes(getAudioAttributes(),true)
                     .build();
             player.setPlaybackSpeed(playbackSpeeds[playbackSpeedIndex]);

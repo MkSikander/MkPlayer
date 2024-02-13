@@ -215,7 +215,8 @@
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="10 Seconds"
+                        android:id="@+id/seek_time"
+                        android:text=""
                         android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 

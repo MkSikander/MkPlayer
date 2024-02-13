@@ -1,23 +1,20 @@
 package com.mbytes.mkplayer.Fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.slider.Slider;
+import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
-
 import java.util.Locale;
 
 
@@ -25,11 +22,13 @@ public class PlayerSettingFragment extends Fragment {
 
     MaterialSwitch seekSwitch,scrollSwitch,zoomSwitch,resumeSwitch,brightnessSwitch,autoplaySwitch,fastSeekingSwitch;
     LinearLayout seekIncrement,playbackSpeed,defaultOrientation;
-    TextView heading;
+    TextView heading,SeekTime;
     View rootView;
     Preferences preferences;
+    public static final Long[] seekIncrementTime={10000L,15000L,20000L,25000L,30000L,35000L,40000L,45000L,50000L};
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex;
+    private static int selectedSeekSpeedIndex;
 
     public PlayerSettingFragment() {
         // Required empty public constructor
@@ -37,19 +36,24 @@ public class PlayerSettingFragment extends Fragment {
     public interface FragmentCallback {
         void onFragmentRemoved();
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        rootView=inflater.inflate(R.layout.fragment_player_setting, container, false);
        initView();
+       setSeekTime();
        onClick();
        return rootView;
     }
 
+    @SuppressLint("SetTextI18n")
+    private void setSeekTime() {
+        SeekTime.setText(PlayerUtils.formatDurationMillis(seekIncrementTime[preferences.getDefaultSeekSpeed()])+" Seconds");
+    }
     private void onClick() {
         heading.setOnClickListener(view -> {
+            assert getFragmentManager() != null;
             getFragmentManager().popBackStack();
         });
         selectedSpeedIndex=preferences.getDefaultPlaybackSpeed();
@@ -60,67 +64,44 @@ public class PlayerSettingFragment extends Fragment {
         brightnessSwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setBrightnessPref(b));
         autoplaySwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setAutoPlayPref(b));
         fastSeekingSwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setFastSeekPref(b));
-        playbackSpeed.setOnClickListener(view -> {
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(rootView.getContext());
-            // Set up the layout for the dialog
-            LayoutInflater inflater = LayoutInflater.from(rootView.getContext());
-            View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
-            builder.setView(dialogView);
-            // Find the slider in the dialog layout
-            Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
-            TextView speedText=dialogView.findViewById(R.id.speed_text);
-            ImageView increaseImg=dialogView.findViewById(R.id.increase);
-            ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
-            // Set up the slider
-            slider.setValue(selectedSpeedIndex); // Set initial value
-            slider.setStepSize(1); // Set step size
-            float Speed = playbackSpeeds[selectedSpeedIndex];
-            speedText.setText((Speed) + " X");
-            slider.setLabelFormatter(value -> {
-                // Format the label (e.g., "1x")
-                float speed = playbackSpeeds[(int) value];
-                return String.format(Locale.getDefault(), "%.1fx", speed);
-            });
-            increaseImg.setOnClickListener(view1 -> {
-                if (selectedSpeedIndex<7) {
-                    selectedSpeedIndex = selectedSpeedIndex + 1;
-                    float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
-                    speedText.setText((selectedSpeed) + " X");
-                    slider.setValue(selectedSpeedIndex);
-                    preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
+        playbackSpeed.setOnClickListener(view -> showPlaybackSpeedDialog());
+        seekIncrement.setOnClickListener(view -> showSeekIncrementDialog());
 
-                }
+    }
+    private void showSeekIncrementDialog() {
 
-            });
+        MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(rootView.getContext());
+        LayoutInflater inflater = LayoutInflater.from(rootView.getContext());
+        View dialogView = inflater.inflate(R.layout.dialog_seek_increment, null);
+        builder.setView(dialogView);
+        Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
+        TextView speedText=dialogView.findViewById(R.id.speed_text);
+        slider.setValue(selectedSeekSpeedIndex); // Set initial value
+        slider.setStepSize(1);
 
-            decreaseImg.setOnClickListener(view1 -> {
-                if (selectedSpeedIndex>0) {
-                    selectedSpeedIndex = selectedSpeedIndex - 1;
-                    float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
-                    slider.setValue(selectedSpeedIndex);
-                    speedText.setText((selectedSpeed) + " X");
-                    preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
-                }
+        Long Speed = seekIncrementTime[selectedSeekSpeedIndex];
+        speedText.setText(PlayerUtils.formatDurationMillis(Speed));
+        slider.setLabelFormatter(value -> {
+            // Format the label (e.g., "1x")
+            long speed = seekIncrementTime[(int) value];
+            return PlayerUtils.formatDurationMillis(speed);
+        });
 
-            });
-
-            // Set listener for slider value changes
-            slider.addOnChangeListener((slider1, value, fromUser) -> {
-                selectedSpeedIndex = (int) value; // Update selected speed index
-                float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
-                speedText.setText((selectedSpeed)+" X");
-                preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
-
-            });
-
-            // Set listener for cancel action
-            builder.setOnCancelListener(dialogInterface -> {});
-
-            // Show the dialog
-            builder.show();
+        slider.addOnChangeListener((slider1, value, fromUser) -> {
+            selectedSeekSpeedIndex = (int) value; // Update selected speed index
+            speedText.setText((PlayerUtils.formatDurationMillis(seekIncrementTime[selectedSeekSpeedIndex])));
+            preferences.setDefaultSeekSpeed(selectedSeekSpeedIndex);
+            setSeekTime();
 
         });
+
+        // Set listener for cancel action
+        builder.setOnCancelListener(dialogInterface -> {});
+        // Show the dialog
+        builder.show();
+
     }
+
 
     private void initView() {
         heading=rootView.findViewById(R.id.heading_player_setting);
@@ -135,7 +116,7 @@ public class PlayerSettingFragment extends Fragment {
         autoplaySwitch=rootView.findViewById(R.id.autoplay_setting);
         fastSeekingSwitch=rootView.findViewById(R.id.fast_seek_setting);
         preferences=new Preferences(rootView.getContext());
-
+        SeekTime=rootView.findViewById(R.id.seek_time);
         //Get Default or Current preference and switch position
         seekSwitch.setChecked(preferences.getSeekGesture());
         zoomSwitch.setChecked(preferences.getZoomGesture());
@@ -144,6 +125,69 @@ public class PlayerSettingFragment extends Fragment {
         brightnessSwitch.setChecked(preferences.getBrightnessPref());
         autoplaySwitch.setChecked(preferences.getAutoPlayPref());
         fastSeekingSwitch.setChecked(preferences.getFastSeekPref());
+
+    }
+    @SuppressLint("SetTextI18n")
+    private void showPlaybackSpeedDialog() {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(rootView.getContext());
+        // Set up the layout for the dialog
+        LayoutInflater inflater = LayoutInflater.from(rootView.getContext());
+        View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
+        builder.setView(dialogView);
+        // Find the slider in the dialog layout
+        Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
+        TextView speedText=dialogView.findViewById(R.id.speed_text);
+        ImageView increaseImg=dialogView.findViewById(R.id.increase);
+        ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
+        // Set up the slider
+        slider.setValue(selectedSpeedIndex); // Set initial value
+        slider.setStepSize(1); // Set step size
+        float Speed = playbackSpeeds[selectedSpeedIndex];
+        speedText.setText((Speed) + " X");
+        slider.setLabelFormatter(value -> {
+            // Format the label (e.g., "1x")
+            float speed = playbackSpeeds[(int) value];
+            return String.format(Locale.getDefault(), "%.1fx", speed);
+        });
+        increaseImg.setOnClickListener(view1 -> {
+            if (selectedSpeedIndex<7) {
+                selectedSpeedIndex = selectedSpeedIndex + 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                speedText.setText((selectedSpeed) + " X");
+                slider.setValue(selectedSpeedIndex);
+                preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
+
+            }
+
+        });
+
+        decreaseImg.setOnClickListener(view1 -> {
+            if (selectedSpeedIndex>0) {
+                selectedSpeedIndex = selectedSpeedIndex - 1;
+                float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
+                slider.setValue(selectedSpeedIndex);
+                speedText.setText((selectedSpeed) + " X");
+                preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
+            }
+
+        });
+
+        // Set listener for slider value changes
+        slider.addOnChangeListener((slider1, value, fromUser) -> {
+            selectedSpeedIndex = (int) value; // Update selected speed index
+            float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
+            speedText.setText((selectedSpeed)+" X");
+            preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
+
+        });
+
+        // Set listener for cancel action
+        builder.setOnCancelListener(dialogInterface -> {});
+
+        // Show the dialog
+        builder.show();
+
+
     }
 
     @Override
