@@ -91,6 +91,7 @@ public class PlayerActivity extends AppCompatActivity {
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
     private FrameLayout zoomLayout;
+    private Long skipPosition=0L;
     private static boolean orientation;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -216,7 +217,13 @@ public class PlayerActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-        Long skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
+        if (preferences.getResumePref()){
+            skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
+        }
+
+        if (preferences.getBrightnessPref()){
+            brightnessManager.setBrightness(preferences.getPreviousBrightnessPref());
+        }
         setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
@@ -225,13 +232,17 @@ public class PlayerActivity extends AppCompatActivity {
         if (player == null) {
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector)
                     .setMediaSourceFactory(new DefaultMediaSourceFactory(this,extractorsFactory))
-                    .setSeekParameters(SeekParameters.CLOSEST_SYNC)
                     .build();
             playerView.setPlayer(player);
         }
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
-
+        if (preferences.getFastSeekPref()){
+            player.setSeekParameters(SeekParameters.NEXT_SYNC);
+        }
+        else {
+            player.setSeekParameters(SeekParameters.DEFAULT);
+        }
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
         //check for skip position
         if (haveStartPosition) {
@@ -272,9 +283,16 @@ public class PlayerActivity extends AppCompatActivity {
                     if (position == playerVideos.size() - 1) {
                         position = 0;
                         finish();
-                    } else {
-                        PlayNext();
                     }
+                    else {
+                        if (preferences.getAutoPlayPref()) {
+                            PlayNext();
+                        }
+                        else {
+                            player.pause();
+                        }
+                    }
+
                 }
             }
         });
@@ -372,6 +390,7 @@ public class PlayerActivity extends AppCompatActivity {
             updateTrackSelectorParameters();
             updateStartPosition();
             setCurrentPosition();
+            setCurrentBrightnessPref();
             player.release();
             player = null;
             playerView.setPlayer(/* player= */ null);
@@ -388,6 +407,9 @@ public class PlayerActivity extends AppCompatActivity {
         if (player != null) {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
+    }
+    private void setCurrentBrightnessPref(){
+        preferences.setCurrentBrightnessPref(brightnessManager.getChangedBrightness());
     }
 
     private void updateStartPosition() {

@@ -20,6 +20,7 @@ import androidx.media3.ui.PlayerView;
 
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 
 import java.util.Objects;
 
@@ -37,7 +38,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private FrameLayout zoomlayout;
     private long prevP;
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
-
+    private Preferences preferences;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -48,11 +49,13 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         this.brightnessManager=brightnessManager;
         this.volumeManager=volumeManager;
         this.playerView=activity.playerView;
+        preferences=new Preferences(playerView.getContext());
         zoomlayout=activity.findViewById(R.id.zoom_layout);
         zoomPercent=activity.findViewById(R.id.zoom_perc);
         gestureDetector=new GestureDetector(activity,this);
         zoomGestureDetector=new ScaleGestureDetector(activity,new scaleGestureDetector());
         onTouchListener(playerView,activity);
+
 
     }
 @UnstableApi
@@ -60,7 +63,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
        @SuppressLint("SetTextI18n")
        @Override
        public boolean onScale(@NonNull ScaleGestureDetector detector) {
-           if(!activity.isControlLocked()) {
+           if(!activity.isControlLocked()&&preferences.getZoomGesture()) {
                scaleFactor *= detector.getScaleFactor();
                zoomPercent.setVisibility(View.VISIBLE);
                scaleFactor = Math.max(0.25f, Math.min(scaleFactor, 4f));
@@ -113,64 +116,67 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
             float deltaY = e2.getY() - e1.getY();
             if (Math.abs(deltaX) > Math.abs(deltaY)&&activity.getBriLayoutVisibility()== View.GONE&&activity.getVolLayoutVisibility()==View.GONE) {
                 // Horizontal scroll (seeking)
-                long seekChange = 0L;
-                long seekStart = playerView.getPlayer() != null ? playerView.getPlayer().getCurrentPosition() : 0L;
-                playerView.setControllerAutoShow(playerView.isControllerFullyVisible());
-                float distanceDiff = Math.min(Math.max(Math.abs(PlayerUtils.pxToDp(distanceX) / 4), 0.5f), 10f);
-                activity.setSeekTextVisible();
-                long SEEK_STEP_MS = 1000L;
-                long change= (long) (distanceDiff* SEEK_STEP_MS);
-                long duration=playerView.getPlayer().getDuration();
-                if (playerView.getPlayer() != null) {
-                    long position;
-                    if (distanceX < 0L) {
-                        seekChange = (seekChange + change) < duration ? (seekChange + change) : (duration - seekStart);
-                        position = Math.min((seekStart + seekChange), duration);
-                        playerView.getPlayer().seekTo(position);
-                    } else {
-                        seekChange = Math.max(seekChange - change,  -seekStart);
-                        position = seekStart + seekChange;
-                        playerView.getPlayer().seekTo(position);
+                if (preferences.getSeekGesture()) {
+                    long seekChange = 0L;
+                    long seekStart = playerView.getPlayer() != null ? playerView.getPlayer().getCurrentPosition() : 0L;
+                    playerView.setControllerAutoShow(playerView.isControllerFullyVisible());
+                    float distanceDiff = Math.min(Math.max(Math.abs(PlayerUtils.pxToDp(distanceX) / 4), 0.5f), 10f);
+                    activity.setSeekTextVisible();
+                    long SEEK_STEP_MS = 1000L;
+                    long change = (long) (distanceDiff * SEEK_STEP_MS);
+                    long duration = playerView.getPlayer().getDuration();
+                    if (playerView.getPlayer() != null) {
+                        long position;
+                        if (distanceX < 0L) {
+                            seekChange = (seekChange + change) < duration ? (seekChange + change) : (duration - seekStart);
+                            position = Math.min((seekStart + seekChange), duration);
+                            playerView.getPlayer().seekTo(position);
+                        } else {
+                            seekChange = Math.max(seekChange - change, -seekStart);
+                            position = seekStart + seekChange;
+                            playerView.getPlayer().seekTo(position);
+                        }
+                        long currentP = playerView.getPlayer().getCurrentPosition();
+                        long seek_value = currentP - prevP;
+
+                        activity.showSeekInfo(
+
+                                PlayerUtils.formatDurationMillis(currentP),
+                                "[" + PlayerUtils.formatDurationMillisSign(seek_value) + "]"
+                        );
+                        return true;
                     }
-                    long currentP=playerView.getPlayer().getCurrentPosition();
-                    long seek_value=currentP-prevP;
-
-                    activity.showSeekInfo(
-
-                            PlayerUtils.formatDurationMillis(currentP),
-                            "[" + PlayerUtils.formatDurationMillisSign(seek_value) + "]"
-                    );
-                    return true;
+                    return false;
                 }
                 return false;
-
             } else {
-                float distanceFull = playerView.getMeasuredHeight() * FULL_SWIPE_RANGE_SCREEN_RATIO;
-                float ratioChange = distanceY / distanceFull;
-                // Vertical scroll
-                if (e1.getX() < (float) playerView.getMeasuredWidth() / 2) {
-                    // Left half of the screen (brightness)
-                    activity.setBriVisible();
-                    float maxBrightness= brightnessManager.maxBrightness;
-                    float change=ratioChange*maxBrightness;
-                    brightnessManager.setBrightness(brightnessManager.getCurrentBrightness()+change);
-                    activity.showBriGestureLayout();
-                } else {
-                    //Right half of the Screen (volume)
-                    int maxVolume = 0;
-                    activity.setVolVisible();
-                    if (audioManager != null) {
-                        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                if (preferences.getScrollGesture()) {
+                    float distanceFull = playerView.getMeasuredHeight() * FULL_SWIPE_RANGE_SCREEN_RATIO;
+                    float ratioChange = distanceY / distanceFull;
+                    // Vertical scroll
+                    if (e1.getX() < (float) playerView.getMeasuredWidth() / 2) {
+                        // Left half of the screen (brightness)
+                        activity.setBriVisible();
+                        float maxBrightness = brightnessManager.maxBrightness;
+                        float change = ratioChange * maxBrightness;
+                        brightnessManager.setBrightness(brightnessManager.getCurrentBrightness() + change);
+                        activity.showBriGestureLayout();
+                    } else {
+                        //Right half of the Screen (volume)
+                        int maxVolume = 0;
+                        activity.setVolVisible();
+                        if (audioManager != null) {
+                            maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                        }
+                        float change = ratioChange * maxVolume;
+                        assert audioManager != null;
+                        int volume = (int) (volumeManager.getCurrentStreamVolume() + change);
+                        volumeManager.setVolume(volume, false);
+                        activity.showVolGestureLayout();
+
+
                     }
-                    float change=ratioChange*maxVolume;
-                    assert audioManager != null;
-                    int volume = (int) (volumeManager.getCurrentStreamVolume() + change);
-                    volumeManager.setVolume(volume,false);
-                    activity.showVolGestureLayout();
-
-
                 }
-
             }
 
         }

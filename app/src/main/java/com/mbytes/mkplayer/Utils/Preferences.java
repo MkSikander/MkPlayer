@@ -91,6 +91,88 @@ public class Preferences {
         editor.putString(key, SortOption);
         editor.apply();
     }
+    public void setSeekGesture(boolean value){
+        String key="seek_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getSeekGesture(){
+        String key="seek_gesture_setting";
+       return preferences.getBoolean(key,true);
+    }
+    public void setScrollGesture(boolean value){
+        String key="scroll_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getScrollGesture(){
+        String key="scroll_gesture_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setZoomGesture(boolean value){
+        String key="zoom_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getZoomGesture(){
+        String key="zoom_gesture_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setResumePref(boolean value){
+        String key="resume_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getResumePref(){
+        String key="resume_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setFastSeekPref(boolean value){
+        String key="fast_seek_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getFastSeekPref(){
+        String key="fast_seek_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setBrightnessPref(boolean value){
+        String key="brightness_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getBrightnessPref(){
+        String key="brightness_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setAutoPlayPref(boolean value){
+        String key="autoplay_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getAutoPlayPref(){
+        String key="autoplay_setting";
+        return preferences.getBoolean(key,true);
+    }
+
+    public void setCurrentBrightnessPref(float value){
+        String key="previous_brightness";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putFloat(key,value);
+        editor.apply();
+    }
+    public float getPreviousBrightnessPref(){
+        String key="previous_brightness";
+        return preferences.getFloat(key,0f);
+    }
+
 
 
 }
