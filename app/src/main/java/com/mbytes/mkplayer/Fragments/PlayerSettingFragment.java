@@ -1,6 +1,7 @@
 package com.mbytes.mkplayer.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.slider.Slider;
 import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.FolderSort;
 import com.mbytes.mkplayer.Utils.Preferences;
 import java.util.Locale;
 
@@ -22,12 +24,13 @@ public class PlayerSettingFragment extends Fragment {
 
     MaterialSwitch seekSwitch,scrollSwitch,zoomSwitch,resumeSwitch,brightnessSwitch,autoplaySwitch,fastSeekingSwitch;
     LinearLayout seekIncrement,playbackSpeed,defaultOrientation;
-    TextView heading,SeekTime;
+    TextView heading,SeekTime,orientText;
     View rootView;
     Preferences preferences;
-    public static final Long[] seekIncrementTime={10000L,15000L,20000L,25000L,30000L,35000L,40000L,45000L,50000L};
+    private final String[] orientations = {"Portrait", "Landscape", "Video Orientation"};
+    private static final Long[] seekIncrementTime={10000L,15000L,20000L,25000L,30000L,35000L,40000L,45000L,50000L};
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
-    private static int selectedSpeedIndex;
+    private static int selectedSpeedIndex, selectedOrient;
     private static int selectedSeekSpeedIndex;
 
     public PlayerSettingFragment() {
@@ -43,13 +46,50 @@ public class PlayerSettingFragment extends Fragment {
        rootView=inflater.inflate(R.layout.fragment_player_setting, container, false);
        initView();
        setSeekTime();
+       setOrientText(selectedOrient);
        onClick();
        return rootView;
     }
 
-    @SuppressLint("SetTextI18n")
-    private void setSeekTime() {
-        SeekTime.setText(PlayerUtils.formatDurationMillis(seekIncrementTime[preferences.getDefaultSeekSpeed()])+" Seconds");
+
+
+
+    private void initView() {
+        heading=rootView.findViewById(R.id.heading_player_setting);
+        playbackSpeed=rootView.findViewById(R.id.playback_speed_layout);
+        seekIncrement=rootView.findViewById(R.id.seek_increment_layout);
+        defaultOrientation=rootView.findViewById(R.id.orientation_layout);
+        seekSwitch=rootView.findViewById(R.id.seek_gesture_setting);
+        scrollSwitch=rootView.findViewById(R.id.scroll_gesture_setting);
+        zoomSwitch=rootView.findViewById(R.id.zoom_gesture_setting);
+        resumeSwitch=rootView.findViewById(R.id.resume_playback_setting);
+        brightnessSwitch=rootView.findViewById(R.id.remember_brightness_setting);
+        autoplaySwitch=rootView.findViewById(R.id.autoplay_setting);
+        fastSeekingSwitch=rootView.findViewById(R.id.fast_seek_setting);
+        orientText=rootView.findViewById(R.id.orientation_text);
+        preferences=new Preferences(rootView.getContext());
+        SeekTime=rootView.findViewById(R.id.seek_time);
+        //Get Default or Current preference and switch position
+        selectedOrient=preferences.getDefaultOrientation();
+        seekSwitch.setChecked(preferences.getSeekGesture());
+        zoomSwitch.setChecked(preferences.getZoomGesture());
+        scrollSwitch.setChecked(preferences.getScrollGesture());
+        resumeSwitch.setChecked(preferences.getResumePref());
+        brightnessSwitch.setChecked(preferences.getBrightnessPref());
+        autoplaySwitch.setChecked(preferences.getAutoPlayPref());
+        fastSeekingSwitch.setChecked(preferences.getFastSeekPref());
+
+    }
+    private void showOrientationDialog() {
+        int selectedOrientation=preferences.getDefaultOrientation();
+        MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(rootView.getContext());
+        builder.setTitle("Choose Default Orientation")
+                .setSingleChoiceItems(orientations, selectedOrientation, (dialogInterface, i) ->{
+                    preferences.setDefaultOrientation(i);
+                    setOrientText(i);
+                    dialogInterface.dismiss();
+                });
+        builder.show();
     }
     private void onClick() {
         heading.setOnClickListener(view -> {
@@ -66,6 +106,9 @@ public class PlayerSettingFragment extends Fragment {
         fastSeekingSwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setFastSeekPref(b));
         playbackSpeed.setOnClickListener(view -> showPlaybackSpeedDialog());
         seekIncrement.setOnClickListener(view -> showSeekIncrementDialog());
+        defaultOrientation.setOnClickListener(view -> {
+            showOrientationDialog();
+        });
 
     }
     private void showSeekIncrementDialog() {
@@ -99,32 +142,6 @@ public class PlayerSettingFragment extends Fragment {
         builder.setOnCancelListener(dialogInterface -> {});
         // Show the dialog
         builder.show();
-
-    }
-
-
-    private void initView() {
-        heading=rootView.findViewById(R.id.heading_player_setting);
-        playbackSpeed=rootView.findViewById(R.id.playback_speed_layout);
-        seekIncrement=rootView.findViewById(R.id.seek_increment_layout);
-        defaultOrientation=rootView.findViewById(R.id.orientation_layout);
-        seekSwitch=rootView.findViewById(R.id.seek_gesture_setting);
-        scrollSwitch=rootView.findViewById(R.id.scroll_gesture_setting);
-        zoomSwitch=rootView.findViewById(R.id.zoom_gesture_setting);
-        resumeSwitch=rootView.findViewById(R.id.resume_playback_setting);
-        brightnessSwitch=rootView.findViewById(R.id.remember_brightness_setting);
-        autoplaySwitch=rootView.findViewById(R.id.autoplay_setting);
-        fastSeekingSwitch=rootView.findViewById(R.id.fast_seek_setting);
-        preferences=new Preferences(rootView.getContext());
-        SeekTime=rootView.findViewById(R.id.seek_time);
-        //Get Default or Current preference and switch position
-        seekSwitch.setChecked(preferences.getSeekGesture());
-        zoomSwitch.setChecked(preferences.getZoomGesture());
-        scrollSwitch.setChecked(preferences.getScrollGesture());
-        resumeSwitch.setChecked(preferences.getResumePref());
-        brightnessSwitch.setChecked(preferences.getBrightnessPref());
-        autoplaySwitch.setChecked(preferences.getAutoPlayPref());
-        fastSeekingSwitch.setChecked(preferences.getFastSeekPref());
 
     }
     @SuppressLint("SetTextI18n")
@@ -188,6 +205,14 @@ public class PlayerSettingFragment extends Fragment {
         builder.show();
 
 
+    }
+    @SuppressLint("SetTextI18n")
+    private void setSeekTime() {
+        SeekTime.setText(PlayerUtils.formatDurationMillis(seekIncrementTime[preferences.getDefaultSeekSpeed()])+" Seconds");
+
+    }
+    private void setOrientText(int i){
+        orientText.setText(orientations[i]);
     }
 
     @Override

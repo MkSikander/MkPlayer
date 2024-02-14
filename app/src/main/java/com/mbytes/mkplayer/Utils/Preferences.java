@@ -194,4 +194,15 @@ public class Preferences {
     }
 
 
+    public void setDefaultOrientation(int i) {
+        String key="def_orient";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key,i);
+        editor.apply();
+    }
+
+    public int getDefaultOrientation() {
+        String key="def_orient";
+        return preferences.getInt(key,2);
+    }
 }

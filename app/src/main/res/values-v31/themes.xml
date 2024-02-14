@@ -12,7 +12,7 @@
         </item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_app</item>
+
     </style>
     <style name="activity_player">
         <item name="android:windowLayoutInDisplayCutoutMode">

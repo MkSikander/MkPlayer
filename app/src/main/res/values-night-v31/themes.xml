@@ -11,7 +11,7 @@
         <item name="colorTertiaryContainer">@color/colorSecondaryDark</item>
         <item name="colorTertiary">@color/colorPrimaryLight</item>
         <item name="android:statusBarColor">#151717</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_app</item>
+
 
         <!-- Add other dark theme attributes -->
 

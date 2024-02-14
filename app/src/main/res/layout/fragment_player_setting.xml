@@ -490,6 +490,7 @@
                     <TextView
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
+                        android:id="@+id/orientation_text"
                         android:layout_gravity="center_vertical"
                         android:text="@string/video_orientation"
                         android:textColor="?attr/colorTertiary"
