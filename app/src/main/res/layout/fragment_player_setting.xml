@@ -39,7 +39,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/interface_name"
-                android:textColor="@color/colorPrimaryDark" />
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,13 +80,11 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/seek_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <LinearLayout
@@ -127,13 +125,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/scroll_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -174,13 +171,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/zoom_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -229,7 +225,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/playback"
-                android:textColor="@color/colorPrimaryDark" />
+                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -269,13 +265,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/resume_playback_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                     />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -354,13 +349,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/remember_brightness_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -402,13 +396,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/autoplay_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -450,13 +443,12 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/fast_seek_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                     />
             </LinearLayout>
 
             <LinearLayout
