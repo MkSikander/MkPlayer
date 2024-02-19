@@ -121,7 +121,6 @@ public class PlayerSettingFragment extends Fragment {
         TextView speedText=dialogView.findViewById(R.id.speed_text);
         slider.setValue(selectedSeekSpeedIndex); // Set initial value
         slider.setStepSize(1);
-
         Long Speed = seekIncrementTime[selectedSeekSpeedIndex];
         speedText.setText(PlayerUtils.formatDurationMillis(Speed));
         slider.setLabelFormatter(value -> {
@@ -129,7 +128,6 @@ public class PlayerSettingFragment extends Fragment {
             long speed = seekIncrementTime[(int) value];
             return PlayerUtils.formatDurationMillis(speed);
         });
-
         slider.addOnChangeListener((slider1, value, fromUser) -> {
             selectedSeekSpeedIndex = (int) value; // Update selected speed index
             speedText.setText((PlayerUtils.formatDurationMillis(seekIncrementTime[selectedSeekSpeedIndex])));
@@ -175,9 +173,7 @@ public class PlayerSettingFragment extends Fragment {
                 preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
 
             }
-
         });
-
         decreaseImg.setOnClickListener(view1 -> {
             if (selectedSpeedIndex>0) {
                 selectedSpeedIndex = selectedSpeedIndex - 1;
@@ -193,7 +189,7 @@ public class PlayerSettingFragment extends Fragment {
         slider.addOnChangeListener((slider1, value, fromUser) -> {
             selectedSpeedIndex = (int) value; // Update selected speed index
             float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
-            speedText.setText((selectedSpeed)+" X");
+            speedText.setText((selectedSpeed)+"X");
             preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
 
         });

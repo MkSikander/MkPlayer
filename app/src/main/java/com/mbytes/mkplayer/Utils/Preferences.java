@@ -183,13 +183,13 @@ public class Preferences {
         return preferences.getInt(key,3);
     }
     public void setDefaultSeekSpeed(int value){
-        String key="default_playback_speed";
+        String key="default_seek_speed";
         SharedPreferences.Editor editor=preferences.edit();
         editor.putInt(key,value);
         editor.apply();
     }
     public int getDefaultSeekSpeed(){
-        String key="default_playback_speed";
+        String key="default_seek_speed";
         return preferences.getInt(key,0);
     }
 
