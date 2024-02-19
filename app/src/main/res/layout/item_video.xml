@@ -73,7 +73,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:text="@string/video_title_placeHolder"
-            android:textColor="?attr/colorTertiary" />
+           />
 
 
     </LinearLayout>

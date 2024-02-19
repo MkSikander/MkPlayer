@@ -90,7 +90,7 @@ public class VideoSort {
 
             // Highlight the selected item
             if (position == checkedItemIndex) {
-                convertView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLight));
+                convertView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_theme_light_primary));
                 textView.setTextColor(ContextCompat.getColor(context,R.color.colorPrimaryDark));
                 iconView.setColorFilter(ContextCompat.getColor(context,R.color.colorPrimaryDark));
             } else {

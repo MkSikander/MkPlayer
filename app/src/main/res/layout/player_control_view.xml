@@ -144,13 +144,11 @@
                     android:id="@+id/exo_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/exo_duration"
                     android:layout_toLeftOf="@+id/exo_duration"
                     android:layout_toEndOf="@+id/exo_position"
                     android:layout_toRightOf="@+id/exo_position"
-                    app:played_color="?attr/colorPrimary"
                     app:scrubber_drawable="@drawable/scrubber" />
             </RelativeLayout>
 

@@ -18,11 +18,11 @@
     </style>
 
     <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
-        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/md_theme_light_secondary</item>
     </style>
 
     <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/md_theme_light_secondary</item>
     </style>
 
     <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
@@ -30,12 +30,7 @@
         <item name="cornerSize">8dp</item>
     </style>
 
-    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
-    </style>
 
-    <style name="ThemeOverlay.App.Switch" parent="">
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
-        <item name="colorSurfaceVariant">@color/colorPrimaryLight</item>
-    </style>
+
+
 </resources>

@@ -4,7 +4,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimaryContainer"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".Activities.MainActivity">
@@ -20,7 +19,6 @@
         android:paddingBottom="5dp"
         android:text="@string/folders"
         android:textAlignment="center"
-        android:textColor="?attr/colorTertiary"
         android:textSize="21sp"
         android:textStyle="bold"
         tools:ignore="RelativeOverlap" />

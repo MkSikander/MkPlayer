@@ -51,7 +51,6 @@
             android:layout_marginStart="13dp"
             android:fontFamily="sans-serif"
             android:text="@string/download"
-            android:textColor="?attr/colorTertiary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -62,11 +61,11 @@
             android:layout_marginStart="13dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/chip_video_count"
-            android:paddingBottom="1dp"
             android:paddingLeft="3dp"
-            android:paddingRight="3dp"
+            android:textColor="@color/black"
             android:paddingTop="1dp"
-            android:textColor="?attr/colorTertiary"
+            android:paddingRight="3dp"
+            android:paddingBottom="1dp"
             android:textSize="12sp" />
 
     </LinearLayout>

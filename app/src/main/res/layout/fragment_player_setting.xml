@@ -17,7 +17,6 @@
         android:layout_marginBottom="30dp"
         android:drawablePadding="10dp"
         android:text="@string/player"
-        android:textColor="?attr/colorTertiary"
         android:textSize="20sp"
         android:textStyle="bold"
         app:drawableLeftCompat="@drawable/ic_arrow_black" />
@@ -39,7 +38,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/interface_name"
-                android:textColor="@color/colorPrimaryDark" />
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -64,7 +63,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/seek_gesture"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -73,20 +71,17 @@
                         android:layout_gravity="center_vertical"
                         android:minLines="2"
                         android:text="@string/seek_gesture_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/seek_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <LinearLayout
@@ -112,7 +107,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/swipe_gesture"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -120,20 +114,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/swipe_gesture_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/scroll_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -159,7 +151,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/zoom_gesture"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -167,20 +158,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/zoom_gesture_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/zoom_gesture_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -208,7 +197,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/seek_increment"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -217,7 +205,6 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/seek_time"
                         android:text=""
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
@@ -229,7 +216,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/playback"
-                android:textColor="@color/colorPrimaryDark" />
+                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -253,7 +240,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/resume"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -262,20 +248,18 @@
                         android:layout_gravity="center_vertical"
                         android:maxLines="2"
                         android:text="@string/resume_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/resume_playback_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                     />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -302,7 +286,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/default_playback_speed"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -310,7 +293,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text=""
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
@@ -339,7 +321,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/remember_brightness_level"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -347,20 +328,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/remember_brightness_level_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/remember_brightness_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -387,7 +366,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/autoplay_settings"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -395,20 +373,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/autoplay_settings_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/autoplay_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -435,7 +411,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/fast_seek"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -443,20 +418,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/fast_seek_description"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/fast_seek_setting"
-                    style="@style/Widget.App.Switch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:thumbTint="@color/colorPrimaryLight" />
+                     />
             </LinearLayout>
 
             <LinearLayout
@@ -484,7 +457,6 @@
                         android:layout_height="wrap_content"
                         android:forceHasOverlappingRendering="false"
                         android:text="@string/player_screen_orientation"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="20sp" />
 
                     <TextView
@@ -493,7 +465,6 @@
                         android:id="@+id/orientation_text"
                         android:layout_gravity="center_vertical"
                         android:text="@string/video_orientation"
-                        android:textColor="?attr/colorTertiary"
                         android:textSize="11sp" />
 
                 </LinearLayout>
