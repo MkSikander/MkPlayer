@@ -23,7 +23,6 @@
             android:layout_gravity="center_vertical"
             android:text="@string/settings"
             android:drawablePadding="10dp"
-            android:textColor="?attr/colorTertiary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:drawableLeftCompat="@drawable/ic_arrow_black" />
@@ -55,14 +54,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="@string/player_settings"
-                android:textColor="?attr/colorTertiary"
                 android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/player_control_player_appearance"
-                android:textColor="?attr/colorTertiary"
                 android:textSize="11sp" />
 
         </LinearLayout>

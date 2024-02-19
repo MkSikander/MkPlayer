@@ -139,7 +139,6 @@
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/exo_duration"
                     android:layout_toEndOf="@+id/exo_position"
-                    app:played_color="?attr/colorPrimary"
                     app:scrubber_drawable="@drawable/scrubber" />
             </RelativeLayout>
 
