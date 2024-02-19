@@ -183,15 +183,26 @@ public class Preferences {
         return preferences.getInt(key,3);
     }
     public void setDefaultSeekSpeed(int value){
-        String key="default_playback_speed";
+        String key="default_seek_speed";
         SharedPreferences.Editor editor=preferences.edit();
         editor.putInt(key,value);
         editor.apply();
     }
     public int getDefaultSeekSpeed(){
-        String key="default_playback_speed";
+        String key="default_seek_speed";
         return preferences.getInt(key,0);
     }
 
 
+    public void setDefaultOrientation(int i) {
+        String key="def_orient";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key,i);
+        editor.apply();
+    }
+
+    public int getDefaultOrientation() {
+        String key="def_orient";
+        return preferences.getInt(key,2);
+    }
 }

@@ -225,11 +225,11 @@ public class PlayerActivity extends AppCompatActivity {
         if (preferences.getResumePref()){
             skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         }
-
         if (preferences.getBrightnessPref()){
             brightnessManager.setBrightness(preferences.getPreviousBrightnessPref());
         }
-        setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
+        setOrientation();
+
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         int seekIndex=preferences.getDefaultSeekSpeed();
@@ -340,6 +340,27 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
     }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private void setOrientation() {
+        int defOrient=preferences.getDefaultOrientation();
+        switch (defOrient){
+            case 0:{
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                break;
+            }
+            case 1:{
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                break;
+            }
+            case 2:{
+                setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
+                break;
+            }
+        }
+
+    }
+
     private AudioAttributes getAudioAttributes() {
         return new AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA)
