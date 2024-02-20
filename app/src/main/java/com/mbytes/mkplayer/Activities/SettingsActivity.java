@@ -2,24 +2,20 @@ package com.mbytes.mkplayer.Activities;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.mbytes.mkplayer.Fragments.PlayerSettingFragment;
 import com.mbytes.mkplayer.R;
 
 public class SettingsActivity extends AppCompatActivity implements PlayerSettingFragment.FragmentCallback {
-  private LinearLayout playerSetting;
-  private RelativeLayout settingLayout;
-  private TextView backBtn;
+    private RelativeLayout settingLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,13 +26,10 @@ public class SettingsActivity extends AppCompatActivity implements PlayerSetting
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        playerSetting=findViewById(R.id.layout_player_setting);
+        LinearLayout playerSetting = findViewById(R.id.layout_player_setting);
         settingLayout=findViewById(R.id.setting_layout);
-        backBtn=findViewById(R.id.heading_setting);
-        backBtn.setOnClickListener(view -> {
-            finish();
-        });
-
+        TextView backBtn = findViewById(R.id.heading_setting);
+        backBtn.setOnClickListener(view -> finish());
         playerSetting.setOnClickListener(view -> {
             settingLayout.setVisibility(View.GONE);
             getSupportFragmentManager().beginTransaction()
@@ -44,7 +37,6 @@ public class SettingsActivity extends AppCompatActivity implements PlayerSetting
                     .addToBackStack(null)
                     .commit();
         });
-
     }
     @Override
     public void onFragmentRemoved() {
