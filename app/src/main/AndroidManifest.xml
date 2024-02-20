@@ -12,7 +12,6 @@
         tools:ignore="ScopedStorage" />
 
     <application
-
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,6 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+        <activity
+            android:name=".SettingsHelperActivities.PlayerSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsHelperActivities.AppearanceActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.mbytes.mkplayer.provider"
@@ -34,7 +40,7 @@
 
         <activity
             android:name=".Activities.SettingsActivity"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection|uiMode"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"
             android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"

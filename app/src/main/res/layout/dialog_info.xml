@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/file_info"
         android:textSize="18sp"
-        android:textColor="#000"/>
+        android:textColor="?attr/colorTertiary"/>
 
     <TextView
         android:id="@+id/info_name"

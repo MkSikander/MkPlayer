@@ -18,18 +18,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/heading_setting"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
             android:text="@string/settings"
             android:drawablePadding="10dp"
-            android:textSize="25sp"
+            android:textSize="22sp"
             app:drawableLeftCompat="@drawable/ic_arrow_black" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_below="@+id/heading_setting"
+        android:layout_marginStart="10dp"
+        android:layout_height="match_parent">
 <LinearLayout
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_below="@+id/heading_setting"
-    android:layout_marginStart="10dp"
     android:layout_marginTop="30dp"
     android:layout_height="wrap_content">
 
@@ -38,7 +41,6 @@
         android:id="@+id/layout_appearance_setting"
         android:layout_height="wrap_content"
        >
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -149,7 +151,8 @@
         android:layout_width="match_parent"
         android:id="@+id/layout_about"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp">
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="35dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -185,5 +188,6 @@
 
 
 </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
 </RelativeLayout>

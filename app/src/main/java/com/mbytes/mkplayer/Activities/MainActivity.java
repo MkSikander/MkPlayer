@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         setContentView(R.layout.activity_main);
         init();
         onCreateHelper();
-
-
     }
 
     void init() {
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         LinearLayout infoLayout = findViewById(R.id.info_layout);
         refreshLayout = findViewById(R.id.refresh_folder);
         preferences = new Preferences(this);
+        preferences.setStoragePermission("OK");
         play_last = findViewById(R.id.play_last_playing);
         LinearLayout renameLayout = findViewById(R.id.rename_layout);
         sortedFolder = new ArrayList<>();
