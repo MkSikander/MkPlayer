@@ -1,5 +1,6 @@
 package com.mbytes.mkplayer.Activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -10,10 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.mbytes.mkplayer.Fragments.AppearanceFragment;
 import com.mbytes.mkplayer.Fragments.PlayerSettingFragment;
 import com.mbytes.mkplayer.R;
 
-public class SettingsActivity extends AppCompatActivity implements PlayerSettingFragment.FragmentCallback {
+public class SettingsActivity extends AppCompatActivity implements PlayerSettingFragment.FragmentCallback,AppearanceFragment.FragmentCallback {
     private RelativeLayout settingLayout;
 
     @Override
@@ -27,6 +30,7 @@ public class SettingsActivity extends AppCompatActivity implements PlayerSetting
             return insets;
         });
         LinearLayout playerSetting = findViewById(R.id.layout_player_setting);
+        LinearLayout appearanceSetting=findViewById(R.id.layout_appearance_setting);
         settingLayout=findViewById(R.id.setting_layout);
         TextView backBtn = findViewById(R.id.heading_setting);
         backBtn.setOnClickListener(view -> finish());
@@ -37,9 +41,17 @@ public class SettingsActivity extends AppCompatActivity implements PlayerSetting
                     .addToBackStack(null)
                     .commit();
         });
+        appearanceSetting.setOnClickListener(view -> {
+            settingLayout.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main,new AppearanceFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
     @Override
     public void onFragmentRemoved() {
         settingLayout.setVisibility(View.VISIBLE);
     }
+
 }

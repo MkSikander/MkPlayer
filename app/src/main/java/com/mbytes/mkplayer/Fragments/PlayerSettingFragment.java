@@ -1,6 +1,7 @@
 package com.mbytes.mkplayer.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -9,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.slider.Slider;
+import com.mbytes.mkplayer.Activities.SettingsActivity;
 import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.FolderSort;
@@ -50,9 +53,6 @@ public class PlayerSettingFragment extends Fragment {
        onClick();
        return rootView;
     }
-
-
-
 
     private void initView() {
         heading=rootView.findViewById(R.id.heading_player_setting);
