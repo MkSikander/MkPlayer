@@ -1,19 +1,19 @@
 package com.mbytes.mkplayer.Activities;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.util.Util;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -23,6 +23,7 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 
 public class AllowAccessActivity extends AppCompatActivity {
 
@@ -30,26 +31,28 @@ public class AllowAccessActivity extends AppCompatActivity {
     public static final int STORAGE_PERMISSION_ABOVE10 = 123;
     public static final int REQUEST_PERMISSION_SETTING = 12;
     private static final int READ_VIDEO_PERMISSION_CODE = 100;
-    TextView allow_btn;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_allow_access);
-        allow_btn = findViewById(R.id.allow_access);
-        SharedPreferences preferences = getSharedPreferences("AllowAccess", MODE_PRIVATE);
-        String value = preferences.getString("Allow","");
+        TextView allow_btn = findViewById(R.id.allow_access);
+        preferences=new Preferences(this);
+        String value = preferences.getStoragePermission();
+//        if(preferences.getDarkTheme()&& !preferences.getDefaultTheme()){
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        } else if (!preferences.getDarkTheme() && preferences.getDefaultTheme()) {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+//        } else if (!preferences.getDarkTheme() && !preferences.getDefaultTheme()) {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//        }
         if (value.equals("OK")) {
             startActivity(new Intent(AllowAccessActivity.this, MainActivity.class));
             finish();
-        } else {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("Allow","OK");
-            editor.apply();
         }
-
         allow_btn.setOnClickListener(new View.OnClickListener() {
-
             @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
             @OptIn(markerClass = UnstableApi.class) @Override
             public void onClick(View v) {
@@ -120,6 +123,7 @@ public class AllowAccessActivity extends AppCompatActivity {
                     }
                 } else {
                     startActivity(new Intent(AllowAccessActivity.this, MainActivity.class));
+                    preferences.setStoragePermission("OK");
                     finish();
                 }
             }
@@ -131,6 +135,7 @@ public class AllowAccessActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == STORAGE_PERMISSION_ABOVE10) {
             startActivity(new Intent(AllowAccessActivity.this, MainActivity.class));
+            preferences.setStoragePermission("OK");
             finish();
         }
     }

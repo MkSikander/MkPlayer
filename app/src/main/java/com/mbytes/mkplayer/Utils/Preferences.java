@@ -195,14 +195,57 @@ public class Preferences {
 
 
     public void setDefaultOrientation(int i) {
-        String key="def_orient";
         SharedPreferences.Editor editor=preferences.edit();
-        editor.putInt(key,i);
+        editor.putInt("def_orient",i);
         editor.apply();
     }
 
     public int getDefaultOrientation() {
-        String key="def_orient";
-        return preferences.getInt(key,2);
+        return preferences.getInt("def_orient",2);
+    }
+    public void setDarkTheme(boolean value){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("dark_theme",value);
+        editor.apply();
+    }
+    public boolean getDarkTheme(){
+        return preferences.getBoolean("dark_theme",false);
+    }
+
+    public void setContrast(boolean value) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("contrast",value);
+        editor.apply();
+    }
+    public boolean getContrast(){
+        return preferences.getBoolean("contrast",false);
+    }
+
+    public void setDynamicTheme(boolean value) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("dynamic_theme",value);
+        editor.apply();
+    }
+    public boolean getDynamicTheme(){
+        return preferences.getBoolean("dynamic_theme",false);
+    }
+
+    public String getStoragePermission() {
+        return preferences.getString("Allow","");
+    }
+    public void setStoragePermission(String value){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putString("Allow",value);
+        editor.apply();
+    }
+
+    public void setDefaultTheme(boolean value) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("DefTheme",value);
+        editor.apply();
+    }
+
+    public boolean getDefaultTheme() {
+        return preferences.getBoolean("DefTheme",true);
     }
 }
