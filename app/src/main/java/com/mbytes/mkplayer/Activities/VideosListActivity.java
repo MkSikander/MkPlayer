@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -40,8 +42,8 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private Handler mHandler;
     private Runnable mRunnable;
     private Preferences sharedPreferences;
-    ImageView sortImg;
-    ImageButton backBtn;
+    private RecyclerView videosRecyclerview;
+    private ProgressBar progressBar;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -49,12 +51,13 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videos_list);
-        RecyclerView videosRecyclerview = findViewById(R.id.videos_recyclerview);
+        videosRecyclerview = findViewById(R.id.videos_recyclerview);
         preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
-        sortImg = findViewById(R.id.img_sort);
-        backBtn = findViewById(R.id.list_back);
+        ImageView sortImg = findViewById(R.id.img_sort);
+        ImageButton backBtn = findViewById(R.id.list_back);
         mHandler = new Handler();
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        progressBar=findViewById(R.id.middle_progress_bar);
         videosList = new ArrayList<>();
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         videosRecyclerview.setHasFixedSize(true);
@@ -67,8 +70,9 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             swipeRefreshLayout.setRefreshing(true);
             mHandler.postDelayed(mRunnable, 500);
         });
-
-        mRunnable = this::loadVideos;
+        if (videosList.isEmpty()) {
+            mRunnable = this::loadVideos;
+        }
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
     }
@@ -132,7 +136,8 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
 
         @Override
         protected void onPreExecute() {
-            swipeRefreshLayout.setRefreshing(true);
+            videosRecyclerview.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
         @Override
@@ -143,6 +148,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(List<VideoItem> result) {
+
             videosList.clear();
             videosList.addAll(result);
             videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
@@ -153,6 +159,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
             adapter.notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
+            new Handler().postDelayed(()->{
+            progressBar.setVisibility(View.INVISIBLE);
+            videosRecyclerview.setVisibility(View.VISIBLE);
+            },300);
         }
     }
 
