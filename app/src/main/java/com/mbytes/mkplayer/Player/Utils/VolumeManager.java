@@ -84,15 +84,12 @@ public class VolumeManager {
             }
         }
     }
-
     public void increaseVolume(boolean showVolumePanel) {
         setVolume(getCurrentVolume() + 1, showVolumePanel);
     }
-
     public void decreaseVolume(boolean showVolumePanel) {
         setVolume(getCurrentVolume() - 1, showVolumePanel);
     }
-
     public static final int MAX_VOLUME_BOOST = 2000;
     private float currentVolume;
 }

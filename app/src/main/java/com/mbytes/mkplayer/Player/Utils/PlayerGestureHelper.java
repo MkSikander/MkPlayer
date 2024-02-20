@@ -163,25 +163,19 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                         activity.showBriGestureLayout();
                     } else {
                         //Right half of the Screen (volume)
-                        int maxVolume = 0;
                         activity.setVolVisible();
-                        if (audioManager != null) {
-                            maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                        }
-                        float change = ratioChange * maxVolume;
-                        assert audioManager != null;
-                        int volume = (int) (volumeManager.getCurrentStreamVolume() + change);
-                        volumeManager.setVolume(volume, false);
+                        float change = ratioChange * volumeManager.getMaxStreamVolume();
+                        volumeManager.setVolume(volumeManager.getCurrentVolume()+change, false);
                         activity.showVolGestureLayout();
-
 
                     }
                 }
+                return true;
             }
 
         }
 
-        return true;
+        return false;
     }
 
     @Override
