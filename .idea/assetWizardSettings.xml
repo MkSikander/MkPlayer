@@ -35,8 +35,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="seek_increment" />
-                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\clock-rotate-right-icon.svg" />
+                            <entry key="outputName" value="ic_audio" />
+                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\music-note-3-svgrepo-com.svg" />
                           </map>
                         </option>
                       </PersistentState>
