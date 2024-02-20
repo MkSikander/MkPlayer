@@ -41,13 +41,7 @@ public class AllowAccessActivity extends AppCompatActivity {
         TextView allow_btn = findViewById(R.id.allow_access);
         preferences=new Preferences(this);
         String value = preferences.getStoragePermission();
-//        if(preferences.getDarkTheme()&& !preferences.getDefaultTheme()){
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//        } else if (!preferences.getDarkTheme() && preferences.getDefaultTheme()) {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-//        } else if (!preferences.getDarkTheme() && !preferences.getDefaultTheme()) {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        }
+        AppCompatDelegate.setDefaultNightMode(preferences.getDefaultTheme());
         if (value.equals("OK")) {
             startActivity(new Intent(AllowAccessActivity.this, MainActivity.class));
             finish();

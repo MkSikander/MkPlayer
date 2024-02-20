@@ -10,25 +10,12 @@ import androidx.media3.common.C;
 public class Preferences {
 
     private static final String MYPREF = "mypref";
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
     public Preferences(Context context) {
         preferences = context.getSharedPreferences(MYPREF, MODE_PRIVATE);
     }
 
-    public void setString(String key, String value) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(key, value);
-        editor.apply();
-    }
-
-    public int getInt(String key){
-        return preferences.getInt(key,0);
-    }
-    public void setInt(String key,int value){
-        SharedPreferences.Editor editor=preferences.edit();
-        editor.putInt(key, value);
-    }
 
     public String getString(String key) {
         return preferences.getString(key, "");
@@ -58,9 +45,6 @@ public class Preferences {
         editor.apply();
     }
 
-    public String getVideoList(String key){
-        return preferences.getString(key,"");
-    }
 
     public int getVideoPosition(String key){
         return preferences.getInt(key, C.INDEX_UNSET);
@@ -203,14 +187,7 @@ public class Preferences {
     public int getDefaultOrientation() {
         return preferences.getInt("def_orient",2);
     }
-    public void setDarkTheme(boolean value){
-        SharedPreferences.Editor editor=preferences.edit();
-        editor.putBoolean("dark_theme",value);
-        editor.apply();
-    }
-    public boolean getDarkTheme(){
-        return preferences.getBoolean("dark_theme",false);
-    }
+
 
     public void setContrast(boolean value) {
         SharedPreferences.Editor editor=preferences.edit();
@@ -239,13 +216,22 @@ public class Preferences {
         editor.apply();
     }
 
-    public void setDefaultTheme(boolean value) {
+    public void setDefaultTheme(int value) {
         SharedPreferences.Editor editor=preferences.edit();
-        editor.putBoolean("DefTheme",value);
+        editor.putInt("DefTheme",value);
         editor.apply();
     }
 
-    public boolean getDefaultTheme() {
-        return preferences.getBoolean("DefTheme",true);
+    public int getDefaultTheme() {
+        return preferences.getInt("DefTheme",-1);
+    }
+
+    public void setSelectedTheme(int i) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt("selected_theme",i);
+        editor.apply();
+    }
+    public int getSelectedTheme(){
+        return preferences.getInt("selected_theme",0);
     }
 }

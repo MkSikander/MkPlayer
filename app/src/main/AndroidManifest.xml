@@ -22,7 +22,10 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".Fragments.AppearanceActivity"
+            android:name=".SettingsHelperActivities.PlayerSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsHelperActivities.AppearanceActivity"
             android:exported="false" />
 
         <provider
