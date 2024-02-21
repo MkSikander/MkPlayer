@@ -234,4 +234,5 @@ public class Preferences {
     public int getSelectedTheme(){
         return preferences.getInt("selected_theme",0);
     }
+
 }

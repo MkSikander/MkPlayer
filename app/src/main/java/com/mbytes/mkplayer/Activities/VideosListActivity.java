@@ -1,20 +1,16 @@
 package com.mbytes.mkplayer.Activities;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,13 +26,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+
 
 public class VideosListActivity extends AppCompatActivity implements VideoListAdapter.VideoLoadListener, VideoSort.OnSortOptionSelectedListener {
 
     private VideoListAdapter adapter;
-    private static final String MYPREF = "mypref";
-    private SharedPreferences preferences;
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<VideoItem> videosList;
     private Handler mHandler;
@@ -52,7 +47,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videos_list);
         videosRecyclerview = findViewById(R.id.videos_recyclerview);
-        preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
         ImageView sortImg = findViewById(R.id.img_sort);
         ImageButton backBtn = findViewById(R.id.list_back);
         mHandler = new Handler();
@@ -145,7 +139,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
             return getVideosInFolder(folderPath);
         }
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
         @Override
         protected void onPostExecute(List<VideoItem> result) {
 
@@ -179,8 +173,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
 
     @Override
     public void onSortOptionSelected() {
-        String sortPref = preferences.getString("sortVideo", "sortName");
-        Log.d("SortPreference", "Selected sort preference: " + sortPref);
         loadVideos();
     }
 
