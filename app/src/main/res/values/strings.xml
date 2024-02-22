@@ -215,5 +215,7 @@
     <string name="_1x">1x</string>
     <string name="seek_increment_text">10 Sec</string>
     <string name="_10_seconds">10 Seconds</string>
+    <string name="new">New</string>
+    <string name="new_tag">New</string>
 
 </resources>
