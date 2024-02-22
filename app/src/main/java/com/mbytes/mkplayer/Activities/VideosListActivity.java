@@ -1,20 +1,15 @@
 package com.mbytes.mkplayer.Activities;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,20 +25,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+
 
 public class VideosListActivity extends AppCompatActivity implements VideoListAdapter.VideoLoadListener, VideoSort.OnSortOptionSelectedListener {
 
     private VideoListAdapter adapter;
-    private static final String MYPREF = "mypref";
-    private SharedPreferences preferences;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<VideoItem> videosList;
     private Handler mHandler;
-    private Runnable mRunnable;
     private Preferences sharedPreferences;
     private RecyclerView videosRecyclerview;
     private ProgressBar progressBar;
+    private String nameOfFolder,folderPath;
+    private TextView videoCount;
+    private boolean isLoadVideoExecuted,isRefreshing;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -52,13 +47,13 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videos_list);
         videosRecyclerview = findViewById(R.id.videos_recyclerview);
-        preferences = getSharedPreferences(MYPREF, MODE_PRIVATE);
         ImageView sortImg = findViewById(R.id.img_sort);
         ImageButton backBtn = findViewById(R.id.list_back);
         mHandler = new Handler();
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         progressBar=findViewById(R.id.middle_progress_bar);
         videosList = new ArrayList<>();
+        videoCount = findViewById(R.id.heading);
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         videosRecyclerview.setHasFixedSize(true);
         sharedPreferences = new Preferences(this);
@@ -68,20 +63,56 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         VideoUtils.setAdapterCallback(adapter);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            mHandler.postDelayed(mRunnable, 500);
+            isRefreshing=true;
+            mHandler.postDelayed(this::reloadVideos, 500);
         });
         if (videosList.isEmpty()) {
-            mRunnable = this::loadVideos;
+            isLoadVideoExecuted=true;
+            loadVideos();
         }
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
     }
 
     @Override
-    public void onVideoLoadRequested() {
-        loadVideos();
+    protected void onResume() {
+        if(!isLoadVideoExecuted){
+            reloadVideos();
+        }
+        super.onResume();
     }
-
+    @Override
+    protected void onPause() {
+        isLoadVideoExecuted=false;
+        super.onPause();
+    }
+    @Override
+    protected void onStop() {
+        isLoadVideoExecuted=false;
+        super.onStop();
+    }
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
+    private void reloadVideos() {
+        if (isRefreshing) {
+            videosList.clear();
+            videosList.addAll(getVideosInFolder(folderPath));
+            videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
+            updateNameAndCount();
+            adapter.notifyDataSetChanged();
+            isRefreshing=false;
+            swipeRefreshLayout.setRefreshing(false);
+        } else {
+            if (videosList.isEmpty()) {
+                loadVideos();
+            }
+        }
+    }
+    //when video is deleted or renamed by user
+    @Override
+    public void onVideoLoadRequested() {
+        isRefreshing=true;
+        reloadVideos();
+    }
     private List<VideoItem> getVideosInFolder(String folderPath) {
         List<VideoItem> videosInFolder = new ArrayList<>();
         String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.DISPLAY_NAME, MediaStore.Video.Media.DURATION, MediaStore.Video.Media.DATE_ADDED, MediaStore.Video.Media.SIZE, MediaStore.Video.Media.MIME_TYPE, MediaStore.Video.Media.RESOLUTION};
@@ -94,7 +125,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 selectionArgs,
                 null
         );
-
         if (cursor != null) {
             int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME);
             int pathColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
@@ -116,7 +146,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration!=null) {
                     VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDuration, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
                     videoItem.setDateAdded(new Date(dateAddedTimeStamp * 1000));
-
                     videosInFolder.add(videoItem);
                 }
             }
@@ -124,64 +153,41 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         }
         return videosInFolder;
     }
-
-
-    @SuppressLint({"NotifyDataSetChanged"})
-    public void loadVideos() {
-        new LoadVideosTask().execute();
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class LoadVideosTask extends AsyncTask<Void, Void, List<VideoItem>> {
-
-        @Override
-        protected void onPreExecute() {
-            videosRecyclerview.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-        @Override
-        protected List<VideoItem> doInBackground(Void... params) {
-            String folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
-            return getVideosInFolder(folderPath);
-        }
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(List<VideoItem> result) {
-
-            videosList.clear();
-            videosList.addAll(result);
-            videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
-            String nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
-            TextView videoCount = findViewById(R.id.heading);
-            assert nameOfFolder != null;
-            nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0, 13) + "..." : nameOfFolder;
-            videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
-            adapter.notifyDataSetChanged();
-            swipeRefreshLayout.setRefreshing(false);
-            new Handler().postDelayed(()->{
-            progressBar.setVisibility(View.INVISIBLE);
-            videosRecyclerview.setVisibility(View.VISIBLE);
-            },300);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        loadVideos();
-        super.onResume();
-    }
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         String videoKey = "played_" + videoPath;
         return sharedPreferences.getBoolean(videoKey);
     }
-
     @Override
     public void onSortOptionSelected() {
-        String sortPref = preferences.getString("sortVideo", "sortName");
-        Log.d("SortPreference", "Selected sort preference: " + sortPref);
         loadVideos();
     }
-
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadVideos(){
+        new Thread(() -> {
+            videosRecyclerview.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
+            List<VideoItem> result = getVideosInFolder(folderPath);
+            runOnUiThread(()->{
+                videosList.clear();
+                videosList.addAll(result);
+                videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
+                nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
+                updateNameAndCount();
+                adapter.notifyDataSetChanged();
+                new Handler().postDelayed(()->{
+                    progressBar.setVisibility(View.GONE);
+                    videosRecyclerview.setVisibility(View.VISIBLE);
+                },800);
+            });
+        }).start();
+    }
+    @SuppressLint("SetTextI18n")
+    private void updateNameAndCount(){
+        if (nameOfFolder != null) {
+            nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0, 13) + "..." : nameOfFolder;
+            videoCount.setText(nameOfFolder + "(" + videosList.size() + ")");
+        }
+    }
 }

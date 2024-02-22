@@ -25,14 +25,14 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="@string/app_name"
-        android:textColor="?attr/colorTertiary"
+        android:textColor="?attr/colorTertiaryFixed"
         android:textSize="30sp" />
     <TextView
         android:id="@+id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/permission_text"
-        android:textColor="?attr/colorTertiary"
+        android:textColor="?attr/colorTertiaryFixed"
         android:padding="10dp"
         android:textSize="20sp"
         android:gravity="center"
@@ -54,6 +54,6 @@
         android:textSize="20sp"
         android:gravity="center"
         android:layout_marginBottom="20dp"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorTertiaryFixed"
         />
 </RelativeLayout>

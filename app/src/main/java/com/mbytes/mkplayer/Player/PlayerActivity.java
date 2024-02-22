@@ -69,6 +69,9 @@ public class PlayerActivity extends AppCompatActivity {
     private int startItemIndex;
     private long startPosition;
     private TrackSelectionParameters trackSelectionParameters;
+
+
+
     public enum ControlsMode {
         LOCK, FULLSCREEN
     }
@@ -158,7 +161,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (newPosition>-1){
             playThis(newPosition);
         }
-        playerGestureHelper = new PlayerGestureHelper(this, audioManager, brightnessManager, volumeManager);
+        playerGestureHelper = new PlayerGestureHelper(this, brightnessManager, volumeManager);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
         nextBtn.setOnClickListener(view ->{PlayNext();setCurrentPosition();});
@@ -275,38 +278,40 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
-                if (playbackState != Player.STATE_READY) {
-                    progressBar.setVisibility(View.VISIBLE);
-
-                }
-                else {
-                    player.play();
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onPlaybackStateChanged(int playbackState) {
-                Player.Listener.super.onPlaybackStateChanged(playbackState);
-                if (playbackState == Player.STATE_ENDED) {
-                    String key = playerVideos.get(position).getVideoPath();
-                    Long currentPosition = 0L;
-                    preferences.setLong(key, currentPosition);
-                    if (position == playerVideos.size() - 1) {
-                        position = 0;
-                        finish();
+                switch (playbackState) {
+                    case Player.STATE_READY: {
+                        player.play();
+                        progressBar.setVisibility(View.GONE);
+                        break;
                     }
-                    else {
-                        if (preferences.getAutoPlayPref()) {
-                            PlayNext();
+                    case Player.STATE_BUFFERING: {
+                        progressBar.setVisibility(View.GONE);
+                        break;
+                    }
+                    case Player.STATE_ENDED:{
+                        String key = playerVideos.get(position).getVideoPath();
+                        Long currentPosition = 0L;
+                        preferences.setLong(key, currentPosition);
+                        if (position == playerVideos.size() - 1) {
+                            position = 0;
+                            finish();
                         }
                         else {
-                            player.pause();
+                            if (preferences.getAutoPlayPref()) {
+                                PlayNext();
+                            }
+                            else {
+                                player.pause();
+                            }
                         }
+                        break;
+                    }
+                    case Player.STATE_IDLE:{
+                        break;
                     }
 
                 }
+
             }
         });
 
@@ -605,5 +610,7 @@ public class PlayerActivity extends AppCompatActivity {
     public void setStartOverVisibility() {
         startOverLayout.setVisibility(View.GONE);
     }
-
+    public float getCurrentVolume() {
+        return audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+    }
 }

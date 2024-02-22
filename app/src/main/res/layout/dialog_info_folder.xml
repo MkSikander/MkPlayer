@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:text="@string/file_info"
         android:textSize="18sp"
-        android:textColor="?attr/colorTertiary"/>
+        android:textColor="?attr/colorTertiaryFixed"/>
 
     <TextView
         android:id="@+id/info_name"
         android:layout_marginTop="20dp"
         android:layout_marginStart="10dp"
         android:textSize="15sp"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/file_name"/>
@@ -29,6 +30,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:textSize="15sp"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/size"/>
@@ -38,6 +40,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:textSize="15sp"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/path"/>
@@ -50,6 +53,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:textSize="15sp"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_height="wrap_content"
         android:text="@string/date_added"/>
 

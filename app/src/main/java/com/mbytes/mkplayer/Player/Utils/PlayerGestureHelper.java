@@ -1,56 +1,45 @@
 package com.mbytes.mkplayer.Player.Utils;
 
 import android.annotation.SuppressLint;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
-
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
 
-import java.util.Objects;
-
 public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     @UnstableApi
     private final PlayerActivity activity;
-    private final AudioManager audioManager;
     private final VolumeManager volumeManager;
     private final GestureDetector gestureDetector;
     private final ScaleGestureDetector zoomGestureDetector;
     private final BrightnessManager brightnessManager;
     private final PlayerView playerView;
     private static  float scaleFactor=1f;
-    private TextView zoomPercent;
-    private FrameLayout zoomlayout;
+    private final TextView zoomPercent;
+    private final FrameLayout zoomLayout;
     private long prevP;
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
     private Preferences preferences;
 
-
     @SuppressLint("ClickableViewAccessibility")
     @UnstableApi
-    public PlayerGestureHelper(PlayerActivity activity,AudioManager audioManager,BrightnessManager brightnessManager,VolumeManager volumeManager){
+    public PlayerGestureHelper(PlayerActivity activity,BrightnessManager brightnessManager,VolumeManager volumeManager){
         this.activity=activity;
-        this.audioManager=audioManager;
         this.brightnessManager=brightnessManager;
         this.volumeManager=volumeManager;
         this.playerView=activity.playerView;
         preferences=new Preferences(playerView.getContext());
-        zoomlayout=activity.findViewById(R.id.zoom_layout);
+        zoomLayout=activity.findViewById(R.id.zoom_layout);
         zoomPercent=activity.findViewById(R.id.zoom_perc);
         gestureDetector=new GestureDetector(activity,this);
         zoomGestureDetector=new ScaleGestureDetector(activity,new scaleGestureDetector());
@@ -67,8 +56,8 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                scaleFactor *= detector.getScaleFactor();
                zoomPercent.setVisibility(View.VISIBLE);
                scaleFactor = Math.max(0.25f, Math.min(scaleFactor, 4f));
-               zoomlayout.setScaleX(scaleFactor);
-               zoomlayout.setScaleY(scaleFactor);
+               zoomLayout.setScaleX(scaleFactor);
+               zoomLayout.setScaleY(scaleFactor);
                zoomPercent.setText(" " + (int) (scaleFactor * 100) + " % ");
            }
            return true;

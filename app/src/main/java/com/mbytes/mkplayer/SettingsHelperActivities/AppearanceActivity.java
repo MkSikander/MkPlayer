@@ -23,7 +23,7 @@ public class AppearanceActivity extends AppCompatActivity {
     private LinearLayout themeLayout;
     private int selectedTheme;
     private TextView themeText,backBtn;
-    private MaterialSwitch contrastSwitch, dynamicSwitch;
+    private MaterialSwitch contrastSwitch;
     private final String[] themeMode = {"Follow System", "Light Mode", "Dark Mode"};
 
     @Override
@@ -42,7 +42,6 @@ public class AppearanceActivity extends AppCompatActivity {
 
     private void initViews() {
         themeLayout = findViewById(R.id.theme_layout);
-        dynamicSwitch = findViewById(R.id.dynamic_switch);
         contrastSwitch = findViewById(R.id.contrast_switch);
         preferences = new Preferences(this);
         themeText = findViewById(R.id.theme_text);
@@ -55,8 +54,6 @@ public class AppearanceActivity extends AppCompatActivity {
         backBtn.setOnClickListener(view -> finish());
         //Contrast Switch
         contrastSwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setContrast(b));
-        //Dynamic Theme Switch
-        dynamicSwitch.setOnCheckedChangeListener((compoundButton, b) -> preferences.setDynamicTheme(b));
         themeLayout.setOnClickListener(view -> {
             selectedTheme = preferences.getSelectedTheme();
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
