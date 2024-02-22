@@ -35,26 +35,22 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
-
     @Override
     public void onAdapterMethodCalled() {
         if (videoLoadListener != null) {
             videoLoadListener.onVideoLoadRequested();
         }
     }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
-        public TextView folderNameTextView,folderVideoCount,NewVideoCount;
+        public TextView folderNameTextView,folderVideoCount,newVideoCount;
         public ImageView checkImage;
-
-
         public ViewHolder(View itemView) {
             super(itemView);
             folderNameTextView = itemView.findViewById(R.id.folder_name);
             folderVideoCount=itemView.findViewById(R.id.folder_video_count);
             checkImage =itemView.findViewById(R.id.check_mark);
-            NewVideoCount=itemView.findViewById(R.id.no_of_new_videos);
+            newVideoCount=itemView.findViewById(R.id.no_of_new_videos);
 
             // Add other views if needed
         }
@@ -71,18 +67,21 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         return new ViewHolder(view);
     }
 
-
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Get the data model based on position
         VideoFolder videoFolder = videoFolders.get(position);
         // Set item views based on the data model
-
         String fname= videoFolder.getFolderName();
         int videoCount=videoFolder.getVideoCount();
+        int newVideos=videoFolder.getNewVideos();
         fname=(fname.length() > 25) ? fname.substring(0, 25) + "..." : fname;
         holder.folderNameTextView.setText(fname);
+        if(newVideos>0){
+            holder.newVideoCount.setText(newVideos+"");
+            holder.newVideoCount.setVisibility(View.VISIBLE);
+        }
         holder.folderVideoCount.setText(videoCount +" videos");
         // Bind other data if needed
         holder.itemView.setOnClickListener(view -> {
@@ -97,7 +96,6 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             FolderUtils.showMenu(view.getContext(),videoFolder);
             return false;
         });
-
 
     }
     @Override

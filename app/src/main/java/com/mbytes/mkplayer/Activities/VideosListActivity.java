@@ -95,7 +95,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private void reloadVideos() {
         if (isRefreshing) {
             videosList.clear();
-            videosList.addAll(getVideosInFolder(folderPath));
+            videosList.addAll(getVideosFromFolder(folderPath));
             videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
             updateNameAndCount();
             adapter.notifyDataSetChanged();
@@ -113,7 +113,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         isRefreshing=true;
         reloadVideos();
     }
-    private List<VideoItem> getVideosInFolder(String folderPath) {
+    private List<VideoItem> getVideosFromFolder(String folderPath) {
         List<VideoItem> videosInFolder = new ArrayList<>();
         String[] projection = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.DISPLAY_NAME, MediaStore.Video.Media.DURATION, MediaStore.Video.Media.DATE_ADDED, MediaStore.Video.Media.SIZE, MediaStore.Video.Media.MIME_TYPE, MediaStore.Video.Media.RESOLUTION};
         String selection = MediaStore.Video.Media.DATA + " LIKE ?";
@@ -168,7 +168,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             videosRecyclerview.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
             folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
-            List<VideoItem> result = getVideosInFolder(folderPath);
+            List<VideoItem> result = getVideosFromFolder(folderPath);
             runOnUiThread(()->{
                 videosList.clear();
                 videosList.addAll(result);

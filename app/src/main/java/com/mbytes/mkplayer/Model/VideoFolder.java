@@ -12,19 +12,23 @@ public class VideoFolder implements Comparable<VideoFolder>, Serializable {
     private int videoCount;
     private Date dateAdded;
     private long folderSize;
+    private int newVideos;
 
 
 
 
-    public VideoFolder(String folderName, String folderPath, Date dateAdded, int videoCount, long folderSize) {
+    public VideoFolder(String folderName, String folderPath, Date dateAdded, int videoCount, long folderSize,int newVideos) {
         this.folderName = folderName;
         this.folderPath = folderPath;
         this.dateAdded = dateAdded;
         this.folderSize=folderSize;
         this.videoCount=videoCount;
+        this.newVideos=newVideos;
 
     }
-
+    public int getNewVideos() {
+        return newVideos;
+    }
     public long getFolderSize() {
         return folderSize;
     }

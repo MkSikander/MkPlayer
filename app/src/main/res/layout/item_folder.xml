@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="5dp"
     android:background="?attr/selectableItemBackground">
 
@@ -27,10 +28,13 @@
         android:visibility="gone"
         android:textColor="@color/white"
         android:textSize="11sp"
+        android:text="@string/_9"
         app:layout_constraintEnd_toStartOf="@+id/text_layout"
         app:layout_constraintHorizontal_bias="0.84"
         app:layout_constraintStart_toStartOf="@+id/icon"
-        app:layout_constraintTop_toTopOf="@+id/icon" />
+        app:layout_constraintTop_toTopOf="@+id/icon"
+        tools:visibility="visible"
+        />
 
     <LinearLayout
         android:id="@+id/text_layout"

@@ -28,7 +28,16 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         this.videoResolution=videoResolution;
         this.videoType=videoType;
     }
-
+    public VideoItem(String videoPath, String videoDuration) {
+        this.videoPath=videoPath;
+        this.videoDuration=videoDuration;
+        this.videoName = ""; // Default value for videoName
+        this.isVideoPlayed = false; // Default value for isVideoPlayed
+        this.dateAdded = new Date(); // Default value for dateAdded
+        this.videoSize = 0; // Default value for videoSize
+        this.videoType = ""; // Default value for videoType
+        this.videoResolution = ""; // Default value for videoResolution
+    }
     protected VideoItem(Parcel in) {
         videoName = in.readString();
         videoPath = in.readString();
@@ -50,6 +59,9 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
             return new VideoItem[size];
         }
     };
+
+
+
 
     public String getVideoType() {
         return videoType;

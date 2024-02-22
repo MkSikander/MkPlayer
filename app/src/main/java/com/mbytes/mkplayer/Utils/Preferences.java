@@ -36,6 +36,16 @@ public class Preferences {
         editor.putBoolean(key, value);
         editor.apply();
     }
+    public void setIsAnyVideoPlayed(boolean value){
+        String key="is_any_video_played";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+    public boolean getIsAnyVideoPlayed(){
+        String key="is_any_video_played";
+        return preferences.getBoolean(key,false);
+    }
 
 
     public void setLastVideos(String key,String key1,int position,String json){

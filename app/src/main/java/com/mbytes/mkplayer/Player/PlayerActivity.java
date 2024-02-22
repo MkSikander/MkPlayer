@@ -333,6 +333,7 @@ public class PlayerActivity extends AppCompatActivity {
         String videoPath = playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
             setVideoPlayedStatus(videoPath);
+            preferences.setIsAnyVideoPlayed(true);
         }
         rotate.setOnClickListener(view -> {
             if (orientation){
