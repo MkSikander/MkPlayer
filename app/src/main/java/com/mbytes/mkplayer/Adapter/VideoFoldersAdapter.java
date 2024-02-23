@@ -82,6 +82,7 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             holder.newVideoCount.setText(newVideos+"");
             holder.newVideoCount.setVisibility(View.VISIBLE);
         }
+        else holder.newVideoCount.setVisibility(View.GONE);
         holder.folderVideoCount.setText(videoCount +" videos");
         // Bind other data if needed
         holder.itemView.setOnClickListener(view -> {
@@ -97,6 +98,15 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             return false;
         });
 
+    }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
     @Override
     public int getItemCount() {

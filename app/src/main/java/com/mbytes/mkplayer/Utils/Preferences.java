@@ -245,4 +245,13 @@ public class Preferences {
         return preferences.getInt("selected_theme",0);
     }
 
+    public void updateFolders(boolean b) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("update_folder",b);
+        editor.apply();
+    }
+    public boolean isUpdateFolder(){
+        return preferences.getBoolean("update_folder",false);
+
+    }
 }

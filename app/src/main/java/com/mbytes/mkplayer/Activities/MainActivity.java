@@ -4,6 +4,7 @@ package com.mbytes.mkplayer.Activities;
 import static com.mbytes.mkplayer.Utils.MainActivityHelper.convertJsonToGson;
 import static com.mbytes.mkplayer.Utils.MainActivityHelper.isVideoFile;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private ArrayList<VideoItem> videoItem;
     private ArrayList<VideoFolder> sortedFolder;
     private Handler mHandler;
+    private RecyclerView foldersRecyclerview;
 
 
     @Override
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         init();
         onCreateHelper();
     }
-
     void init() {
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
@@ -65,14 +66,13 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         preferences.setStoragePermission("OK");
         play_last = findViewById(R.id.play_last_playing);
         sortedFolder = new ArrayList<>();
-        RecyclerView foldersRecyclerview = findViewById(R.id.folders_recyclerview);
+        foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         foldersRecyclerview.setHasFixedSize(true);
         adapter = new VideoFoldersAdapter(sortedFolder);
         adapter.setVideoLoadListener(this);
         foldersRecyclerview.setAdapter(adapter);
         FolderUtils.setAdapterCallback(adapter);
-
     }
     @OptIn(markerClass = UnstableApi.class)
     void onCreateHelper() {
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     public void onSortOptionSelected() {
         loadVideoFolders();
     }
+    @SuppressLint("NotifyDataSetChanged")
     private void loadVideoFolders() {
         sortedFolder.clear();
         sortedFolder.addAll(getVideoFolders());
@@ -172,12 +173,13 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     public void onVideoLoadRequested() {
         loadVideoFolders();
     }
+    @SuppressLint("NotifyDataSetChanged")
     @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onResume() {
-        if (preferences.getIsAnyVideoPlayed()){
-            preferences.setIsAnyVideoPlayed(false);
-            new Handler().postDelayed(this::loadVideoFolders,300);
+        if (preferences.isUpdateFolder()){
+            preferences.updateFolders(false);
+            reloadFolders();
         }
         getLastVideos();
         if (!(videoItem == null)) {
@@ -192,6 +194,11 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
             });
         }
         super.onResume();
+
+    }
+
+    private void reloadFolders() {
+        mHandler.postDelayed(this::loadVideoFolders,200);
     }
 
     public List<VideoFolder> getVideoFolders() {

@@ -79,6 +79,11 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         if(!isLoadVideoExecuted){
             reloadVideos();
         }
+        if(sharedPreferences.getIsAnyVideoPlayed()){
+            sharedPreferences.setIsAnyVideoPlayed(false);
+            sharedPreferences.updateFolders(true);
+            reloadVideos();
+        }
         super.onResume();
     }
     @Override
@@ -105,6 +110,10 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             if (videosList.isEmpty()) {
                 loadVideos();
             }
+            else {
+                adapter.notifyDataSetChanged();
+            }
+
         }
     }
     //when video is deleted or renamed by user

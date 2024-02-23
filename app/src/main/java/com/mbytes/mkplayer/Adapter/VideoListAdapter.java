@@ -110,6 +110,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             videoLoadListener.onVideoLoadRequested();
         }
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences
         // Use a unique key for each video

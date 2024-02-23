@@ -22,19 +22,18 @@
         android:id="@+id/no_of_new_videos"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/circle_background"
         android:gravity="center"
-        android:visibility="gone"
+        android:text="@string/_9"
         android:textColor="@color/white"
         android:textSize="11sp"
-        android:text="@string/_9"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/text_layout"
-        app:layout_constraintHorizontal_bias="0.84"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/icon"
         app:layout_constraintTop_toTopOf="@+id/icon"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/text_layout"

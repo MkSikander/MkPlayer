@@ -41,6 +41,7 @@ public class BrightnessManager {
         layoutParams.screenBrightness = currentBrightness;
         changedBrightness=currentBrightness;
         activity.getWindow().setAttributes(layoutParams);
+        activity.setCurrentBrightnessPref();
 
         // fixes a bug which makes the action bar reappear after changing the brightness
 

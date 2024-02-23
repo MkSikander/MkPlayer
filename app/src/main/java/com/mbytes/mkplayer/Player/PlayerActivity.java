@@ -270,7 +270,6 @@ public class PlayerActivity extends AppCompatActivity {
         } else {
             player.seekTo(skipPosition);
         }
-
         playerView.setKeepScreenOn(true);
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         player.prepare();
@@ -311,7 +310,6 @@ public class PlayerActivity extends AppCompatActivity {
                     }
 
                 }
-
             }
         });
 
@@ -452,7 +450,7 @@ public class PlayerActivity extends AppCompatActivity {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
     }
-    private void setCurrentBrightnessPref(){
+    public void setCurrentBrightnessPref(){
         preferences.setCurrentBrightnessPref(brightnessManager.getChangedBrightness());
     }
 
