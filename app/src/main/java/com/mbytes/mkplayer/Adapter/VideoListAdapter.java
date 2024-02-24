@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -43,12 +42,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         public TextView videoName, videoDuration, newText;
         public ImageView thumbnail, moreMenu;
         Context context;
-        CheckBox checkBox;
 
         public ViewHolder(View itemView) {
             super(itemView);
             videoName = itemView.findViewById(R.id.video_name);
-            checkBox = itemView.findViewById(R.id.checkbox);
             newText = itemView.findViewById(R.id.symbol_new);
             thumbnail = itemView.findViewById(R.id.thumbnail);
             videoDuration = itemView.findViewById(R.id.video_duration);
@@ -61,7 +58,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         // Inflate the custom layout
-        View view = inflater.inflate(R.layout.item_video, parent, false);
+        View view = inflater.inflate(R.layout.video_item, parent, false);
         // Return a new holder instance
         return new ViewHolder(view);
 
@@ -70,7 +67,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
          VideoItem videoItem = videos.get(position);
-        holder.itemView.setOnClickListener(view -> onItemViewClicked(view,videoItem,position));
+        holder.itemView.setOnClickListener(view -> onItemViewClicked(view,position));
         holder.itemView.setOnLongClickListener(view -> {
             VideoUtils.showMenu(view.getContext(), videoItem);
             return false;
@@ -89,9 +86,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         holder.videoDuration.setText(VideoUtils.timeConversion((long) milliSeconds));
         holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
     }
-
     @OptIn(markerClass = UnstableApi.class)
-    private void onItemViewClicked(View view , VideoItem videoItem, int position) {
+    private void onItemViewClicked(View view , int position) {
         Context context = view.getContext();
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra("position", position);
@@ -109,6 +105,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         if (videoLoadListener != null) {
             videoLoadListener.onVideoLoadRequested();
         }
+    }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
     private boolean getVideoPlayedStatus(String videoPath) {
         // Retrieve video playback status from SharedPreferences

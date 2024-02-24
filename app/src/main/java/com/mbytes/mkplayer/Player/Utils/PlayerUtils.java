@@ -128,18 +128,24 @@ public class PlayerUtils {
     public static void setPlaybackSpeed(Player player, Context context) {
         preferences=new Preferences(context);
         selectedSpeedIndex=preferences.getDefaultPlaybackSpeed();
+        float m=player.getPlaybackParameters().speed;
+        if (playbackSpeeds[selectedSpeedIndex]!=m){
+            for (int k=0;k<playbackSpeeds.length;k++){
+                if (m==playbackSpeeds[k]){
+                    selectedSpeedIndex=k;
+                }
+            }
+        }
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         // Set up the layout for the dialog
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_playback_speed, null);
         builder.setView(dialogView);
-
         // Find the slider in the dialog layout
         Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
         TextView speedText=dialogView.findViewById(R.id.speed_text);
         ImageView increaseImg=dialogView.findViewById(R.id.increase);
         ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
-
         // Set up the slider
         slider.setValue(selectedSpeedIndex); // Set initial value
         slider.setStepSize(1); // Set step size
@@ -150,21 +156,22 @@ public class PlayerUtils {
             float speed = playbackSpeeds[(int) value];
             return String.format(Locale.getDefault(), "%.1fx", speed);
         });
+        if(selectedSpeedIndex<7){
+            increaseImg.setAlpha(1f);
+        }
+        if (selectedSpeedIndex>0){
+            decreaseImg.setAlpha(1f);
+        }
         increaseImg.setOnClickListener(view -> {
             if (selectedSpeedIndex<7) {
                 selectedSpeedIndex = selectedSpeedIndex + 1;
                 float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
                 speedText.setText((selectedSpeed) + " X");
                 slider.setValue(selectedSpeedIndex);
-                preferences.setDefaultPlaybackSpeed(selectedSpeedIndex);
                 player.setPlaybackSpeed(selectedSpeed); // Set playback speed
                 player.play(); // Start playback
-                increaseImg.setEnabled(true);
-                increaseImg.setAlpha(1f);
             }
-
         });
-
         decreaseImg.setOnClickListener(view -> {
             if (selectedSpeedIndex>0) {
                 selectedSpeedIndex = selectedSpeedIndex - 1;
@@ -173,12 +180,10 @@ public class PlayerUtils {
                 speedText.setText((selectedSpeed) + " X");
                 player.setPlaybackSpeed(selectedSpeed); // Set playback speed
                 player.play(); // Start playback
-                decreaseImg.setEnabled(true);
-                decreaseImg.setAlpha(1f);
+
             }
 
         });
-
         // Set listener for slider value changes
         slider.addOnChangeListener((slider1, value, fromUser) -> {
             selectedSpeedIndex = (int) value; // Update selected speed index
@@ -187,14 +192,11 @@ public class PlayerUtils {
             player.setPlaybackSpeed(selectedSpeed); // Set playback speed
             player.play(); // Start playback
         });
-
         // Set listener for cancel action
         builder.setOnCancelListener(dialogInterface -> player.play());
-
         // Show the dialog
         builder.show();
     }
-
 
     public static void showPlaylistVideos(ArrayList<VideoItem> videos,int position,Context context){
          bottomSheetDialog = new BottomSheetDialog(context);
@@ -211,9 +213,6 @@ public class PlayerUtils {
     public static void hideBottomSheet(){
         bottomSheetDialog.dismiss();
     }
-
-
-
     @OptIn(markerClass = UnstableApi.class)
     public static void setSubTrack(Player player , DefaultTrackSelector trackSelector, Context context){
         ArrayList<String> subTrack = new ArrayList<>();
@@ -237,7 +236,6 @@ public class PlayerUtils {
                 }
             }
         }
-
         // If no track is selected, use the size of the list
         if (selectedTrackIndex==-1)
         {

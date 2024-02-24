@@ -127,9 +127,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
                         }
                         long currentP = playerView.getPlayer().getCurrentPosition();
                         long seek_value = currentP - prevP;
-
                         activity.showSeekInfo(
-
                                 PlayerUtils.formatDurationMillis(currentP),
                                 "[" + PlayerUtils.formatDurationMillisSign(seek_value) + "]"
                         );

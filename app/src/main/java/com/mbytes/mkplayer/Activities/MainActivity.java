@@ -4,6 +4,7 @@ package com.mbytes.mkplayer.Activities;
 import static com.mbytes.mkplayer.Utils.MainActivityHelper.convertJsonToGson;
 import static com.mbytes.mkplayer.Utils.MainActivityHelper.isVideoFile;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         init();
         onCreateHelper();
     }
-
     void init() {
         settingImg = findViewById(R.id.img_setting);
         sortImg = findViewById(R.id.img_sort);
@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         adapter.setVideoLoadListener(this);
         foldersRecyclerview.setAdapter(adapter);
         FolderUtils.setAdapterCallback(adapter);
-
     }
     @OptIn(markerClass = UnstableApi.class)
     void onCreateHelper() {
@@ -92,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     public void onSortOptionSelected() {
         loadVideoFolders();
     }
+    @SuppressLint("NotifyDataSetChanged")
     private void loadVideoFolders() {
         sortedFolder.clear();
         sortedFolder.addAll(getVideoFolders());
@@ -132,16 +132,54 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         }
         return fileCount;
     }
-
-
+    private int newVideosCount(String folderPath){
+        int count=0;
+        List<VideoItem> videosInFolder=new ArrayList<>();
+        String[] projection = {MediaStore.Video.Media.DATA,MediaStore.Video.Media.DURATION};
+        String selection = MediaStore.Video.Media.DATA + " LIKE ?";
+        String[] selectionArgs = new String[]{folderPath + "/%"};
+        Cursor cursor = getContentResolver().query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        );
+        if (cursor != null) {
+            int pathColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+            int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION);
+            while (cursor.moveToNext()) {
+                String videoPath = cursor.getString(pathColumn);
+                String videoDuration = cursor.getString(durationColumn);
+                if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration != null) {
+                    VideoItem videoItem = new VideoItem(videoPath, videoDuration);
+                    videosInFolder.add(videoItem);
+                }
+            }
+            cursor.close();
+        }
+        for(int i=0;i<videosInFolder.size();i++){
+            String videoPath=videosInFolder.get(i).getVideoPath();
+            String videoKey = "played_" + videoPath;
+            boolean playedStatus=preferences.getBoolean(videoKey);
+            if (!playedStatus){
+                count++;
+            }
+        }
+        return count;
+    }
     @Override
     public void onVideoLoadRequested() {
         loadVideoFolders();
     }
-
+    @SuppressLint("NotifyDataSetChanged")
     @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onResume() {
+        if (preferences.isUpdateFolder()){
+            preferences.updateFolders(false);
+            reloadFolders();
+        }
         getLastVideos();
         if (!(videoItem == null)) {
             play_last.setVisibility(View.VISIBLE);
@@ -155,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
             });
         }
         super.onResume();
+
+    }
+
+    private void reloadFolders() {
+        mHandler.postDelayed(this::loadVideoFolders,200);
     }
 
     public List<VideoFolder> getVideoFolders() {
@@ -176,9 +219,10 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
                 String uniqueKey = lowercaseFolderName + folderPath;
                 if (!path.startsWith("/0") && uniqueFolderPaths.add(uniqueKey)) {
                     int videoCount = noOfFiles(folderPath);
+                    int newVideos=newVideosCount(folderPath);
                     long folderSize = calculateFolderSize(folderPath);
                     Log.d("Folder Size ", "folder Size in Cursor" + folderSize);
-                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000), videoCount, folderSize);
+                    VideoFolder videoFolder = new VideoFolder(effectiveFolderName, folderPath, new Date(dateAddedTimeStamp * 1000), videoCount, folderSize,newVideos);
                     videoFolder.setDateAdded(new Date(dateAddedTimeStamp * 1000));
                     videoFolders.add(videoFolder);
                 }

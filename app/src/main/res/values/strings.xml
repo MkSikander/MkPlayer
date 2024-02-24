@@ -216,5 +216,6 @@
     <string name="seek_increment_text">10 Sec</string>
     <string name="_10_seconds">10 Seconds</string>
     <string name="new_tag">New</string>
+    <string name="_9">9</string>
 
 </resources>
