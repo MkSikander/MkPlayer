@@ -56,8 +56,9 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         videosRecyclerview.setHasFixedSize(true);
         sharedPreferences = new Preferences(this);
-        adapter = new VideoListAdapter(videosList, sharedPreferences);
+        adapter = new VideoListAdapter(videosList);
         adapter.setVideoLoadListener(this);
+        adapter.setHasStableIds(true);
         videosRecyclerview.setAdapter(adapter);
         VideoUtils.setAdapterCallback(adapter);
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -143,15 +144,16 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             while (cursor.moveToNext()) {
                 String videoName = cursor.getString(nameColumn);
                 String videoPath = cursor.getString(pathColumn);
-                String videoDuration = cursor.getString(durationColumn);
+                long videoDuration = cursor.getLong(durationColumn);
                 long dateAddedTimeStamp = cursor.getLong(dateAddedColumn);
                 boolean isVideoPlayed = getVideoPlayedStatus(videoPath);
                 long videoSize = cursor.getLong(sizeColumn);
                 String format = cursor.getString(typeColumn);
                 String videoType = format.substring(format.lastIndexOf("/") + 1);
                 String videoResolution = cursor.getString(resolutionColumn);
-                if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration!=null) {
-                    VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDuration, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
+                if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration!=0) {
+                    String videoDurationString=VideoUtils.timeConversion(videoDuration);
+                    VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDurationString, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
                     videoItem.setDateAdded(new Date(dateAddedTimeStamp * 1000));
                     videosInFolder.add(videoItem);
                 }

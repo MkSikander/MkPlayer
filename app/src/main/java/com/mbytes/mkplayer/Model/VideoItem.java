@@ -91,7 +91,9 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         return videoDuration;
     }
 
-
+    public boolean getPlayedStatus(){
+        return isVideoPlayed;
+    }
 
     public String getVideoName() {
         return videoName;
