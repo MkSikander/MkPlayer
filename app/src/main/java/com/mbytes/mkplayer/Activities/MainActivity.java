@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private ArrayList<VideoItem> videoItem;
     private ArrayList<VideoFolder> sortedFolder;
     private Handler mHandler;
-    private RecyclerView foldersRecyclerview;
 
 
     @Override
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         preferences.setStoragePermission("OK");
         play_last = findViewById(R.id.play_last_playing);
         sortedFolder = new ArrayList<>();
-        foldersRecyclerview = findViewById(R.id.folders_recyclerview);
+        RecyclerView foldersRecyclerview = findViewById(R.id.folders_recyclerview);
         foldersRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         foldersRecyclerview.setHasFixedSize(true);
         adapter = new VideoFoldersAdapter(sortedFolder);

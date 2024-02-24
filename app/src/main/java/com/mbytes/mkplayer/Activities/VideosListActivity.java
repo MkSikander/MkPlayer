@@ -39,7 +39,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private String nameOfFolder,folderPath;
     private TextView videoCount;
     private boolean isLoadVideoExecuted,isRefreshing;
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +72,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
     }
-
     @Override
     protected void onResume() {
         if(!isLoadVideoExecuted){

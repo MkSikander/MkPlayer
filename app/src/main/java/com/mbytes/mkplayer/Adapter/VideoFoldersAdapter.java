@@ -2,15 +2,11 @@ package com.mbytes.mkplayer.Adapter;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,12 +40,10 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
         public TextView folderNameTextView,folderVideoCount,newVideoCount;
-        public ImageView checkImage;
         public ViewHolder(View itemView) {
             super(itemView);
             folderNameTextView = itemView.findViewById(R.id.folder_name);
             folderVideoCount=itemView.findViewById(R.id.folder_video_count);
-            checkImage =itemView.findViewById(R.id.check_mark);
             newVideoCount=itemView.findViewById(R.id.no_of_new_videos);
 
             // Add other views if needed
