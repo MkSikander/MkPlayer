@@ -1,6 +1,6 @@
 package com.mbytes.mkplayer.Activities;
 
-import android.annotation.SuppressLint;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,7 +39,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private String nameOfFolder,folderPath;
     private TextView videoCount;
     private boolean isLoadVideoExecuted,isRefreshing;
-    @SuppressLint("SetTextI18n")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -95,7 +95,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         isLoadVideoExecuted=false;
         super.onStop();
     }
-    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
+
     private void reloadVideos() {
         if (isRefreshing) {
             videosList.clear();
@@ -171,7 +171,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     public void onSortOptionSelected() {
         loadVideos();
     }
-    @SuppressLint("NotifyDataSetChanged")
+
     private void loadVideos(){
         new Thread(() -> {
             videosRecyclerview.setVisibility(View.GONE);
@@ -192,7 +192,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
             });
         }).start();
     }
-    @SuppressLint("SetTextI18n")
+
     private void updateNameAndCount(){
         if (nameOfFolder != null) {
             nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0, 13) + "..." : nameOfFolder;
