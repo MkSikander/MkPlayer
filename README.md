@@ -18,20 +18,17 @@ the [Issues](https://github.com/MkSikander/MkPlayer/issues) section.**
 
 <div style="width:100%; display:flex; justify-content:space-between;">
 
-[<img src="Images/folderlight" width=19% alt="Home Light">](Images/folderlight)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width=19% alt="Home Dark">](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width=19% alt="Sub Folder Light">](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width=19% alt="Sub Folder Dark">](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" width=19% alt="Quick Settings">](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png)
+[<img src="Images/folderlight.jpg" width=19% alt="Home Light">](Images/folderlight.jpg)
+[<img src="Images/folderdark.jpg" width=19% alt="Home Light">](Images/folderdark.jpg)
+[<img src="Images/videolight.jpg" width=19% alt="Home Light">](Images/videolight.jpg)
+[<img src="Images/videodark.jpg" width=19% alt="Home Light">](Images/videodark.jpg)
 </div>
 
 ### Player Ui
 
 <div style="width:100%; display:flex; justify-content:space-between;">
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" width=49% alt="Player">](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" width=49% alt="Player">](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png)
-</div>
+[<img src="Images/playerui.jpg" width=19% alt="Home Light">](Images/playerui.jpg)
 
 ## Supported formats
 
