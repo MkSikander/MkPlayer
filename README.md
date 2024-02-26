@@ -1,4 +1,4 @@
-<img src="Images/Mk Player.png" width=100% alt="banner">
+<img src="Images/Mk Player.png" width=80% alt="banner">
 
 # Mk Player
 
@@ -28,7 +28,7 @@ the [Issues](https://github.com/MkSikander/MkPlayer/issues) section.**
 
 <div style="width:100%; display:flex; justify-content:space-between;">
 
-[<img src="Images/playerui.jpg" width=100% alt="Home Light">](Images/playerui.jpg)
+[<img src="Images/playerui.jpg" width=80% alt="Home Light">](Images/playerui.jpg)
 
 ## Supported formats
 
