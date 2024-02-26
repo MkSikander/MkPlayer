@@ -1,4 +1,4 @@
-![Mk player banner](fastlane/metadata/android/en-US/images/nextplayer-banner.png)
+<img src="Images/Mk Player.png" width=100% alt="banner">
 
 # Mk Player
 
@@ -19,9 +19,9 @@ the [Issues](https://github.com/MkSikander/MkPlayer/issues) section.**
 <div style="width:100%; display:flex; justify-content:space-between;">
 
 [<img src="Images/folderlight.jpg" width=19% alt="Home Light">](Images/folderlight.jpg)
-[<img src="Images/folderdark.jpg" width=19% alt="Home Light">](Images/folderdark.jpg)
-[<img src="Images/videolight.jpg" width=19% alt="Home Light">](Images/videolight.jpg)
-[<img src="Images/videodark.jpg" width=19% alt="Home Light">](Images/videodark.jpg)
+[<img src="Images/folderdark.jpg" width=19% alt="Home Dark">](Images/folderdark.jpg)
+[<img src="Images/videolight.jpg" width=19% alt="Video Light">](Images/videolight.jpg)
+[<img src="Images/videodark.jpg" width=19% alt="Video Dark">](Images/videodark.jpg)
 </div>
 
 ### Player Ui
