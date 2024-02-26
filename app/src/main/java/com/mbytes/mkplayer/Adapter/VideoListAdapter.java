@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
-import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,12 +29,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
-    private final Preferences sharedPreferences;
+
     private final ArrayList<VideoItem> videos;
 
-    public VideoListAdapter(ArrayList<VideoItem> videos, Preferences sharedPreferences) {
+    public VideoListAdapter(ArrayList<VideoItem> videos) {
         this.videos = videos;
-        this.sharedPreferences = sharedPreferences;
+
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Define views in the ViewHolder
@@ -63,28 +62,28 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         return new ViewHolder(view);
 
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
          VideoItem videoItem = videos.get(position);
-        holder.itemView.setOnClickListener(view -> onItemViewClicked(view,position));
-        holder.itemView.setOnLongClickListener(view -> {
-            VideoUtils.showMenu(view.getContext(), videoItem);
-            return false;
-        });
+            Glide.with(holder.context)
+                    .load(new File(videoItem.getVideoPath()))
+                    .override(95,58)
+                    .fitCenter()
+                    .into(holder.thumbnail);
+                holder.videoName.setText(videoItem.getVideoName());
+                holder.videoDuration.setText(videoItem.getVideoDuration());
+                holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
+                holder.itemView.setOnClickListener(view -> onItemViewClicked(view,position));
+                holder.itemView.setOnLongClickListener(view -> {
+                    VideoUtils.showMenu(view.getContext(), videoItem);
+                    return false;
+                });
+                if (videoItem.getPlayedStatus()) {
+                    holder.newText.setVisibility(View.GONE);
+                } else {
+                    holder.newText.setVisibility(View.VISIBLE);
+                }
 
-            double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
-            boolean isVideoPlayed = getVideoPlayedStatus(videoItem.getVideoPath());
-
-        if (isVideoPlayed) {
-            holder.newText.setVisibility(View.GONE);
-        } else {
-            holder.newText.setVisibility(View.VISIBLE);
-        }
-        Glide.with(holder.context).load(new File(videoItem.getVideoPath())).into(holder.thumbnail);
-        holder.videoName.setText(videoItem.getVideoName());
-        holder.videoDuration.setText(VideoUtils.timeConversion((long) milliSeconds));
-        holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
     }
     @OptIn(markerClass = UnstableApi.class)
     private void onItemViewClicked(View view , int position) {
@@ -115,10 +114,5 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public int getItemViewType(int position) {
         return position;
     }
-    private boolean getVideoPlayedStatus(String videoPath) {
-        // Retrieve video playback status from SharedPreferences
-        // Use a unique key for each video
-        String videoKey = "played_" + videoPath;
-        return sharedPreferences.getBoolean(videoKey);
-    }
+
 }
