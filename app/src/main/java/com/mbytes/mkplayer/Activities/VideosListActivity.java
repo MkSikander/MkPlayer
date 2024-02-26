@@ -57,7 +57,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         videosRecyclerview.setHasFixedSize(true);
         sharedPreferences = new Preferences(this);
         adapter = new VideoListAdapter(videosList);
-        adapter.setVideoLoadListener(this);
+        adapter.setVideoLoadListener(this,this);
         adapter.setHasStableIds(true);
         videosRecyclerview.setAdapter(adapter);
         VideoUtils.setAdapterCallback(adapter);

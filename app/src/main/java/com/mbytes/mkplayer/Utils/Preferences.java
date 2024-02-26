@@ -164,7 +164,7 @@ public class Preferences {
     }
     public float getPreviousBrightnessPref(){
         String key="previous_brightness";
-        return preferences.getFloat(key,0f);
+        return preferences.getFloat(key,-2f);
     }
     public void setDefaultPlaybackSpeed(int value){
         String key="default_playback_speed";

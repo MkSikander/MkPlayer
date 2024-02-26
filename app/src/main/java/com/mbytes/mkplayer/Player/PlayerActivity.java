@@ -229,7 +229,11 @@ public class PlayerActivity extends AppCompatActivity {
             skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         }
         if (preferences.getBrightnessPref()){
-            brightnessManager.setBrightness(preferences.getPreviousBrightnessPref());
+            float brightness=preferences.getPreviousBrightnessPref();
+            if (brightness==-2f){
+                brightness=getIntent().getFloatExtra("bri",0);
+            }
+            brightnessManager.setBrightness(brightness);
         }
         setOrientation();
 

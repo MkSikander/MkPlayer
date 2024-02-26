@@ -3,6 +3,7 @@ package com.mbytes.mkplayer.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.mbytes.mkplayer.Activities.VideosListActivity;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
@@ -25,9 +27,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public interface VideoLoadListener {
         void onVideoLoadRequested();
     }
+    private VideosListActivity activity;
     private VideoLoadListener videoLoadListener;
-    public void setVideoLoadListener(VideoLoadListener listener) {
+    public void setVideoLoadListener(VideoLoadListener listener, VideosListActivity activity) {
         this.videoLoadListener = listener;
+        this.activity=activity;
+
     }
 
     private final ArrayList<VideoItem> videos;
@@ -90,6 +95,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         Context context = view.getContext();
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra("position", position);
+        intent.putExtra("bri",getCurrentBrightness());
         Bundle bundle=new Bundle();
         bundle.putParcelableArrayList("videoArrayList",videos);
         intent.putExtras(bundle);
@@ -103,6 +109,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public void onAdapterMethodCalled() {
         if (videoLoadListener != null) {
             videoLoadListener.onVideoLoadRequested();
+        }
+    }
+    public float getCurrentBrightness()  {
+        try {
+            int systemBri= Settings.System.getInt(activity.getContentResolver(),Settings.System.SCREEN_BRIGHTNESS);
+            return systemBri/255.0f;
+        }
+        catch (Exception e){
+            return -1.0f;
         }
     }
     @Override
