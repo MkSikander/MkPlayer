@@ -28,7 +28,7 @@ the [Issues](https://github.com/MkSikander/MkPlayer/issues) section.**
 
 <div style="width:100%; display:flex; justify-content:space-between;">
 
-[<img src="Images/playerui.jpg" width=76% alt="Home Light">](Images/playerui.jpg)
+[<img src="Images/playerui.jpg" width=77% alt="Home Light">](Images/playerui.jpg)
 
 ## Supported formats
 
