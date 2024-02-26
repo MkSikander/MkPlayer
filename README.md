@@ -1,4 +1,4 @@
-<img src="Images/Mk Player.png" width=80% alt="banner">
+<img src="Images/Mk Player.png" width=100% alt="banner">
 
 # Mk Player
 
