@@ -213,54 +213,74 @@
         android:textColor="?attr/colorPrimary"
         android:textStyle="bold" />
   </LinearLayout>
-
+<!-- Playlist recycler view for landscape mode-->
   <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="350dp"
-      android:background="@color/player_background"
-      android:layout_height="match_parent"
-      android:id="@+id/playlist_layout"
+      android:background="@color/cardview_dark_background"
+      android:layout_height="0dp"
+      android:id="@+id/playlist_layout_land"
       android:visibility="gone"
-      tools:visibility="visible"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/textView"
+    <ImageView
+        android:id="@+id/btn_back_land"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:gravity="center_vertical"
-        android:text="@string/back"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:drawableLeftCompat="@drawable/ic_arrow_left"
+        android:padding="10dp"
+        android:src="@drawable/arrow_right_white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/done"
-        android:id="@+id/done"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/todo" />
 
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlist_recycler_view"
+        android:id="@+id/playlist_recycler_view_land"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/done"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_back_land"
+        />
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>>
+  <!-- Playlist recycler view for portrait mode-->
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/playlist_layout_portrait"
+      android:layout_width="match_parent"
+      android:layout_height="350dp"
+      android:background="@color/cardview_dark_background"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="@+id/player_view"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/btn_back_portrait"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/todo"
+        android:padding="10dp"
+        android:src="@drawable/ic_arrow_down_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_recycler_view_portrait"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_back_portrait"
+     />
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

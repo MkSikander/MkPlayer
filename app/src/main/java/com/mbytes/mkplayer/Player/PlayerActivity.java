@@ -9,9 +9,7 @@ import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setPlaybackSpeed;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
 
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -21,6 +19,8 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,45 +67,49 @@ public class PlayerActivity extends AppCompatActivity {
 
     private ExoPlayer player;
     public PlayerView playerView;
-    private ControlsMode controlsMode;
     public static boolean isControlLocked = false;
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
     private TrackSelectionParameters trackSelectionParameters;
-    private ConstraintLayout playlistLayout;
 
 
-
-    public enum ControlsMode {
-        LOCK, FULLSCREEN
-    }
-    public static final Long[] seekIncrementTime={10000L,15000L,20000L,25000L,30000L,35000L,40000L,45000L,50000L};
+    public static final Long[] seekIncrementTime = {10000L, 15000L, 20000L, 25000L, 30000L, 35000L, 40000L, 45000L, 50000L};
     private static final String KEY_TRACK_SELECTION_PARAMETERS = "track_selection_parameters";
     private static final String KEY_ITEM_INDEX = "item_index";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
     private ArrayList<VideoItem> playerVideos = new ArrayList<>();
-    private TextView title, volume_text, brightness_text, seek_duration, seek_change, startOver;
+    private TextView title;
+    private TextView volume_text;
+    private TextView brightness_text;
+    private TextView seek_duration;
+    private TextView seek_change;
     private DefaultTrackSelector trackSelector;
     private Preferences preferences;
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private int position;
-    private int newPosition;
-    private ImageView nextBtn, prevBtn, backBtn, scalingBtn, lockBtn, unlockBtn, audioTrack, subTitleTrack, cancelStartOver,playbackSpeed,playList,rotate;
+    private ImageView unlockBtn;
+    private ImageView audioTrack;
+    private ImageView subTitleTrack;
+    private ImageView playbackSpeed;
+    private ImageView playList;
+    private ImageView rotate;
     //Gesture Related import
     private ProgressBar progressBar, volProgress, briProgress;
     private LinearLayout bri_layout, vol_layout, startOverLayout;
-    private AudioManager audioManager;
     private RelativeLayout root;
     private BrightnessManager brightnessManager;
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
     private FrameLayout zoomLayout;
-    private Long skipPosition=0L;
+    private Long skipPosition = 0L;
     private int tempPlaybackSpeed;
     private static boolean orientation;
-    private RecyclerView playListRecyclerView;
+    private RecyclerView playListRecyclerViewLand, playListRecyclerViewPortrait;
+    private ConstraintLayout playlistLayoutLand, playlistLayoutPortrait;
+    private Animation slideInBottom, slideOutBottom, slideInRight, slideOutRight;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -131,29 +135,37 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void initViews(Bundle savedInstanceState) {
         preferences = new Preferences(PlayerActivity.this);
-        tempPlaybackSpeed=preferences.getDefaultPlaybackSpeed();
+        tempPlaybackSpeed = preferences.getDefaultPlaybackSpeed();
         playerView = findViewById(R.id.player_view);
-        playlistLayout=findViewById(R.id.playlist_layout);
         progressBar = findViewById(R.id.exo_mid_progress);
         trackSelector = new DefaultTrackSelector(this);
-        nextBtn = findViewById(R.id.exo_next_btn);
-        playListRecyclerView = findViewById(R.id.playlist_recycler_view);
-        prevBtn = findViewById(R.id.exo_prev);
-        zoomLayout=findViewById(R.id.zoom_layout);
-        backBtn = findViewById(R.id.video_back);
+        ImageView nextBtn = findViewById(R.id.exo_next_btn);
+        playListRecyclerViewPortrait = findViewById(R.id.playlist_recycler_view_portrait);
+        playListRecyclerViewLand = findViewById(R.id.playlist_recycler_view_land);
+        playlistLayoutLand = findViewById(R.id.playlist_layout_land);
+        playlistLayoutPortrait = findViewById(R.id.playlist_layout_portrait);
+        slideInBottom = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_bottom);
+        slideOutBottom = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_bottom);
+        slideInRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_right);
+        slideOutRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_right);
+        ImageView playlistBackLand = findViewById(R.id.btn_back_land);
+        ImageView playlistBackPortrait = findViewById(R.id.btn_back_portrait);
+        ImageView prevBtn = findViewById(R.id.exo_prev);
+        zoomLayout = findViewById(R.id.zoom_layout);
+        ImageView backBtn = findViewById(R.id.video_back);
         title = findViewById(R.id.video_title);
-        scalingBtn = findViewById(R.id.scaling);
-        rotate=findViewById(R.id.rotate);
-        lockBtn = findViewById(R.id.lock);
+        ImageView scalingBtn = findViewById(R.id.scaling);
+        rotate = findViewById(R.id.rotate);
+        ImageView lockBtn = findViewById(R.id.lock);
         unlockBtn = findViewById(R.id.unlock);
-        startOver = findViewById(R.id.start_over);
-        cancelStartOver = findViewById(R.id.start_over_cancel);
+        TextView startOver = findViewById(R.id.start_over);
+        ImageView cancelStartOver = findViewById(R.id.start_over_cancel);
         startOverLayout = findViewById(R.id.start_over_layout);
         root = findViewById(R.id.root_layout);
         audioTrack = findViewById(R.id.audio_track);
         subTitleTrack = findViewById(R.id.exo_subtitle_track);
-        playbackSpeed=findViewById(R.id.playback_speed);
-        playList=findViewById(R.id.playlist);
+        playbackSpeed = findViewById(R.id.playback_speed);
+        playList = findViewById(R.id.playlist);
         bri_layout = findViewById(R.id.brightness_gesture_layout);
         vol_layout = findViewById(R.id.volume_gesture_layout);
         volProgress = findViewById(R.id.volume_progress_bar);
@@ -162,28 +174,32 @@ public class PlayerActivity extends AppCompatActivity {
         briProgress = findViewById(R.id.brightness_progress_bar);
         volume_text = findViewById(R.id.volume_progress_text);
         brightness_text = findViewById(R.id.brightness_progress_text);
-        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         volumeManager = new VolumeManager(audioManager);
         brightnessManager = new BrightnessManager(this);
-        newPosition=getIntent().getIntExtra("VIDEO_POSITION",-1);
-        if (newPosition>-1){
+        int newPosition = getIntent().getIntExtra("VIDEO_POSITION", -1);
+        if (newPosition > -1) {
             playThis(newPosition);
         }
 
         playerGestureHelper = new PlayerGestureHelper(this, brightnessManager, volumeManager);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
-        nextBtn.setOnClickListener(view ->{PlayNext();setCurrentPosition();});
-        prevBtn.setOnClickListener(view -> {PlayPrev();setCurrentPosition();});
+        nextBtn.setOnClickListener(view -> {
+            PlayNext();
+            setCurrentPosition();
+        });
+        prevBtn.setOnClickListener(view -> {
+            PlayPrev();
+            setCurrentPosition();
+        });
         backBtn.setOnClickListener(view -> finish());
         lockBtn.setOnClickListener(view -> {
-            controlsMode = ControlsMode.LOCK;
             root.setVisibility(View.INVISIBLE);
             unlockBtn.setVisibility(View.VISIBLE);
             isControlLocked = true;
         });
         unlockBtn.setOnClickListener(view -> {
-            controlsMode = ControlsMode.FULLSCREEN;
             root.setVisibility(View.VISIBLE);
             unlockBtn.setVisibility(View.INVISIBLE);
             isControlLocked = false;
@@ -200,9 +216,9 @@ public class PlayerActivity extends AppCompatActivity {
             clearStartPosition();
         }
         scalingBtn.setOnClickListener(v -> {
-                zoomLayout.setScaleX(1f);
-                zoomLayout.setScaleY(1f);
-               playerGestureHelper.resetScaleFactor();
+            zoomLayout.setScaleX(1f);
+            zoomLayout.setScaleY(1f);
+            playerGestureHelper.resetScaleFactor();
             int currentMode = playerView.getResizeMode();
             int newMode = RESIZE_MODE_FIT; // Default to fit
             switch (currentMode) {
@@ -215,6 +231,9 @@ public class PlayerActivity extends AppCompatActivity {
                 case RESIZE_MODE_ZOOM:
                     newMode = RESIZE_MODE_FIXED_HEIGHT;
                     break;
+                case androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT:
+                case androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH:
+                    break;
             }
             playerView.setResizeMode(newMode);
         });
@@ -222,12 +241,18 @@ public class PlayerActivity extends AppCompatActivity {
             player.seekTo(0L);
             startOverLayout.setVisibility(View.GONE);
         });
-        cancelStartOver.setOnClickListener(view -> {
-            startOverLayout.setVisibility(View.VISIBLE);
+        cancelStartOver.setOnClickListener(view -> startOverLayout.setVisibility(View.VISIBLE));
+        playlistBackLand.setOnClickListener(view -> {
+            playlistLayoutLand.startAnimation(slideOutRight);
+            playlistLayoutLand.setVisibility(View.GONE);
+        });
+        playlistBackPortrait.setOnClickListener(view -> {
+            playlistLayoutPortrait.startAnimation(slideOutBottom);
+            playlistLayoutPortrait.setVisibility(View.GONE);
         });
 
-
     }
+
     @SuppressLint("SourceLockedOrientationActivity")
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
@@ -235,30 +260,30 @@ public class PlayerActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-        if (preferences.getResumePref()){
+        if (preferences.getResumePref()) {
             skipPosition = preferences.getLong(playerVideos.get(position).getVideoPath());
         }
-        if (preferences.getBrightnessPref()){
-            float brightness=preferences.getPreviousBrightnessPref();
-            if (brightness==-2f){
-                brightness=getIntent().getFloatExtra("bri",0);
+        if (preferences.getBrightnessPref()) {
+            float brightness = preferences.getPreviousBrightnessPref();
+            if (brightness == -2f) {
+                brightness = getIntent().getFloatExtra("bri", 0);
             }
             brightnessManager.setBrightness(brightness);
         }
         setOrientation();
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
-        int seekIndex=preferences.getDefaultSeekSpeed();
+        int seekIndex = preferences.getDefaultSeekSpeed();
         DefaultExtractorsFactory extractorsFactory =
                 new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
         if (player == null) {
-            int playbackSpeedIndex= preferences.getDefaultPlaybackSpeed();
+            int playbackSpeedIndex = preferences.getDefaultPlaybackSpeed();
             player = new ExoPlayer.Builder(this).setTrackSelector(trackSelector)
-                    .setMediaSourceFactory(new DefaultMediaSourceFactory(this,extractorsFactory))
+                    .setMediaSourceFactory(new DefaultMediaSourceFactory(this, extractorsFactory))
                     .setHandleAudioBecomingNoisy(true)
                     .setSeekForwardIncrementMs(seekIncrementTime[seekIndex])
                     .setSeekBackIncrementMs(seekIncrementTime[seekIndex])
-                    .setAudioAttributes(getAudioAttributes(),true)
+                    .setAudioAttributes(getAudioAttributes(), true)
                     .build();
             player.setPlaybackSpeed(playbackSpeeds[playbackSpeedIndex]);
             playerView.setPlayer(player);
@@ -266,10 +291,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
         MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(path)));
         player.setMediaItem(mediaItem);
-        if (preferences.getFastSeekPref()){
+        if (preferences.getFastSeekPref()) {
             player.setSeekParameters(SeekParameters.NEXT_SYNC);
-        }
-        else {
+        } else {
             player.setSeekParameters(SeekParameters.DEFAULT);
         }
         boolean haveStartPosition = startItemIndex != C.INDEX_UNSET;
@@ -300,25 +324,23 @@ public class PlayerActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         break;
                     }
-                    case Player.STATE_ENDED:{
+                    case Player.STATE_ENDED: {
                         String key = playerVideos.get(position).getVideoPath();
                         Long currentPosition = 0L;
                         preferences.setLong(key, currentPosition);
                         if (position == playerVideos.size() - 1) {
                             position = 0;
                             finish();
-                        }
-                        else {
+                        } else {
                             if (preferences.getAutoPlayPref()) {
                                 PlayNext();
-                            }
-                            else {
+                            } else {
                                 player.pause();
                             }
                         }
                         break;
                     }
-                    case Player.STATE_IDLE:{
+                    case Player.STATE_IDLE: {
                         break;
                     }
 
@@ -334,12 +356,8 @@ public class PlayerActivity extends AppCompatActivity {
             player.pause();
             setSubTrack(player, trackSelector, PlayerActivity.this);
         });
-        playbackSpeed.setOnClickListener(view -> {
-            setPlaybackSpeed(player,PlayerActivity.this);
-        });
-        playList.setOnClickListener(view -> {
-            showPlaylistVideos();
-        });
+        playbackSpeed.setOnClickListener(view -> setPlaybackSpeed(player, PlayerActivity.this));
+        playList.setOnClickListener(view -> showPlaylistVideos());
 
         String videoPath = playerVideos.get(position).getVideoPath();
         if (!getVideoPlayedStatus(videoPath)) {
@@ -347,12 +365,11 @@ public class PlayerActivity extends AppCompatActivity {
             preferences.setIsAnyVideoPlayed(true);
         }
         rotate.setOnClickListener(view -> {
-            if (orientation){
-                orientation=false;
+            if (orientation) {
+                orientation = false;
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-            }
-            else {
-                orientation=true;
+            } else {
+                orientation = true;
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
             }
         });
@@ -360,17 +377,17 @@ public class PlayerActivity extends AppCompatActivity {
 
     @SuppressLint("SourceLockedOrientationActivity")
     private void setOrientation() {
-        int defOrient=preferences.getDefaultOrientation();
-        switch (defOrient){
-            case 0:{
+        int defOrient = preferences.getDefaultOrientation();
+        switch (defOrient) {
+            case 0: {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                 break;
             }
-            case 1:{
+            case 1: {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 break;
             }
-            case 2:{
+            case 2: {
                 setRequestedOrientation(PlayerUtils.getVideoRotation(playerVideos.get(position).getVideoPath()));
                 break;
             }
@@ -384,6 +401,7 @@ public class PlayerActivity extends AppCompatActivity {
                 .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
                 .build();
     }
+
     private void showStartOverLayout() {
         Handler startOverShow = new Handler();
         Handler startOverHide = new Handler();
@@ -413,21 +431,22 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
-    public void playThis(int newPosition){
+    public void playThis(int newPosition) {
         try {
             setCurrentPosition();
             player.stop();
-            position=newPosition;
-            playlistLayout.setVisibility(View.GONE);
+            position = newPosition;
+            hidePlaylist();
             initializePlayer();
-        }
-        catch (Exception ignored){
+        } catch (Exception ignored) {
         }
     }
-    public void updateList(ArrayList<VideoItem> videosList){
-        playerVideos=videosList;
-        playlistLayout.setVisibility(View.GONE);
+
+    public void updateList(ArrayList<VideoItem> videosList) {
+        playerVideos = videosList;
+        hidePlaylist();
     }
+
     private void PlayPrev() {
         try {
             player.stop();
@@ -451,19 +470,21 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void setCurrentPosition(){
+    private void setCurrentPosition() {
         String key = playerVideos.get(position).getVideoPath();
         Long currentPosition = Math.max(0, player.getContentPosition());
         preferences.setLong(key, currentPosition);
 
     }
+
     //for bundle instances To resume video where it was left (during Calls and Interrupt)
     private void updateTrackSelectorParameters() {
         if (player != null) {
             trackSelectionParameters = player.getTrackSelectionParameters();
         }
     }
-    public void setCurrentBrightnessPref(){
+
+    public void setCurrentBrightnessPref() {
         preferences.setCurrentBrightnessPref(brightnessManager.getChangedBrightness());
     }
 
@@ -508,6 +529,7 @@ public class PlayerActivity extends AppCompatActivity {
         }
         super.onPause();
     }
+
     @Override
     public void onStop() {
         if (player != null) {
@@ -517,6 +539,7 @@ public class PlayerActivity extends AppCompatActivity {
         setLastVideos();
         super.onStop();
     }
+
     @Override
     public void onDestroy() {
         preferences.setDefaultPlaybackSpeed(tempPlaybackSpeed);
@@ -546,30 +569,26 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void hideProgressBar() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Your existing code here
-                if (vol_layout.getVisibility() == View.VISIBLE) {
-                    vol_layout.setVisibility(View.GONE);
-                }
-                if (bri_layout.getVisibility() == View.VISIBLE) {
-                    bri_layout.setVisibility(View.GONE);
-                }
-                if (seek_change.getVisibility() == View.VISIBLE) {
-                    seek_change.setVisibility(View.GONE);
-                    seek_duration.setVisibility(View.GONE);
-                }
+        handler.postDelayed(() -> {
+            // Your existing code here
+            if (vol_layout.getVisibility() == View.VISIBLE) {
+                vol_layout.setVisibility(View.GONE);
+            }
+            if (bri_layout.getVisibility() == View.VISIBLE) {
+                bri_layout.setVisibility(View.GONE);
+            }
+            if (seek_change.getVisibility() == View.VISIBLE) {
+                seek_change.setVisibility(View.GONE);
+                seek_duration.setVisibility(View.GONE);
             }
         }, 800);
     }
 
-    public float getCurrentBrightness()  {
+    public float getCurrentBrightness() {
         try {
-            int systemBri= Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS);
-            return systemBri/255.0f;
-        }
-        catch (Exception e){
+            int systemBri = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+            return systemBri / 255.0f;
+        } catch (Exception e) {
             return -1.0f;
         }
     }
@@ -615,32 +634,48 @@ public class PlayerActivity extends AppCompatActivity {
         seek_duration.setText(s);
         seek_change.setText(s1);
     }
-    public static void setOrientationBool(int a){
-        orientation= a == 6;
+
+    public static void setOrientationBool(int a) {
+        orientation = a == 6;
     }
 
     public void setStartOverVisibility() {
         startOverLayout.setVisibility(View.GONE);
     }
-    public float getCurrentVolume() {
-        return audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-    }
 
-    private void showPlaylistVideos(){
-        if (playerView.isControllerFullyVisible()){
+    private void showPlaylistVideos() {
+        if (playerView.isControllerFullyVisible()) {
             playerView.hideController();
         }
-        playlistLayout.setVisibility(View.VISIBLE);
-        playListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this,playerVideos, position);
-        playListRecyclerView.setAdapter(adapter);
+        bri_layout.setVisibility(View.GONE);
+        vol_layout.setVisibility(View.GONE);
 
+        if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+            playlistLayoutLand.setVisibility(View.VISIBLE);
+            playlistLayoutLand.startAnimation(slideInRight);
+            playListRecyclerViewLand.setLayoutManager(new LinearLayoutManager(this));
+            PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
+            playListRecyclerViewLand.setAdapter(adapter);
+        } else {
+            playlistLayoutPortrait.setVisibility(View.VISIBLE);
+            playlistLayoutPortrait.startAnimation(slideInBottom);
+            playListRecyclerViewPortrait.setLayoutManager(new LinearLayoutManager(this));
+            PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
+            playListRecyclerViewPortrait.setAdapter(adapter);
+        }
     }
+
     public void hidePlaylist() {
-        if (playlistLayout.getVisibility()==View.VISIBLE){
-            playlistLayout.setVisibility(View.GONE);
+        if (playlistLayoutPortrait.getVisibility() == View.VISIBLE) {
+            playlistLayoutPortrait.startAnimation(slideOutBottom);
+            playlistLayoutPortrait.setVisibility(View.GONE);
+        }
+        if(playlistLayoutLand.getVisibility()==View.VISIBLE){
+            playlistLayoutLand.startAnimation(slideOutRight);
+            playlistLayoutLand.setVisibility(View.GONE);
         }
 
     }
+
 
 }
