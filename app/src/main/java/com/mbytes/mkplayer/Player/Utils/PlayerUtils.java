@@ -38,8 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class PlayerUtils {
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex; //
-    @SuppressLint("StaticFieldLeak")
-    private static BottomSheetDialog bottomSheetDialog;
+
    private static Preferences preferences;
 
     //getting video Orientation
@@ -198,21 +197,7 @@ public class PlayerUtils {
         builder.show();
     }
 
-    public static void showPlaylistVideos(ArrayList<VideoItem> videos,int position,Context context){
-         bottomSheetDialog = new BottomSheetDialog(context);
-        bottomSheetDialog.setContentView(R.layout.playlist_bottom_sheet);
-        TextView bottomSheetTitle = bottomSheetDialog.findViewById(R.id.bottom_sheet_title);
-        bottomSheetTitle.setText("Playlist");
-        RecyclerView recyclerView = bottomSheetDialog.findViewById(R.id.playlist_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(context,videos, position);
-        recyclerView.setAdapter(adapter);
 
-        bottomSheetDialog.show();
-    }
-    public static void hideBottomSheet(){
-        bottomSheetDialog.dismiss();
-    }
     @OptIn(markerClass = UnstableApi.class)
     public static void setSubTrack(Player player , DefaultTrackSelector trackSelector, Context context){
         ArrayList<String> subTrack = new ArrayList<>();

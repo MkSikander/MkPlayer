@@ -5,13 +5,13 @@ import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJson;
-import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.hideBottomSheet;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setPlaybackSpeed;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
-import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.showPlaylistVideos;
+
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -33,6 +33,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -45,10 +46,13 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.extractor.DefaultExtractorsFactory;
 import androidx.media3.ui.PlayerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.Utils.BrightnessManager;
 import com.mbytes.mkplayer.Player.Utils.PlayerGestureHelper;
+import com.mbytes.mkplayer.Player.Utils.PlaylistVideoAdapter;
 import com.mbytes.mkplayer.Player.Utils.VolumeManager;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
@@ -69,6 +73,7 @@ public class PlayerActivity extends AppCompatActivity {
     private int startItemIndex;
     private long startPosition;
     private TrackSelectionParameters trackSelectionParameters;
+    private ConstraintLayout playlistLayout;
 
 
 
@@ -100,6 +105,7 @@ public class PlayerActivity extends AppCompatActivity {
     private Long skipPosition=0L;
     private int tempPlaybackSpeed;
     private static boolean orientation;
+    private RecyclerView playListRecyclerView;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -127,9 +133,11 @@ public class PlayerActivity extends AppCompatActivity {
         preferences = new Preferences(PlayerActivity.this);
         tempPlaybackSpeed=preferences.getDefaultPlaybackSpeed();
         playerView = findViewById(R.id.player_view);
+        playlistLayout=findViewById(R.id.playlist_layout);
         progressBar = findViewById(R.id.exo_mid_progress);
         trackSelector = new DefaultTrackSelector(this);
         nextBtn = findViewById(R.id.exo_next_btn);
+        playListRecyclerView = findViewById(R.id.playlist_recycler_view);
         prevBtn = findViewById(R.id.exo_prev);
         zoomLayout=findViewById(R.id.zoom_layout);
         backBtn = findViewById(R.id.video_back);
@@ -161,6 +169,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (newPosition>-1){
             playThis(newPosition);
         }
+
         playerGestureHelper = new PlayerGestureHelper(this, brightnessManager, volumeManager);
         position = getIntent().getIntExtra("position", 1);
         playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
@@ -217,6 +226,7 @@ public class PlayerActivity extends AppCompatActivity {
             startOverLayout.setVisibility(View.VISIBLE);
         });
 
+
     }
     @SuppressLint("SourceLockedOrientationActivity")
     @OptIn(markerClass = UnstableApi.class)
@@ -236,7 +246,6 @@ public class PlayerActivity extends AppCompatActivity {
             brightnessManager.setBrightness(brightness);
         }
         setOrientation();
-
         String path = playerVideos.get(position).getVideoPath();
         title.setText(playerVideos.get(position).getVideoName());
         int seekIndex=preferences.getDefaultSeekSpeed();
@@ -329,7 +338,7 @@ public class PlayerActivity extends AppCompatActivity {
             setPlaybackSpeed(player,PlayerActivity.this);
         });
         playList.setOnClickListener(view -> {
-            showPlaylistVideos(playerVideos,position,PlayerActivity.this);
+            showPlaylistVideos();
         });
 
         String videoPath = playerVideos.get(position).getVideoPath();
@@ -409,7 +418,7 @@ public class PlayerActivity extends AppCompatActivity {
             setCurrentPosition();
             player.stop();
             position=newPosition;
-            hideBottomSheet();
+            playlistLayout.setVisibility(View.GONE);
             initializePlayer();
         }
         catch (Exception ignored){
@@ -417,7 +426,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
     public void updateList(ArrayList<VideoItem> videosList){
         playerVideos=videosList;
-        hideBottomSheet();
+        playlistLayout.setVisibility(View.GONE);
     }
     private void PlayPrev() {
         try {
@@ -616,4 +625,22 @@ public class PlayerActivity extends AppCompatActivity {
     public float getCurrentVolume() {
         return audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
+
+    private void showPlaylistVideos(){
+        if (playerView.isControllerFullyVisible()){
+            playerView.hideController();
+        }
+        playlistLayout.setVisibility(View.VISIBLE);
+        playListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this,playerVideos, position);
+        playListRecyclerView.setAdapter(adapter);
+
+    }
+    public void hidePlaylist() {
+        if (playlistLayout.getVisibility()==View.VISIBLE){
+            playlistLayout.setVisibility(View.GONE);
+        }
+
+    }
+
 }

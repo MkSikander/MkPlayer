@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     private ArrayList<VideoFolder> sortedFolder;
     private Handler mHandler;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);

@@ -67,12 +67,13 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         // Get the data model based on position
         VideoFolder videoFolder = videoFolders.get(position);
         // Set item views based on the data model
-        String fname= videoFolder.getFolderName();
+        String fName= videoFolder.getFolderName();
         int videoCount=videoFolder.getVideoCount();
         int newVideos=videoFolder.getNewVideos();
-        fname=(fname.length() > 25) ? fname.substring(0, 25) + "..." : fname;
-        holder.folderNameTextView.setText(fname);
+        fName=(fName.length() > 25) ? fName.substring(0, 25) + "..." : fName;
+        holder.folderNameTextView.setText(fName);
         if(newVideos>0){
+
             holder.newVideoCount.setText(newVideos+"");
             holder.newVideoCount.setVisibility(View.VISIBLE);
         }

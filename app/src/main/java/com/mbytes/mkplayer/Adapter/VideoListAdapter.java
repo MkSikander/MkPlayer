@@ -18,6 +18,7 @@ import com.mbytes.mkplayer.Activities.VideosListActivity;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -27,18 +28,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public interface VideoLoadListener {
         void onVideoLoadRequested();
     }
-    private VideosListActivity activity;
+    private final VideosListActivity activity;
+    private final Preferences preferences;
     private VideoLoadListener videoLoadListener;
-    public void setVideoLoadListener(VideoLoadListener listener, VideosListActivity activity) {
+    public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
-        this.activity=activity;
-
     }
 
     private final ArrayList<VideoItem> videos;
-
-    public VideoListAdapter(ArrayList<VideoItem> videos) {
+    public VideoListAdapter(ArrayList<VideoItem> videos, VideosListActivity activity) {
         this.videos = videos;
+        this.activity=activity;
+        preferences=new Preferences(activity);
 
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -83,7 +84,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                     VideoUtils.showMenu(view.getContext(), videoItem);
                     return false;
                 });
-                if (videoItem.getPlayedStatus()) {
+                if (getVideoPlayedStatus(videoItem.getVideoPath())) {
                     holder.newText.setVisibility(View.GONE);
                 } else {
                     holder.newText.setVisibility(View.VISIBLE);
@@ -119,6 +120,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         catch (Exception e){
             return -1.0f;
         }
+    }
+    private boolean getVideoPlayedStatus(String videoPath) {
+        // Retrieve video playback status from SharedPreferences
+        String videoKey = "played_" + videoPath;
+        return preferences.getBoolean(videoKey);
     }
     @Override
     public long getItemId(int position) {

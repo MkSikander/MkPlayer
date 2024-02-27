@@ -11,17 +11,16 @@ import java.util.Objects;
 public class VideoItem implements Comparable<VideoItem>, Parcelable {
     private final String videoName;
     private final String videoPath;
-    private final boolean isVideoPlayed;
+
     private final String videoDuration;
     private Date dateAdded;
     private final String videoType;
     private final String videoResolution;
     private final long videoSize;
 
-    public VideoItem(String videoName, String videoPath ,boolean isVideoPlayed,String videoDuration,Date dateAdded,long videoSize,String videoType,String videoResolution) {
+    public VideoItem(String videoName, String videoPath ,String videoDuration,Date dateAdded,long videoSize,String videoType,String videoResolution) {
         this.videoName = videoName;
         this.videoPath = videoPath;
-        this.isVideoPlayed=isVideoPlayed;
         this.videoDuration=videoDuration;
         this.dateAdded=dateAdded;
         this.videoSize=videoSize;
@@ -32,7 +31,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         this.videoPath=videoPath;
         this.videoDuration=videoDuration;
         this.videoName = ""; // Default value for videoName
-        this.isVideoPlayed = false; // Default value for isVideoPlayed
         this.dateAdded = new Date(); // Default value for dateAdded
         this.videoSize = 0; // Default value for videoSize
         this.videoType = ""; // Default value for videoType
@@ -41,7 +39,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
     protected VideoItem(Parcel in) {
         videoName = in.readString();
         videoPath = in.readString();
-        isVideoPlayed = in.readByte() != 0;
         videoDuration = in.readString();
         videoType = in.readString();
         videoResolution = in.readString();
@@ -91,9 +88,7 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         return videoDuration;
     }
 
-    public boolean getPlayedStatus(){
-        return isVideoPlayed;
-    }
+
 
     public String getVideoName() {
         return videoName;
@@ -110,12 +105,12 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VideoItem videoItem = (VideoItem) o;
-        return isVideoPlayed == videoItem.isVideoPlayed && videoSize == videoItem.videoSize && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded) && Objects.equals(videoType, videoItem.videoType) && Objects.equals(videoResolution, videoItem.videoResolution);
+        return videoSize == videoItem.videoSize && Objects.equals(videoName, videoItem.videoName) && Objects.equals(videoPath, videoItem.videoPath) && Objects.equals(videoDuration, videoItem.videoDuration) && Objects.equals(dateAdded, videoItem.dateAdded) && Objects.equals(videoType, videoItem.videoType) && Objects.equals(videoResolution, videoItem.videoResolution);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(videoName, videoPath, isVideoPlayed, videoDuration, dateAdded, videoType, videoResolution, videoSize);
+        return Objects.hash(videoName, videoPath, videoDuration, dateAdded, videoType, videoResolution, videoSize);
     }
 
     @NonNull
@@ -124,7 +119,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         return "VideoItem{" +
                 "videoName='" + videoName + '\'' +
                 ", videoPath='" + videoPath + '\'' +
-                ", isVideoPlayed=" + isVideoPlayed +
                 ", videoDuration='" + videoDuration + '\'' +
                 ", dateAdded=" + dateAdded +
                 ", videoType='" + videoType + '\'' +
@@ -148,7 +142,6 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(videoName);
         parcel.writeString(videoPath);
-        parcel.writeByte((byte) (isVideoPlayed ? 1 : 0));
         parcel.writeString(videoDuration);
         parcel.writeString(videoType);
         parcel.writeString(videoResolution);

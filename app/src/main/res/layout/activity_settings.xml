@@ -117,6 +117,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:id="@+id/layout_audio_setting"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp">
 
@@ -157,6 +159,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:id="@+id/layout_about"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
         android:layout_marginBottom="35dp">

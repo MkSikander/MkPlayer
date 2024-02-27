@@ -25,14 +25,11 @@ import java.util.ArrayList;
 
 public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdapter.ViewHolder> {
 
-    private ArrayList<VideoItem> mVideos;
+    private final ArrayList<VideoItem> mVideos;
 
-    private int mSelectedPosition = -1;
-    private Context mContext;
+    private final int mSelectedPosition;
+    private final Context mContext;
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
 
     @OptIn(markerClass = UnstableApi.class)
     public PlaylistVideoAdapter(Context mContext, ArrayList<VideoItem> videos, int mSelectedPosition) {
