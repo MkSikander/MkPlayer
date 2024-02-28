@@ -254,4 +254,20 @@ public class Preferences {
         return preferences.getBoolean("update_folder",false);
 
     }
+    public void setShowNewTag(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("show_new_tag",b);
+        editor.apply();
+    }
+    public boolean isShowNewTag() {
+       return preferences.getBoolean("show_new_tag",true);
+    }
+    public void setShowVidCount(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("show_video_count",b);
+        editor.apply();
+    }
+    public boolean isShowVideoCount() {
+        return preferences.getBoolean("show_video_count",true);
+    }
 }

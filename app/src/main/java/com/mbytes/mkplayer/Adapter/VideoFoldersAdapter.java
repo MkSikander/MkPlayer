@@ -45,7 +45,6 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
             folderNameTextView = itemView.findViewById(R.id.folder_name);
             folderVideoCount=itemView.findViewById(R.id.folder_video_count);
             newVideoCount=itemView.findViewById(R.id.no_of_new_videos);
-
             // Add other views if needed
         }
     }
@@ -60,7 +59,6 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         // Return a new holder instance
         return new ViewHolder(view);
     }
-
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -72,14 +70,21 @@ public class VideoFoldersAdapter extends RecyclerView.Adapter<VideoFoldersAdapte
         int newVideos=videoFolder.getNewVideos();
         fName=(fName.length() > 25) ? fName.substring(0, 25) + "..." : fName;
         holder.folderNameTextView.setText(fName);
-        if(newVideos>0){
-
-            holder.newVideoCount.setText(newVideos+"");
-            holder.newVideoCount.setVisibility(View.VISIBLE);
+        if (preferences.isShowNewTag()){
+            if(newVideos>0){
+                holder.newVideoCount.setText(newVideos+"");
+                holder.newVideoCount.setVisibility(View.VISIBLE);
+            }
+            else holder.newVideoCount.setVisibility(View.GONE);
         }
         else holder.newVideoCount.setVisibility(View.GONE);
-        holder.folderVideoCount.setText(videoCount +" videos");
-        // Bind other data if needed
+        if (preferences.isShowVideoCount()){
+            holder.folderVideoCount.setText(videoCount +" videos");
+            holder.folderVideoCount.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.folderVideoCount.setVisibility(View.GONE);
+        }
         holder.itemView.setOnClickListener(view -> {
                 // Handle item click
                 Context context = view.getContext();
