@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
@@ -22,41 +22,48 @@
       tools:ignore="PrivateResource" />
 
   <ProgressBar
+      android:id="@+id/exo_mid_progress"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerInParent="true"
       android:visibility="visible"
-      android:id="@+id/exo_mid_progress"
-      />
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
   <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
       android:id="@+id/seek_duration"
-      android:text="@string/seek_text"
-      android:textColor="@color/white"
-      android:textStyle="bold"
-      android:textSize="30sp"
-      android:visibility="gone"
-      tools:visibility="visible"
-      android:layout_marginTop="200dp"
-      android:layout_centerHorizontal="true"
-      >
-  </TextView>
-  <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:id="@+id/seek_change"
+      android:layout_centerHorizontal="true"
       android:text="@string/seek_text"
       android:textColor="@color/white"
-      android:textStyle="bold"
-      android:layout_marginTop="5dp"
       android:textSize="30sp"
+      android:textStyle="bold"
       android:visibility="gone"
-      tools:visibility="visible"
+      app:layout_constraintBottom_toTopOf="@+id/exo_mid_progress"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:visibility="visible" />
+
+  <TextView
+      android:id="@+id/seek_change"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:layout_below="@id/seek_duration"
       android:layout_centerHorizontal="true"
-      >
-  </TextView>
+      android:text="@string/seek_text"
+      android:textColor="@color/white"
+      android:textSize="30sp"
+      android:textStyle="bold"
+      android:visibility="gone"
+      app:layout_constraintBottom_toTopOf="@+id/exo_mid_progress"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/seek_duration"
+      tools:visibility="visible" />
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -69,6 +76,10 @@
       android:visibility="gone"
       tools:visibility="visible"
       android:layout_centerInParent="true"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
       >
   </TextView>
 
@@ -76,15 +87,18 @@
       android:id="@+id/volume_gesture_layout"
       android:layout_width="54dp"
       android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:layout_centerInParent="true"
       android:layout_gravity="center_vertical"
       android:layout_margin="16dp"
       android:background="@drawable/overlay_background"
       android:clickable="false"
       android:gravity="center"
-      android:layout_alignParentStart="true"
-      android:layout_centerInParent="true"
       android:orientation="vertical"
       android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
       tools:visibility="visible">
 
     <TextView
@@ -118,15 +132,18 @@
       android:id="@+id/brightness_gesture_layout"
       android:layout_width="54dp"
       android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerInParent="true"
       android:layout_gravity="center_vertical|end"
       android:layout_margin="16dp"
       android:background="@drawable/overlay_background"
       android:clickable="false"
       android:gravity="center"
-      android:layout_alignParentEnd="true"
-      android:layout_centerInParent="true"
       android:orientation="vertical"
       android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="@+id/player_view"
+      app:layout_constraintTop_toTopOf="parent"
       tools:visibility="visible">
 
     <TextView
@@ -147,7 +164,6 @@
         tools:progress="15" />
 
 
-
     <ImageView
         android:id="@+id/brightness_icon"
         android:layout_width="24dp"
@@ -156,42 +172,127 @@
         android:src="@drawable/ic_brightness"
         tools:ignore="ContentDescription" />
   </LinearLayout>
-  <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_marginBottom="75dp"
-      android:layout_marginStart="10dp"
-      android:visibility="gone"
-      tools:visibility="visible"
-      android:paddingStart="10dp"
-      android:id="@+id/start_over_layout"
-      android:paddingEnd="10dp"
-      android:paddingTop="4dp"
-      android:paddingBottom="4dp"
-      android:background="@drawable/rounded_background"
-      android:layout_alignParentBottom="true"
-      android:layout_height="wrap_content">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:src="@drawable/ic_cancel"
-        android:id="@+id/start_over_cancel"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:textColor="@color/white"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content"
-        android:text="@string/continue_from_where_you_left"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_over"
-        android:id="@+id/start_over"
-        android:layout_marginStart="5dp"
-        android:layout_gravity="center_vertical"
-        android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"
-        />
-  </LinearLayout>
 
-</RelativeLayout>
+  <LinearLayout
+      android:id="@+id/start_over_layout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/rounded_background"
+      android:paddingStart="10dp"
+      android:paddingTop="4dp"
+      android:paddingEnd="10dp"
+      android:paddingBottom="4dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginBottom="65dp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/start_over_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_cancel"
+        android:contentDescription="@string/todo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="@string/continue_from_where_you_left"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/start_over"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="5dp"
+        android:text="@string/start_over"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold" />
+  </LinearLayout>
+<!-- Playlist recycler view for landscape mode-->
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="400dp"
+      android:background="@color/cardview_dark_background"
+      android:layout_height="0dp"
+      android:id="@+id/playlist_layout_land"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      tools:visibility="visible"
+      app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/playlist"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:id="@+id/text_view_playlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btn_back_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/todo"
+        android:padding="10dp"
+        android:background="@drawable/circular_ripple"
+        android:src="@drawable/arrow_right_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_recycler_view_land"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_back_land"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_playlist" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <!-- Playlist recycler view for portrait mode-->
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/playlist_layout_portrait"
+      android:layout_width="match_parent"
+      android:layout_height="350dp"
+      android:background="@color/cardview_dark_background"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="@+id/player_view"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+     >
+
+    <ImageView
+        android:id="@+id/btn_back_portrait"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/todo"
+        android:padding="10dp"
+        android:background="@drawable/circular_ripple"
+        android:src="@drawable/ic_arrow_down_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_recycler_view_portrait"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_back_portrait"
+     />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.mbytes.mkplayer.Activities;
 
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,7 +57,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         videosRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         videosRecyclerview.setHasFixedSize(true);
         sharedPreferences = new Preferences(this);
-        adapter = new VideoListAdapter(videosList);
+        adapter = new VideoListAdapter(videosList,this);
         adapter.setVideoLoadListener(this);
         adapter.setHasStableIds(true);
         videosRecyclerview.setAdapter(adapter);
@@ -96,6 +97,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         super.onStop();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void reloadVideos() {
         if (isRefreshing) {
             videosList.clear();
@@ -146,14 +148,13 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 String videoPath = cursor.getString(pathColumn);
                 long videoDuration = cursor.getLong(durationColumn);
                 long dateAddedTimeStamp = cursor.getLong(dateAddedColumn);
-                boolean isVideoPlayed = getVideoPlayedStatus(videoPath);
                 long videoSize = cursor.getLong(sizeColumn);
                 String format = cursor.getString(typeColumn);
                 String videoType = format.substring(format.lastIndexOf("/") + 1);
                 String videoResolution = cursor.getString(resolutionColumn);
                 if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration!=0) {
                     String videoDurationString=VideoUtils.timeConversion(videoDuration);
-                    VideoItem videoItem = new VideoItem(videoName, videoPath, isVideoPlayed, videoDurationString, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
+                    VideoItem videoItem = new VideoItem(videoName, videoPath, videoDurationString, new Date(dateAddedTimeStamp * 1000), videoSize, videoType, videoResolution);
                     videoItem.setDateAdded(new Date(dateAddedTimeStamp * 1000));
                     videosInFolder.add(videoItem);
                 }
@@ -162,16 +163,13 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         }
         return videosInFolder;
     }
-    private boolean getVideoPlayedStatus(String videoPath) {
-        // Retrieve video playback status from SharedPreferences
-        String videoKey = "played_" + videoPath;
-        return sharedPreferences.getBoolean(videoKey);
-    }
+
     @Override
     public void onSortOptionSelected() {
         loadVideos();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void loadVideos(){
         new Thread(() -> {
             videosRecyclerview.setVisibility(View.GONE);
@@ -193,6 +191,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         }).start();
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateNameAndCount(){
         if (nameOfFolder != null) {
             nameOfFolder = (nameOfFolder.length() > 13) ? nameOfFolder.substring(0, 13) + "..." : nameOfFolder;

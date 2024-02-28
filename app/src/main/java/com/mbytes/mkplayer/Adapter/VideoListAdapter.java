@@ -3,6 +3,7 @@ package com.mbytes.mkplayer.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,11 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.mbytes.mkplayer.Activities.VideosListActivity;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
+import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -25,15 +28,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     public interface VideoLoadListener {
         void onVideoLoadRequested();
     }
+    private final VideosListActivity activity;
+    private final Preferences preferences;
     private VideoLoadListener videoLoadListener;
     public void setVideoLoadListener(VideoLoadListener listener) {
         this.videoLoadListener = listener;
     }
 
     private final ArrayList<VideoItem> videos;
-
-    public VideoListAdapter(ArrayList<VideoItem> videos) {
+    public VideoListAdapter(ArrayList<VideoItem> videos, VideosListActivity activity) {
         this.videos = videos;
+        this.activity=activity;
+        preferences=new Preferences(activity);
 
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,7 +84,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                     VideoUtils.showMenu(view.getContext(), videoItem);
                     return false;
                 });
-                if (videoItem.getPlayedStatus()) {
+                if (getVideoPlayedStatus(videoItem.getVideoPath())) {
                     holder.newText.setVisibility(View.GONE);
                 } else {
                     holder.newText.setVisibility(View.VISIBLE);
@@ -90,6 +96,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         Context context = view.getContext();
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra("position", position);
+        intent.putExtra("bri",getCurrentBrightness());
         Bundle bundle=new Bundle();
         bundle.putParcelableArrayList("videoArrayList",videos);
         intent.putExtras(bundle);
@@ -104,6 +111,20 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         if (videoLoadListener != null) {
             videoLoadListener.onVideoLoadRequested();
         }
+    }
+    public float getCurrentBrightness()  {
+        try {
+            int systemBri= Settings.System.getInt(activity.getContentResolver(),Settings.System.SCREEN_BRIGHTNESS);
+            return systemBri/255.0f;
+        }
+        catch (Exception e){
+            return -1.0f;
+        }
+    }
+    private boolean getVideoPlayedStatus(String videoPath) {
+        // Retrieve video playback status from SharedPreferences
+        String videoKey = "played_" + videoPath;
+        return preferences.getBoolean(videoKey);
     }
     @Override
     public long getItemId(int position) {

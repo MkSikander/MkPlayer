@@ -91,6 +91,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
             activity.playerView.hideController();
         } else {
             activity.playerView.showController();
+            activity.hidePlaylist();
         }
         return true;
     }
