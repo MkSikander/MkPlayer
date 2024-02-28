@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.mbytes.mkplayer.Adapter.VideoListAdapter;
 import com.mbytes.mkplayer.Model.VideoItem;
-import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
 import com.mbytes.mkplayer.Utils.VideoSort;

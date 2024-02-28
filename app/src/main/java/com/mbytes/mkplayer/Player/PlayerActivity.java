@@ -441,7 +441,6 @@ public class PlayerActivity extends AppCompatActivity {
         } catch (Exception ignored) {
         }
     }
-
     public void updateList(ArrayList<VideoItem> videosList) {
         playerVideos = videosList;
         hidePlaylist();
