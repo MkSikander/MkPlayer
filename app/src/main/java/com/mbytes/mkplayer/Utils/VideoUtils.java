@@ -2,6 +2,7 @@ package com.mbytes.mkplayer.Utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -10,10 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -29,6 +28,7 @@ public class VideoUtils {
     public interface AdapterCallback {
         void onAdapterMethodCalled();
     }
+   static Preferences preferences;
 
     private static AdapterCallback adapterCallback;
 
@@ -59,15 +59,9 @@ public class VideoUtils {
     public static void showMenu(Context context, VideoItem videoItem) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
         @SuppressLint("InflateParams") View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.video_item_menu, null);
-
+        preferences=new Preferences(context);
         TextView deleteTextView = bottomSheetView.findViewById(R.id.layout_delete);
-        deleteTextView.setOnClickListener(v -> {
-            MaterialAlertDialogBuilder dialogBuilder = getMaterialAlertDialogBuilder(context, videoItem);
-            dialogBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> bottomSheetDialog.dismiss());
-            dialogBuilder.show();
-
-            bottomSheetDialog.dismiss();
-        });
+        deleteTextView.setOnClickListener(v -> showMaterialAlertDialogBuilder(context, videoItem,bottomSheetDialog));
 
         TextView shareTextView = bottomSheetView.findViewById(R.id.layout_share);
         shareTextView.setOnClickListener(v -> {
@@ -93,20 +87,29 @@ public class VideoUtils {
         bottomSheetDialog.show();
     }
 
-    @NonNull
-    private static MaterialAlertDialogBuilder getMaterialAlertDialogBuilder(Context context, VideoItem videoItem) {
+    private static void showMaterialAlertDialogBuilder(Context context, VideoItem videoItem,BottomSheetDialog bottomSheetDialog) {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
-        dialogBuilder.setTitle("Are You Sure");
-        dialogBuilder.setMessage("Deleted video will not be restored");
-        dialogBuilder.setPositiveButton("Delete", (dialogInterface, i) -> deleteVideo(context, videoItem));
-        return dialogBuilder;
+        View customView=LayoutInflater.from(context).inflate(R.layout.dialog_delete_video,null);
+        dialogBuilder.setView(customView);
+        TextView delete=customView.findViewById(R.id.btn_delete);
+        TextView cancel=customView.findViewById(R.id.btn_cancel);
+        TextView videoName=customView.findViewById(R.id.video_name);
+        videoName.setText(videoItem.getVideoName());
+        delete.setOnClickListener(view -> {
+            deleteVideo(context,videoItem);
+            alertDialog.dismiss();
+        });
+        cancel.setOnClickListener(view -> alertDialog.dismiss());
+        dialogBuilder.setOnCancelListener(DialogInterface::dismiss);
+         alertDialog=dialogBuilder.create();
+         alertDialog.show();
+        bottomSheetDialog.dismiss();
     }
 
     private static void renameVideo(Context context, VideoItem videoItem) {
         MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context);
         View customView = LayoutInflater.from(context).inflate(R.layout.custom_rename_dialog, null);
         alertDialogBuilder.setView(customView);
-
         // Access views in your custom layout
         TextView titleTextView = customView.findViewById(R.id.dialog_title);
         EditText newNameEditText = customView.findViewById(R.id.new_name_edittext);
@@ -121,12 +124,10 @@ public class VideoUtils {
 
         renameButton.setOnClickListener(view -> {
             String newName = newNameEditText.getText().toString().trim();
-
-            if (!newName.isEmpty()) {
+            if (!newName.isEmpty()&&!newName.startsWith(".")) {
                 // Get the current video file path
                 String videoPath = videoItem.getVideoPath();
                 File videoFile = new File(videoPath);
-
                 // Create a new file with the desired name in the same directory
                 File newVideoFile = new File(videoFile.getParent(), newName + ".mp4");
 
@@ -164,6 +165,7 @@ public class VideoUtils {
                 }
                 // File deleted successfully
                 // You may want to update your UI or perform other actions here
+                preferences.updateFolders(true);
                 Toast.makeText(context, "Video deleted", Toast.LENGTH_SHORT).show();
 
             } else {
@@ -194,7 +196,6 @@ public class VideoUtils {
         try {
             context.startActivity(chooserIntent);
         } catch (Exception e) {
-            e.printStackTrace();
             Toast.makeText(context, "No app available to handle the action", Toast.LENGTH_SHORT).show();
         }
     }
@@ -216,26 +217,18 @@ public class VideoUtils {
         TextView dateAddedTextView = customView.findViewById(R.id.info_date_added);
         TextView formatTextView = customView.findViewById(R.id.info_format);
         TextView resolutionTextView = customView.findViewById(R.id.info_resolution);
-//        TextView audioCodecTextView = customView.findViewById(R.id.info_audio_codec);
-//        Button okayButton=customView.findViewById(R.id.ok_btn);
-
-
         // Customize the dialog title
-        titleTextView.setText("Details");
+        titleTextView.setText("Video Details");
 
         // Set video information
         nameTextView.setText("Video Name: " + videoItem.getVideoName());
         sizeTextView.setText("Size: " + convertFileSize(videoItem.getVideoSize()));
         pathTextView.setText("Path: " + videoItem.getVideoPath());
-        durationTextView.setText("Duration: " + formatDuration(videoItem));
+        durationTextView.setText("Duration: " + videoItem.getVideoDuration());
         dateAddedTextView.setText("Date Added: " + formatDate(videoItem.getDateAdded()));
         formatTextView.setText("Format: " + videoItem.getVideoType());
         resolutionTextView.setText("Resolution: " + videoItem.getVideoResolution());
-//        audioCodecTextView.setText("Audio Codec: " + videoItem.getAudioCodec());
-
-
-        alertDialogBuilder.setPositiveButton("Okay", (dialogInterface, i) -> {
-
+        alertDialogBuilder.setPositiveButton("Ok", (dialogInterface, i) -> {
         });
         // Create and show the dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -243,19 +236,8 @@ public class VideoUtils {
     }
 
 
-
-
-
-
-// Helper method to format duration (in milliseconds) to HH:mm:ss format
-        private static String formatDuration(VideoItem videoItem) {
-            double milliSeconds = Double.parseDouble(videoItem.getVideoDuration());
-            return timeConversion((long)milliSeconds);
-        }
-
-// Helper method to format date (in milliseconds) to a readable date string
+// Helper method to format date to a readable date string
         private static String formatDate(Date date) {
-
             return String.valueOf(date);
         }
 

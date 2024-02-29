@@ -1,121 +1,131 @@
 package com.mbytes.mkplayer.Utils;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-
+import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
-
 import java.util.Comparator;
 
 public class FolderSort {
-
-
-
-    public static void showSortOptionsDialog(Context context, OnSortOptionSelectedListener listener) {
+    static int selectedItem=-1;
+    static boolean tagSwitchValue;
+    static boolean countSwitchValue;
+    static boolean isCountSwitchAccessed=false;
+    static boolean isTagSwitchAccessed=false;
+    public static void showQuickSettingDialog(Context context, OnSortOptionSelectedListener listener) {
         Preferences preferences = new Preferences(context);
-
-        final String[] items = {"Name (A-Z)", "Name (Z - A)", "Date (New - Old)", "Date (Old - New)"};
+        ImageView title,titleRevers,date,dateReverse;
+        MaterialSwitch showNewTag,showVideoCount;
         int checkedItemIndex = getCheckedItemIndex(preferences.getFolderSortPref("sort"));
-
+        boolean isShowNewTag=preferences.isShowNewTag();
+        boolean isShowVideoCount=preferences.isShowVideoCount();
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
-        dialogBuilder.setTitle("Sort Options")
-                .setSingleChoiceItems(new CustomSortAdapter(context, items, checkedItemIndex), checkedItemIndex, (dialog, which) -> {
+        View customDialog = LayoutInflater.from(context).inflate(R.layout.quick_setting_dialog, null);
+        title = customDialog.findViewById(R.id.name_a_to_z);
+        titleRevers = customDialog.findViewById(R.id.name_z_to_a);
+        date = customDialog.findViewById(R.id.date_new_to_old);
+        dateReverse = customDialog.findViewById(R.id.date_old_to_new);
+        showNewTag=customDialog.findViewById(R.id.switch_show_new_tag);
+        showVideoCount=customDialog.findViewById(R.id.switch_show_video_count);
+        showNewTag.setChecked(isShowNewTag);
+        showVideoCount.setChecked(isShowVideoCount);
+        setSelectedButton(title,titleRevers,date,dateReverse,checkedItemIndex,context);
+        title.setOnClickListener(view -> {
+            selectedItem=0;
+            setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
+        });
+        titleRevers.setOnClickListener(view -> {
+            selectedItem=1;
+            setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
+        });
+        date.setOnClickListener(view -> {
+            selectedItem=2;
+            setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
+        });
+        dateReverse.setOnClickListener(view -> {
+            selectedItem=3;
+            setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
+        });
+        showNewTag.setOnCheckedChangeListener((compoundButton, b) -> {
+           tagSwitchValue=b;
+           isTagSwitchAccessed=true;
+        });
+        showVideoCount.setOnCheckedChangeListener((compoundButton, b) -> {
+            countSwitchValue=b;
+            isCountSwitchAccessed=true;
+        });
+        dialogBuilder.setView(customDialog)
+                .setPositiveButton("Done",(dialog,which)->{
                     // Handle the selected sorting option
-                    switch (which) {
+                    if (selectedItem!=-1 || isCountSwitchAccessed||isTagSwitchAccessed){
+                    if (selectedItem!=-1){
+                    switch (selectedItem) {
                         case 0:
                             preferences.setFolderSortPref("sort", "sortName");
                             break;
                         case 1:
-                            preferences.setFolderSortPref("sort", "sortNamer");
+                            preferences.setFolderSortPref("sort", "sortNameR");
                             break;
                         case 2:
                             preferences.setFolderSortPref("sort", "sortDate");
                             break;
                         case 3:
-                            preferences.setFolderSortPref("sort", "sortDater");
+                            preferences.setFolderSortPref("sort", "sortDateR");
                             break;
+                    }}
+                    else if (isCountSwitchAccessed){
+                        preferences.setShowVidCount(countSwitchValue);
                     }
-
-
-                    // Notify the listener that the sorting preference has been updated
-                    if (listener != null) {
-                        listener.onSortOptionSelected();
+                    if (isTagSwitchAccessed){
+                        preferences.setShowNewTag(tagSwitchValue);
                     }
+                        if (listener != null) {
+                            listener.onSortOptionSelected();
+                        }
 
-                    // Dismiss the dialog after handling the selection
                     dialog.dismiss();
-                });
-
-
+                }}
+                ).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
         dialogBuilder.show();
+
     }
+    private static void setSelectedButton(ImageView title, ImageView titleRevers, ImageView date, ImageView dateReverse, int checkedItemIndex, Context context) {
+        switch (checkedItemIndex){
+            case 0:
+            {
+                title.setBackground(AppCompatResources.getDrawable(context,R.drawable.selected_background));
+                dateReverse.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                date.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                titleRevers.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
 
-    private static class CustomSortAdapter extends ArrayAdapter<String> {
-        private final Context context;
-        private final int checkedItemIndex;
-
-        public CustomSortAdapter(Context context, String[] items, int checkedItemIndex) {
-            super(context, R.layout.custom_sort_item, items);
-            this.context = context;
-            this.checkedItemIndex = checkedItemIndex;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.custom_sort_item, parent, false);
-                int themeColor = getThemeColor(context,R.color.colorLightDark);
-                convertView.setBackgroundColor(themeColor);
+                break;
             }
+            case 1:{
+                titleRevers.setBackground(AppCompatResources.getDrawable(context,R.drawable.selected_background));
+                title.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                dateReverse.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                date.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
 
-            TextView textView = convertView.findViewById(R.id.text);
-            ImageView iconView = convertView.findViewById(R.id.icon);
-
-            String item = getItem(position);
-            textView.setText(item);
-
-            // Set the icon based on position (replace with your own logic)
-            int iconResId = getIconResId(position);
-            iconView.setImageResource(iconResId);
-
-            // Highlight the selected item
-            if (position == checkedItemIndex) {
-                convertView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_theme_light_primary));
-                textView.setTextColor(ContextCompat.getColor(context,R.color.colorPrimaryDark));
-                iconView.setColorFilter(ContextCompat.getColor(context,R.color.colorPrimaryDark));
-            } else {
-                convertView.setBackgroundColor(Color.TRANSPARENT);
+                break;
             }
-
-            return convertView;
-        }
-
-        private int getIconResId(int position) {
-            // Replace with your logic to get the icon resource ID based on position
-            switch (position) {
-                case 1:
-                    return R.drawable.sort_name_reverse;
-                case 2:
-                    return R.drawable.sort_date;
-                case 3:
-                    return R.drawable.sort_date_reverse;
-                default:
-                    return R.drawable.sort_name;
+            case 2:{
+                date.setBackground(AppCompatResources.getDrawable(context,R.drawable.selected_background));
+                titleRevers.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                title.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                dateReverse.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                break;
+            }
+            case 3:{
+                dateReverse.setBackground(AppCompatResources.getDrawable(context,R.drawable.selected_background));
+                titleRevers.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                title.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                date.setBackground(AppCompatResources.getDrawable(context,R.drawable.unselected_background));
+                break;
             }
         }
     }
@@ -124,55 +134,48 @@ public class FolderSort {
         switch (sortPreference) {
             case "sortName":
                 return 0;
-            case "sortNamer":
+            case "sortNameR":
                 return 1;
             case "sortDate":
                 return 2;
-            case "sortDater":
+            case "sortDateR":
                 return 3;
-            default:
-                return -1; // No preference or unknown preference
+
         }
+        return 0;
     }
 
     public interface OnSortOptionSelectedListener {
         void onSortOptionSelected();
     }
 
-    private static int getThemeColor(Context context, int attribute) {
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(attribute, typedValue, true);
-        return typedValue.data;
-    }
 
 
+    public static class VideoFolderComparator implements Comparator<VideoFolder> {
+        private final String sortBy;
 
-        public static class VideoFolderComparator implements Comparator<VideoFolder> {
-            private final String sortBy;
-
-            public VideoFolderComparator(Context context) {
-               Preferences preferences = new Preferences(context);
-                if (preferences.contains("sort")) {
-                    // Set a default sort preference (e.g., "sortName")
-                    preferences.setFolderSortPref("sort", "sortName");
-                }
-                sortBy = preferences.getFolderSortPref("sort");
+        public VideoFolderComparator(Context context) {
+            Preferences preferences = new Preferences(context);
+            if (preferences.contains("sort")) {
+                // Set a default sort preference (e.g., "sortName")
+                preferences.setFolderSortPref("sort", "sortName");
             }
+            sortBy = preferences.getFolderSortPref("sort");
+        }
 
-            @Override
-            public int compare(VideoFolder folder1, VideoFolder folder2) {
-                if ("sortDate".equals(sortBy)) {
-                    return folder2.getDateAdded().compareTo(folder1.getDateAdded());
-                } else if ("sortName".equals(sortBy)) {
-                    return folder1.getFolderName().compareToIgnoreCase(folder2.getFolderName());
-                } else if ("sortDater".equals(sortBy)) {
-                    return folder1.getDateAdded().compareTo(folder2.getDateAdded());
-                } else if ("sortNamer".equals(sortBy)) {
-                    return folder2.getFolderName().compareToIgnoreCase(folder1.getFolderName());
-                }
-                return 0;
+        @Override
+        public int compare(VideoFolder folder1, VideoFolder folder2) {
+            if ("sortDate".equals(sortBy)) {
+                return folder2.getDateAdded().compareTo(folder1.getDateAdded());
+            } else if ("sortName".equals(sortBy)) {
+                return folder1.getFolderName().compareToIgnoreCase(folder2.getFolderName());
+            } else if ("sortDateR".equals(sortBy)) {
+                return folder1.getDateAdded().compareTo(folder2.getDateAdded());
+            } else if ("sortNameR".equals(sortBy)) {
+                return folder2.getFolderName().compareToIgnoreCase(folder1.getFolderName());
             }
+            return 0;
         }
     }
+}
 

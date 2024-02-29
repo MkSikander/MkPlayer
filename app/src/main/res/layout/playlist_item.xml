@@ -50,7 +50,7 @@
         android:layout_centerVertical="true"
         android:contentDescription="@string/todo"
         android:padding="10dp"
-        android:src="@drawable/ic_cancel"
+        android:src="@drawable/ic_cancel_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

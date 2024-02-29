@@ -33,10 +33,11 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private VideoListAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<VideoItem> videosList;
+    private ProgressBar progressBar;
     private Handler mHandler;
     private Preferences sharedPreferences;
     private RecyclerView videosRecyclerview;
-    private ProgressBar progressBar;
+
     private String nameOfFolder,folderPath;
     private TextView videoCount;
     private boolean isLoadVideoExecuted,isRefreshing;
@@ -69,7 +70,14 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
         });
         if (videosList.isEmpty()) {
             isLoadVideoExecuted=true;
+            videosRecyclerview.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
             loadVideos();
+            mHandler.postDelayed(()->{
+                videosRecyclerview.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            },800);
+
         }
         sortImg.setOnClickListener(view -> VideoSort.showVideoSortOptionsDialog(VideosListActivity.this, VideosListActivity.this));
         backBtn.setOnClickListener(view -> finish());
@@ -166,29 +174,23 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
 
     @Override
     public void onSortOptionSelected() {
+        swipeRefreshLayout.setRefreshing(true);
         loadVideos();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void loadVideos(){
-        new Thread(() -> {
-            videosRecyclerview.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+//            videosRecyclerview.setVisibility(View.GONE);
+//            progressBar.setVisibility(View.VISIBLE);
             folderPath = getIntent().getStringExtra("folderPath") != null ? getIntent().getStringExtra("folderPath") : "";
             List<VideoItem> result = getVideosFromFolder(folderPath);
-            runOnUiThread(()->{
                 videosList.clear();
                 videosList.addAll(result);
                 videosList.sort(new VideoSort.VideoFilesComparator(VideosListActivity.this));
                 nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
                 updateNameAndCount();
                 adapter.notifyDataSetChanged();
-                new Handler().postDelayed(()->{
-                    progressBar.setVisibility(View.GONE);
-                    videosRecyclerview.setVisibility(View.VISIBLE);
-                },800);
-            });
-        }).start();
+                mHandler.postDelayed(()-> swipeRefreshLayout.setRefreshing(false),800);
     }
 
     @SuppressLint("SetTextI18n")

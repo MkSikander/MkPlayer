@@ -48,7 +48,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clipToPadding="false"
         android:contentDescription="@string/todo"
-        android:src="@drawable/ic_sort" />
+        android:src="@drawable/ic_quick_setting" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh_folder"
@@ -61,7 +61,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/img_setting"
-
             />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

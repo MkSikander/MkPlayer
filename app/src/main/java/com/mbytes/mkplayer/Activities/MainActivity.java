@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-        sortImg.setOnClickListener(view -> FolderSort.showSortOptionsDialog(MainActivity.this, MainActivity.this));
+        sortImg.setOnClickListener(view -> FolderSort.showQuickSettingDialog(MainActivity.this, MainActivity.this));
         mHandler = new Handler();
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(true);
@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     }
     @Override
     public void onSortOptionSelected() {
-        loadVideoFolders();
+        refreshLayout.setRefreshing(true);
+        mHandler.postDelayed(this::loadVideoFolders,1000);
+
     }
     @SuppressLint("NotifyDataSetChanged")
     private void loadVideoFolders() {
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
         refreshLayout.setRefreshing(false);
         adapter.notifyDataSetChanged();
     }
-
     private long calculateFolderSize(String folderPath) {
         long totalSize = 0;
         File folder = new File(folderPath);

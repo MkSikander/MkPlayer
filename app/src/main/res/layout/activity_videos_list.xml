@@ -18,7 +18,7 @@
         android:padding="10dp"
         android:layout_marginStart="10dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_arrow_black"
+        android:src="@drawable/ic_arrow_left"
         android:contentDescription="@string/desc" />
     <TextView
         android:layout_width="wrap_content"
@@ -39,7 +39,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_margin="10dp"
+        android:padding="5dp"
+        android:layout_margin="7dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clipToPadding="false"
         android:contentDescription="@string/todo"
@@ -67,6 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/middle_progress_bar"
+        android:visibility="gone"
         android:layout_centerInParent="true"
         />
 

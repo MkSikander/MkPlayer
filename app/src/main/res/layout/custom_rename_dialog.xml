@@ -14,8 +14,9 @@
         android:textColor="?attr/colorTertiaryFixed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/rename_video"
+        android:textSize="20sp"
 />
 
     <EditText
