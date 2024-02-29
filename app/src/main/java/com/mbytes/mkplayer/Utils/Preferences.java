@@ -204,18 +204,6 @@ public class Preferences {
         editor.putBoolean("contrast",value);
         editor.apply();
     }
-    public boolean getContrast(){
-        return preferences.getBoolean("contrast",false);
-    }
-
-    public void setDynamicTheme(boolean value) {
-        SharedPreferences.Editor editor=preferences.edit();
-        editor.putBoolean("dynamic_theme",value);
-        editor.apply();
-    }
-    public boolean getDynamicTheme(){
-        return preferences.getBoolean("dynamic_theme",false);
-    }
 
     public String getStoragePermission() {
         return preferences.getString("Allow","");

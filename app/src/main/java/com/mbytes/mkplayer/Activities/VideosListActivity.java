@@ -190,10 +190,7 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
                 nameOfFolder = getIntent().getStringExtra("nameOfFolder") != null ? getIntent().getStringExtra("nameOfFolder") : "";
                 updateNameAndCount();
                 adapter.notifyDataSetChanged();
-
-                mHandler.postDelayed(()->{
-                    swipeRefreshLayout.setRefreshing(false);
-                },500);
+                mHandler.postDelayed(()-> swipeRefreshLayout.setRefreshing(false),800);
     }
 
     @SuppressLint("SetTextI18n")
