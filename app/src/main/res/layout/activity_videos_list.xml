@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:padding="5dp"
-        android:layout_margin="7dp"
+        android:layout_margin="6dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clipToPadding="false"
         android:contentDescription="@string/todo"

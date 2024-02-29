@@ -6,15 +6,20 @@ import android.view.View;
 import android.widget.ImageView;
 import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.R;
 import java.util.Comparator;
 public class VideoSort {
     static int selectedItem=-1;
+    static boolean tagSwitchValue;
+    static boolean isTagSwitchAccessed=false;
 
     public static void showVideoSortOptionsDialog(Context context,VideoSort.OnSortOptionSelectedListener listener) {
         Preferences preferences = new Preferences(context);
         ImageView title,titleRevers,date,dateReverse;
+        MaterialSwitch showNewTag;
+        boolean isShowNewTag=preferences.isShowNewVideoTag();
         int checkedItemIndex = getCheckedItemIndex(preferences.getVideoSortPref("sortVideo"));
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         View customDialog = LayoutInflater.from(context).inflate(R.layout.video_sort_dialog, null);
@@ -22,6 +27,7 @@ public class VideoSort {
         titleRevers = customDialog.findViewById(R.id.name_z_to_a);
         date = customDialog.findViewById(R.id.date_new_to_old);
         dateReverse = customDialog.findViewById(R.id.date_old_to_new);
+        showNewTag=customDialog.findViewById(R.id.switch_show_new_tag);
         title.setOnClickListener(view -> {
             selectedItem=0;
             setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
@@ -38,24 +44,34 @@ public class VideoSort {
             selectedItem=3;
             setSelectedButton(title,titleRevers,date,dateReverse,selectedItem,context);
         });
+        showNewTag.setOnCheckedChangeListener((compoundButton, b) -> {
+            tagSwitchValue=b;
+            isTagSwitchAccessed=true;
+        });
+        showNewTag.setChecked(isShowNewTag);
         setSelectedButton(title,titleRevers,date,dateReverse,checkedItemIndex,context);
         dialogBuilder.setView(customDialog)
                 .setPositiveButton("Ok",(dialog,which)->{
                     // Handle the selected sorting option
-                    if (selectedItem!=-1) {
-                        switch (selectedItem) {
-                            case 0:
-                                preferences.setVideoSortPref("sortVideo", "sortName");
-                                break;
-                            case 1:
-                                preferences.setVideoSortPref("sortVideo", "sortNameR");
-                                break;
-                            case 2:
-                                preferences.setVideoSortPref("sortVideo", "sortDate");
-                                break;
-                            case 3:
-                                preferences.setVideoSortPref("sortVideo", "sortDateR");
-                                break;
+                    if (selectedItem!=-1||isTagSwitchAccessed) {
+                        if (selectedItem!=1) {
+                            switch (selectedItem) {
+                                case 0:
+                                    preferences.setVideoSortPref("sortVideo", "sortName");
+                                    break;
+                                case 1:
+                                    preferences.setVideoSortPref("sortVideo", "sortNameR");
+                                    break;
+                                case 2:
+                                    preferences.setVideoSortPref("sortVideo", "sortDate");
+                                    break;
+                                case 3:
+                                    preferences.setVideoSortPref("sortVideo", "sortDateR");
+                                    break;
+                            }
+                        }
+                        if (isTagSwitchAccessed){
+                            preferences.setShowNewVideoTag(tagSwitchValue);
                         }
 
                         // Notify the listener that the sorting preference has been updated

@@ -104,7 +104,7 @@
         android:layout_height="wrap_content"
         android:textColor="?attr/colorTertiaryFixed"
         android:text="@string/date_new_to_old"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/view2"
         app:layout_constraintTop_toBottomOf="@+id/date_new_to_old"
         app:layout_constraintStart_toStartOf="@id/date_new_to_old"
         app:layout_constraintEnd_toEndOf="@id/date_new_to_old"
@@ -138,6 +138,42 @@
         android:gravity="center"
         />
 
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="20dp"
+        android:background="?attr/colorTertiaryFixed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/text_new_tag_switch"
+        app:layout_constraintTop_toBottomOf="@+id/date_new_to_old_text" />
 
+    <TextView
+        android:id="@+id/text_new_tag_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="@string/show_new_tag"
+        android:textColor="?attr/colorTertiaryFixed"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/switch_show_new_tag"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/switch_show_new_tag" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switch_show_new_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.923"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view2"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

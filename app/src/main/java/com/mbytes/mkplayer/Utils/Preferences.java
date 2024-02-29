@@ -259,4 +259,12 @@ public class Preferences {
         return preferences.getBoolean("show_video_count",true);
     }
 
+    public boolean isShowNewVideoTag() {
+        return preferences.getBoolean("new_video_tag",true);
+    }
+    public void setShowNewVideoTag(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("new_video_tag",b);
+        editor.apply();
+    }
 }

@@ -78,7 +78,7 @@ public class FolderSort {
                             preferences.setFolderSortPref("sort", "sortDateR");
                             break;
                     }}
-                    else if (isCountSwitchAccessed){
+                    if (isCountSwitchAccessed){
                         preferences.setShowVidCount(countSwitchValue);
                     }
                     if (isTagSwitchAccessed){

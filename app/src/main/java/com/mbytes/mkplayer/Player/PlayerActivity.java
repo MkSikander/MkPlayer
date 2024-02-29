@@ -436,14 +436,12 @@ public class PlayerActivity extends AppCompatActivity {
             setCurrentPosition();
             player.stop();
             position = newPosition;
-            hidePlaylist();
             initializePlayer();
         } catch (Exception ignored) {
         }
     }
     public void updateList(ArrayList<VideoItem> videosList) {
         playerVideos = videosList;
-        hidePlaylist();
     }
 
     private void PlayPrev() {
