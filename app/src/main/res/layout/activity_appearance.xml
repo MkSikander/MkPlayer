@@ -20,7 +20,7 @@
         android:drawablePadding="10dp"
         android:text="@string/appearance_name"
         android:textSize="22sp"
-        app:drawableLeftCompat="@drawable/ic_arrow_black" />
+        app:drawableLeftCompat="@drawable/ic_arrow_left" />
 
     <ScrollView
         android:layout_width="match_parent"

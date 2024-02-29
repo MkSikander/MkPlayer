@@ -33,9 +33,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_arrow_down_white" />
-                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Downloads\folder-svgrepo-com.svg" />
+                            <entry key="outputName" value="ic_sort_name_reverse" />
+                            <entry key="sourceFile" value="C:\Users\Mohd_Kafeel\Desktop\icon\ic_sort_name_reverse.svg" />
                           </map>
                         </option>
                       </PersistentState>

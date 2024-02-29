@@ -226,5 +226,7 @@
     <string name="date_new_to_old">New to Old</string>
     <string name="show_new_tag">Show new tag</string>
     <string name="show_video_count">Show video count</string>
+    <string name="_4444">4444</string>
+    <string name="this_is_title_of_video">this is title of video</string>
 
 </resources>

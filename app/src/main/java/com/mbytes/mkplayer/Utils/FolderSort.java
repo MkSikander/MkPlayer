@@ -1,19 +1,14 @@
 package com.mbytes.mkplayer.Utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-
 import androidx.appcompat.content.res.AppCompatResources;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
-
 import java.util.Comparator;
 
 public class FolderSort {
@@ -74,13 +69,13 @@ public class FolderSort {
                             preferences.setFolderSortPref("sort", "sortName");
                             break;
                         case 1:
-                            preferences.setFolderSortPref("sort", "sortNamer");
+                            preferences.setFolderSortPref("sort", "sortNameR");
                             break;
                         case 2:
                             preferences.setFolderSortPref("sort", "sortDate");
                             break;
                         case 3:
-                            preferences.setFolderSortPref("sort", "sortDater");
+                            preferences.setFolderSortPref("sort", "sortDateR");
                             break;
                     }}
                     else if (isCountSwitchAccessed){
@@ -139,11 +134,11 @@ public class FolderSort {
         switch (sortPreference) {
             case "sortName":
                 return 0;
-            case "sortNamer":
+            case "sortNameR":
                 return 1;
             case "sortDate":
                 return 2;
-            case "sortDater":
+            case "sortDateR":
                 return 3;
 
         }
@@ -174,9 +169,9 @@ public class FolderSort {
                 return folder2.getDateAdded().compareTo(folder1.getDateAdded());
             } else if ("sortName".equals(sortBy)) {
                 return folder1.getFolderName().compareToIgnoreCase(folder2.getFolderName());
-            } else if ("sortDater".equals(sortBy)) {
+            } else if ("sortDateR".equals(sortBy)) {
                 return folder1.getDateAdded().compareTo(folder2.getDateAdded());
-            } else if ("sortNamer".equals(sortBy)) {
+            } else if ("sortNameR".equals(sortBy)) {
                 return folder2.getFolderName().compareToIgnoreCase(folder1.getFolderName());
             }
             return 0;

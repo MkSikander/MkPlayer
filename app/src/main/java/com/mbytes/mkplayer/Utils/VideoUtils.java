@@ -11,10 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoItem;
@@ -30,6 +28,7 @@ public class VideoUtils {
     public interface AdapterCallback {
         void onAdapterMethodCalled();
     }
+   static Preferences preferences;
 
     private static AdapterCallback adapterCallback;
 
@@ -60,12 +59,9 @@ public class VideoUtils {
     public static void showMenu(Context context, VideoItem videoItem) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
         @SuppressLint("InflateParams") View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.video_item_menu, null);
-
+        preferences=new Preferences(context);
         TextView deleteTextView = bottomSheetView.findViewById(R.id.layout_delete);
-        deleteTextView.setOnClickListener(v -> {
-            showMaterialAlertDialogBuilder(context, videoItem,bottomSheetDialog);
-
-        });
+        deleteTextView.setOnClickListener(v -> showMaterialAlertDialogBuilder(context, videoItem,bottomSheetDialog));
 
         TextView shareTextView = bottomSheetView.findViewById(R.id.layout_share);
         shareTextView.setOnClickListener(v -> {
@@ -91,7 +87,6 @@ public class VideoUtils {
         bottomSheetDialog.show();
     }
 
-    @NonNull
     private static void showMaterialAlertDialogBuilder(Context context, VideoItem videoItem,BottomSheetDialog bottomSheetDialog) {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         View customView=LayoutInflater.from(context).inflate(R.layout.dialog_delete_video,null);
@@ -104,9 +99,7 @@ public class VideoUtils {
             deleteVideo(context,videoItem);
             alertDialog.dismiss();
         });
-        cancel.setOnClickListener(view -> {
-            alertDialog.dismiss();
-        });
+        cancel.setOnClickListener(view -> alertDialog.dismiss());
         dialogBuilder.setOnCancelListener(DialogInterface::dismiss);
          alertDialog=dialogBuilder.create();
          alertDialog.show();
@@ -172,6 +165,7 @@ public class VideoUtils {
                 }
                 // File deleted successfully
                 // You may want to update your UI or perform other actions here
+                preferences.updateFolders(true);
                 Toast.makeText(context, "Video deleted", Toast.LENGTH_SHORT).show();
 
             } else {
@@ -202,7 +196,6 @@ public class VideoUtils {
         try {
             context.startActivity(chooserIntent);
         } catch (Exception e) {
-            e.printStackTrace();
             Toast.makeText(context, "No app available to handle the action", Toast.LENGTH_SHORT).show();
         }
     }

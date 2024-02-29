@@ -270,4 +270,5 @@ public class Preferences {
     public boolean isShowVideoCount() {
         return preferences.getBoolean("show_video_count",true);
     }
+
 }

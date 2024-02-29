@@ -244,7 +244,7 @@
         android:contentDescription="@string/todo"
         android:padding="10dp"
         android:background="@drawable/circular_ripple"
-        android:src="@drawable/arrow_right_white"
+        android:src="@drawable/ic_arrow_right_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
