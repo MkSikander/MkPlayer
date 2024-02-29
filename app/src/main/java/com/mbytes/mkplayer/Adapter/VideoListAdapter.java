@@ -73,7 +73,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
          VideoItem videoItem = videos.get(position);
             Glide.with(holder.context)
                     .load(new File(videoItem.getVideoPath()))
-                    .override(95,58)
                     .fitCenter()
                     .into(holder.thumbnail);
                 holder.videoName.setText(videoItem.getVideoName());
@@ -84,10 +83,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                     VideoUtils.showMenu(view.getContext(), videoItem);
                     return false;
                 });
-                if (getVideoPlayedStatus(videoItem.getVideoPath())) {
-                    holder.newText.setVisibility(View.GONE);
-                } else {
-                    holder.newText.setVisibility(View.VISIBLE);
+                if (preferences.isShowNewVideoTag()) {
+                    if (getVideoPlayedStatus(videoItem.getVideoPath())) {
+                        holder.newText.setVisibility(View.GONE);
+                    } else {
+                        holder.newText.setVisibility(View.VISIBLE);
+                    }
+                }
+                else {
+                    holder.newText.setVisibility(View.INVISIBLE);
                 }
 
     }

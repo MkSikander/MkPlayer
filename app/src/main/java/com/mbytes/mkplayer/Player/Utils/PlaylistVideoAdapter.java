@@ -1,25 +1,22 @@
 package com.mbytes.mkplayer.Player.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -27,7 +24,7 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
 
     private final ArrayList<VideoItem> mVideos;
 
-    private final int mSelectedPosition;
+    private int mSelectedPosition;
     private final Context mContext;
 
 
@@ -47,27 +44,49 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
         return new ViewHolder(view);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @OptIn(markerClass = UnstableApi.class)
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         VideoItem video = mVideos.get(position);
         holder.videoName.setText(video.getVideoName());
         Glide.with(holder.context).load(new File(video.getVideoPath())).into(holder.videoImage);
         // Highlight the video at the given position
         if (position == mSelectedPosition) {
-            holder.itemView.setBackgroundColor(Color.LTGRAY); // Highlight the item
+            holder.itemView.setBackground(AppCompatResources.getDrawable(mContext,R.drawable.chip_video_count));
+            holder.videoName.setTextColor(Color.BLACK);
+            // Highlight the item
         } else {
-            holder.itemView.setBackgroundColor(Color.TRANSPARENT); // Reset background color
+            holder.itemView.setBackground(AppCompatResources.getDrawable(mContext,R.drawable.unselected_background));
+            holder.videoName.setTextColor(Color.WHITE);// Reset background color
         }
 
       holder.itemView.setOnClickListener(view -> {
           ((PlayerActivity) mContext).playThis(position);
+          mSelectedPosition=position;
+          notifyDataSetChanged();
 
       });
         holder.removeVideoFromList.setOnClickListener(view -> {
             if (position>=0&&position<mVideos.size()){
-                mVideos.remove(position);
-                ((PlayerActivity)mContext).updateList(mVideos);
+                if (position==mSelectedPosition){
+                    mVideos.remove(position);
+                    ((PlayerActivity)mContext).updateList(mVideos);
+                    ((PlayerActivity) mContext).playThis(position);
+                    notifyDataSetChanged();
+                }
+                if (position<mSelectedPosition){
+                    mSelectedPosition=mSelectedPosition-1;
+                    mVideos.remove(position);
+                    ((PlayerActivity)mContext).updateList(mVideos);
+                    notifyDataSetChanged();
+                }
+                if (position>mSelectedPosition){
+                    mVideos.remove(position);
+                    ((PlayerActivity)mContext).updateList(mVideos);
+                    notifyDataSetChanged();
+                }
+
             }
         });
     }
