@@ -214,7 +214,7 @@
   </LinearLayout>
 <!-- Playlist recycler view for landscape mode-->
   <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="400dp"
+      android:layout_width="0dp"
       android:background="@color/player_background"
       android:layout_height="0dp"
       android:id="@+id/playlist_layout_land"
@@ -225,16 +225,17 @@
       app:layout_constraintTop_toTopOf="parent">
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/text_view_playlist"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="@string/playlist"
         android:textColor="@color/white"
         android:textSize="20sp"
-        android:id="@+id/text_view_playlist"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/btn_back_land"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/playlist_recycler_view_land"/>
 
     <ImageView
         android:id="@+id/btn_back_land"

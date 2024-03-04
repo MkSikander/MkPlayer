@@ -10,11 +10,14 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.ui.PlayerView;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
+
+import java.util.Objects;
 
 public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     @UnstableApi
@@ -24,7 +27,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private final ScaleGestureDetector zoomGestureDetector;
     private final BrightnessManager brightnessManager;
     private final PlayerView playerView;
-    private static  float scaleFactor=1f;
+    private static  float scaleFactor;
     private final TextView zoomPercent;
     private final FrameLayout zoomLayout;
     private long prevP;
@@ -41,11 +44,10 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         preferences=new Preferences(playerView.getContext());
         zoomLayout=activity.findViewById(R.id.zoom_layout);
         zoomPercent=activity.findViewById(R.id.zoom_perc);
+        scaleFactor=zoomLayout.getScaleY();
         gestureDetector=new GestureDetector(activity,this);
         zoomGestureDetector=new ScaleGestureDetector(activity,new scaleGestureDetector());
         onTouchListener(playerView,activity);
-
-
     }
 @UnstableApi
    private class scaleGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener{
@@ -76,8 +78,17 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
        }
    }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public boolean onDown(@NonNull MotionEvent e) {
+//        if (e.getPointerCount()==1&& !activity.isControlLocked()&&!activity.isPlaylistVisible()){
+//            if (e.getX() < (float) playerView.getWidth() / 2) {
+//                // Left half of the screen
+//                Objects.requireNonNull(activity.playerView.getPlayer()).seekBack();
+//            } else {
+//                Objects.requireNonNull(activity.playerView.getPlayer()).seekForward();
+//            }
+//        }
         return false;
     }
     @Override
@@ -100,7 +111,8 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     @Override
     public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
         boolean isControlLocked=activity.isControlLocked();
-        if (!isControlLocked) {
+        boolean isPlaylistVisible=activity.isPlaylistVisible();
+        if (!isControlLocked&&!isPlaylistVisible) {
             activity.setStartOverVisibility();
             float deltaX = e2.getX() - e1.getX();
             float deltaY = e2.getY() - e1.getY();

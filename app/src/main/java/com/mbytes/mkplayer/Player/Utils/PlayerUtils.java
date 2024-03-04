@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,10 +20,7 @@ import androidx.media3.common.TrackGroup;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
@@ -39,7 +38,7 @@ public class PlayerUtils {
     private static final float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2.0f};
     private static int selectedSpeedIndex; //
 
-   private static Preferences preferences;
+    private static Preferences preferences;
 
     //getting video Orientation
     @OptIn(markerClass = UnstableApi.class)
@@ -63,75 +62,76 @@ public class PlayerUtils {
         }
         return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
+
     public static String convertVideoListToJson(ArrayList<VideoItem> videoList) {
         Gson gson = new Gson();
         return gson.toJson(videoList);
     }
 
+
+
     @OptIn(markerClass = UnstableApi.class)
-    public static void setAudioTrack(Player player , DefaultTrackSelector trackSelector, Context context){
+    public static void setAudioTrack(Player player, DefaultTrackSelector trackSelector, Context context) {
         ArrayList<String> audioTrack = new ArrayList<>();
         ArrayList<String> audioList = new ArrayList<>();
-        int selectedTrackIndex=-1;
-        int a=0;
-        Tracks tracks=player.getCurrentTracks();
+        int selectedTrackIndex = -1;
+        int a = 0;
+        Tracks tracks = player.getCurrentTracks();
         for (Tracks.Group trackGroup : tracks.getGroups()) {
             // Group level information.
             boolean trackInGroupIsSupported = trackGroup.isSupported();
-            if(trackGroup.getType()== C.TRACK_TYPE_AUDIO && trackInGroupIsSupported) {
-                for (int m = 0; m < trackGroup.length; m++ ) {
+            if (trackGroup.getType() == C.TRACK_TYPE_AUDIO && trackInGroupIsSupported) {
+                for (int m = 0; m < trackGroup.length; m++) {
                     // Individual track information.
                     audioTrack.add(trackGroup.getTrackFormat(m).language.toString());
-                    audioList.add(PlayerUtils.getName(trackGroup.getMediaTrackGroup(),m));
+                    audioList.add(PlayerUtils.getName(trackGroup.getMediaTrackGroup(), m));
                     boolean isSelected = trackGroup.isTrackSelected(m);
                     a++;
-                    if (isSelected){
-                        selectedTrackIndex=a-1;
+                    if (isSelected) {
+                        selectedTrackIndex = a - 1;
                     }
                 }
             }
         }
 
         // If no track is selected, use the size of the list
-        if (selectedTrackIndex==-1)
-        {
-            selectedTrackIndex=0;
+        if (selectedTrackIndex == -1) {
+            selectedTrackIndex = 0;
         }
         if (audioList.get(0).contains("null")) {
             audioList.set(0, "Default Track");
         }
-        boolean isAudioDisabled=trackSelector.getParameters().getRendererDisabled(C.TRACK_TYPE_AUDIO);
-        if(isAudioDisabled)
-        {
-            selectedTrackIndex =audioList.size();
+        boolean isAudioDisabled = trackSelector.getParameters().getRendererDisabled(C.TRACK_TYPE_AUDIO);
+        if (isAudioDisabled) {
+            selectedTrackIndex = audioList.size();
         }
         audioList.add("Disable Audio");
         CharSequence[] tempTracks = audioList.toArray(new CharSequence[audioList.size()]);
-        MaterialAlertDialogBuilder dialogBuilder=new MaterialAlertDialogBuilder(context);
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle("Select Audio Track");
         dialogBuilder.setOnCancelListener(dialogInterface -> player.play());
-        dialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
-            if (i!=audioList.size()-1) {
+        dialogBuilder.setSingleChoiceItems(tempTracks, selectedTrackIndex, (dialogInterface, i) -> {
+            if (i != audioList.size() - 1) {
                 trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_AUDIO, false));
                 trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredAudioLanguage(audioTrack.get(i)));
-            }
-            else {
-                trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_AUDIO,true));
+            } else {
+                trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_AUDIO, true));
             }
             player.play();
             dialogInterface.dismiss();
         });
         dialogBuilder.show();
     }
+
     @SuppressLint("SetTextI18n")
     public static void setPlaybackSpeed(Player player, Context context) {
-        preferences=new Preferences(context);
-        selectedSpeedIndex=preferences.getDefaultPlaybackSpeed();
-        float m=player.getPlaybackParameters().speed;
-        if (playbackSpeeds[selectedSpeedIndex]!=m){
-            for (int k=0;k<playbackSpeeds.length;k++){
-                if (m==playbackSpeeds[k]){
-                    selectedSpeedIndex=k;
+        preferences = new Preferences(context);
+        selectedSpeedIndex = preferences.getDefaultPlaybackSpeed();
+        float m = player.getPlaybackParameters().speed;
+        if (playbackSpeeds[selectedSpeedIndex] != m) {
+            for (int k = 0; k < playbackSpeeds.length; k++) {
+                if (m == playbackSpeeds[k]) {
+                    selectedSpeedIndex = k;
                 }
             }
         }
@@ -142,9 +142,9 @@ public class PlayerUtils {
         builder.setView(dialogView);
         // Find the slider in the dialog layout
         Slider slider = dialogView.findViewById(R.id.slider_playback_speed);
-        TextView speedText=dialogView.findViewById(R.id.speed_text);
-        ImageView increaseImg=dialogView.findViewById(R.id.increase);
-        ImageView decreaseImg=dialogView.findViewById(R.id.decrease);
+        TextView speedText = dialogView.findViewById(R.id.speed_text);
+        ImageView increaseImg = dialogView.findViewById(R.id.increase);
+        ImageView decreaseImg = dialogView.findViewById(R.id.decrease);
         // Set up the slider
         slider.setValue(selectedSpeedIndex); // Set initial value
         slider.setStepSize(1); // Set step size
@@ -155,14 +155,14 @@ public class PlayerUtils {
             float speed = playbackSpeeds[(int) value];
             return String.format(Locale.getDefault(), "%.1fx", speed);
         });
-        if(selectedSpeedIndex<7){
+        if (selectedSpeedIndex < 7) {
             increaseImg.setAlpha(1f);
         }
-        if (selectedSpeedIndex>0){
+        if (selectedSpeedIndex > 0) {
             decreaseImg.setAlpha(1f);
         }
         increaseImg.setOnClickListener(view -> {
-            if (selectedSpeedIndex<7) {
+            if (selectedSpeedIndex < 7) {
                 selectedSpeedIndex = selectedSpeedIndex + 1;
                 float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
                 speedText.setText((selectedSpeed) + " X");
@@ -172,7 +172,7 @@ public class PlayerUtils {
             }
         });
         decreaseImg.setOnClickListener(view -> {
-            if (selectedSpeedIndex>0) {
+            if (selectedSpeedIndex > 0) {
                 selectedSpeedIndex = selectedSpeedIndex - 1;
                 float selectedSpeed = playbackSpeeds[selectedSpeedIndex];
                 slider.setValue(selectedSpeedIndex);
@@ -187,7 +187,7 @@ public class PlayerUtils {
         slider.addOnChangeListener((slider1, value, fromUser) -> {
             selectedSpeedIndex = (int) value; // Update selected speed index
             float selectedSpeed = playbackSpeeds[selectedSpeedIndex]; // Get selected speed
-            speedText.setText((selectedSpeed)+" X");
+            speedText.setText((selectedSpeed) + " X");
             player.setPlaybackSpeed(selectedSpeed); // Set playback speed
             player.play(); // Start playback
         });
@@ -199,50 +199,47 @@ public class PlayerUtils {
 
 
     @OptIn(markerClass = UnstableApi.class)
-    public static void setSubTrack(Player player , DefaultTrackSelector trackSelector, Context context){
+    public static void setSubTrack(Player player, DefaultTrackSelector trackSelector, Context context) {
         ArrayList<String> subTrack = new ArrayList<>();
         ArrayList<String> subList = new ArrayList<>();
-        int selectedTrackIndex=-1;
-        int a=0;
-        Tracks tracks=player.getCurrentTracks();
+        int selectedTrackIndex = -1;
+        int a = 0;
+        Tracks tracks = player.getCurrentTracks();
         for (Tracks.Group trackGroup : tracks.getGroups()) {
             // Group level information.
             boolean trackInGroupIsSupported = trackGroup.isSupported();
-            if(trackGroup.getType()== C.TRACK_TYPE_TEXT && trackInGroupIsSupported) {
-                for (int m = 0; m < trackGroup.length; m++ ) {
+            if (trackGroup.getType() == C.TRACK_TYPE_TEXT && trackInGroupIsSupported) {
+                for (int m = 0; m < trackGroup.length; m++) {
                     // Individual track information.
                     subTrack.add(trackGroup.getTrackFormat(m).language.toString());
-                    subList.add(PlayerUtils.getSubName(trackGroup.getMediaTrackGroup(),m));
+                    subList.add(PlayerUtils.getSubName(trackGroup.getMediaTrackGroup(), m));
                     boolean isSelected = trackGroup.isTrackSelected(m);
                     a++;
-                    if (isSelected){
-                        selectedTrackIndex=a-1;
+                    if (isSelected) {
+                        selectedTrackIndex = a - 1;
                     }
                 }
             }
         }
         // If no track is selected, use the size of the list
-        if (selectedTrackIndex==-1)
-        {
-            selectedTrackIndex=subList.size();
+        if (selectedTrackIndex == -1) {
+            selectedTrackIndex = subList.size();
         }
-        boolean isAudioDisabled=trackSelector.getParameters().getRendererDisabled(C.TRACK_TYPE_VIDEO);
-        if(isAudioDisabled)
-        {
-            selectedTrackIndex =subList.size();
+        boolean isAudioDisabled = trackSelector.getParameters().getRendererDisabled(C.TRACK_TYPE_VIDEO);
+        if (isAudioDisabled) {
+            selectedTrackIndex = subList.size();
         }
         subList.add("Disable Subtitle");
         CharSequence[] tempTracks = subList.toArray(new CharSequence[subList.size()]);
         MaterialAlertDialogBuilder subDialogBuilder = new MaterialAlertDialogBuilder(context);
         subDialogBuilder.setTitle("Select Subtitle Track");
         subDialogBuilder.setOnCancelListener(dialogInterface -> player.play());
-        subDialogBuilder.setSingleChoiceItems(tempTracks,selectedTrackIndex, (dialogInterface, i) -> {
-            if (i!=subList.size()-1) {
+        subDialogBuilder.setSingleChoiceItems(tempTracks, selectedTrackIndex, (dialogInterface, i) -> {
+            if (i != subList.size() - 1) {
                 trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_VIDEO, false));
                 trackSelector.setParameters(trackSelector.buildUponParameters().setPreferredTextLanguage(subTrack.get(i)));
-            }
-            else {
-                trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_VIDEO,true));
+            } else {
+                trackSelector.setParameters(trackSelector.buildUponParameters().setRendererDisabled(C.TRACK_TYPE_VIDEO, true));
             }
             player.play();
             dialogInterface.dismiss();
@@ -298,6 +295,7 @@ public class PlayerUtils {
             return "-" + formatDurationMillis(Math.abs(millis));
         }
     }
+
     @SuppressLint("DefaultLocale")
     public static String formatDurationMillis(long millis) {
         long hours = TimeUnit.MILLISECONDS.toHours(millis);
@@ -312,6 +310,7 @@ public class PlayerUtils {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
+
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }

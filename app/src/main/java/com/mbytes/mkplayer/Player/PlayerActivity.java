@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -68,6 +69,7 @@ public class PlayerActivity extends AppCompatActivity {
     private ExoPlayer player;
     public PlayerView playerView;
     public static boolean isControlLocked = false;
+    public static boolean isPlaylistVisible=false;
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
@@ -641,6 +643,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void showPlaylistVideos() {
+        isPlaylistVisible=true;
         if (playerView.isControllerFullyVisible()) {
             playerView.hideController();
         }
@@ -648,21 +651,26 @@ public class PlayerActivity extends AppCompatActivity {
         vol_layout.setVisibility(View.GONE);
 
         if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+            playlistLayoutLand.getLayoutParams().width= playerView.getMeasuredWidth()/2;
+            playlistLayoutLand.requestLayout();
             playlistLayoutLand.setVisibility(View.VISIBLE);
             playlistLayoutLand.startAnimation(slideInRight);
             playListRecyclerViewLand.setLayoutManager(new LinearLayoutManager(this));
             PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
             playListRecyclerViewLand.setAdapter(adapter);
+            playListRecyclerViewLand.scrollToPosition(position);
         } else {
             playlistLayoutPortrait.setVisibility(View.VISIBLE);
             playlistLayoutPortrait.startAnimation(slideInBottom);
             playListRecyclerViewPortrait.setLayoutManager(new LinearLayoutManager(this));
             PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
             playListRecyclerViewPortrait.setAdapter(adapter);
+            playListRecyclerViewPortrait.scrollToPosition(position);
         }
     }
 
     public void hidePlaylist() {
+        isPlaylistVisible=false;
         if (playlistLayoutPortrait.getVisibility() == View.VISIBLE) {
             playlistLayoutPortrait.startAnimation(slideOutBottom);
             playlistLayoutPortrait.setVisibility(View.GONE);
@@ -672,6 +680,10 @@ public class PlayerActivity extends AppCompatActivity {
             playlistLayoutLand.setVisibility(View.GONE);
         }
 
+    }
+
+    public boolean isPlaylistVisible(){
+        return isPlaylistVisible;
     }
 
 
