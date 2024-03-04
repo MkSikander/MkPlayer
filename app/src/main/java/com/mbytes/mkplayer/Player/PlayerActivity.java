@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -244,14 +243,8 @@ public class PlayerActivity extends AppCompatActivity {
             startOverLayout.setVisibility(View.GONE);
         });
         cancelStartOver.setOnClickListener(view -> startOverLayout.setVisibility(View.VISIBLE));
-        playlistBackLand.setOnClickListener(view -> {
-            playlistLayoutLand.startAnimation(slideOutRight);
-            playlistLayoutLand.setVisibility(View.GONE);
-        });
-        playlistBackPortrait.setOnClickListener(view -> {
-            playlistLayoutPortrait.startAnimation(slideOutBottom);
-            playlistLayoutPortrait.setVisibility(View.GONE);
-        });
+        playlistBackLand.setOnClickListener(view -> hidePlaylist());
+        playlistBackPortrait.setOnClickListener(view -> hidePlaylist());
 
     }
 

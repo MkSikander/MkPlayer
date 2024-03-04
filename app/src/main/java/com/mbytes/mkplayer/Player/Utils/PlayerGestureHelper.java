@@ -17,7 +17,6 @@ import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
 
-import java.util.Objects;
 
 public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     @UnstableApi
@@ -32,7 +31,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private final FrameLayout zoomLayout;
     private long prevP;
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
-    private Preferences preferences;
+    private final Preferences preferences;
 
     @SuppressLint("ClickableViewAccessibility")
     @UnstableApi
@@ -68,12 +67,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
        @Override
        public void onScaleEnd(@NonNull ScaleGestureDetector detector) {
            Handler mHandler=new Handler();
-           mHandler.postDelayed(new Runnable() {
-               @Override
-               public void run() {
-                   zoomPercent.setVisibility(View.GONE);
-               }
-           },1000);
+           mHandler.postDelayed(() -> zoomPercent.setVisibility(View.GONE),1000);
            super.onScaleEnd(detector);
        }
    }
