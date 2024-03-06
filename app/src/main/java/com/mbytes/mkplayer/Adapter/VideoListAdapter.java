@@ -77,10 +77,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
                     .into(holder.thumbnail);
                 holder.videoName.setText(videoItem.getVideoName());
                 holder.videoDuration.setText(videoItem.getVideoDuration());
-                holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem));
+                holder.moreMenu.setOnClickListener(view -> VideoUtils.showMenu(view.getContext(), videoItem,videos));
                 holder.itemView.setOnClickListener(view -> onItemViewClicked(view,position));
                 holder.itemView.setOnLongClickListener(view -> {
-                    VideoUtils.showMenu(view.getContext(), videoItem);
+                    VideoUtils.showMenu(view.getContext(), videoItem, videos);
                     return false;
                 });
                 if (preferences.isShowNewVideoTag()) {
