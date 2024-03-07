@@ -1,7 +1,9 @@
 package com.mbytes.mkplayer.Player.Utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -17,8 +19,10 @@ import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Utils.Preferences;
 
+import java.util.Objects;
 
-public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
+@OptIn(markerClass = UnstableApi.class)
+public class PlayerGestureHelper extends GestureDetector.SimpleOnGestureListener{
     @UnstableApi
     private final PlayerActivity activity;
     private final VolumeManager volumeManager;
@@ -27,15 +31,19 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private final BrightnessManager brightnessManager;
     private final PlayerView playerView;
     private static  float scaleFactor;
-    private final TextView zoomPercent;
+    private final TextView zoomPercent,seekForward,seekBack,fastSeekText;
     @UnstableApi
     private final AspectRatioFrameLayout zoomLayout;
     private long prevP;
+    public static final float EXCLUSION_AREA=20f;
+    private static final int[] seekIncrementTime={10,15,20,25,30,35,40,45,50};
+
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
     private final Preferences preferences;
+    private int dpSeekForward,dpSeekBack;
+
 
     @SuppressLint("ClickableViewAccessibility")
-    @UnstableApi
     public PlayerGestureHelper(PlayerActivity activity,BrightnessManager brightnessManager,VolumeManager volumeManager){
         this.activity=activity;
         this.brightnessManager=brightnessManager;
@@ -44,12 +52,15 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         preferences=new Preferences(playerView.getContext());
         zoomLayout=activity.findViewById(R.id.exo_content_frame);
         zoomPercent=activity.findViewById(R.id.zoom_perc);
+        seekForward=activity.findViewById(R.id.dp_seek_forward);
+        seekBack=activity.findViewById(R.id.dp_seek_back);
+        fastSeekText=activity.findViewById(R.id.lp_fast_seek);
         scaleFactor=zoomLayout.getScaleY();
         gestureDetector=new GestureDetector(activity,this);
         zoomGestureDetector=new ScaleGestureDetector(activity,new scaleGestureDetector());
         onTouchListener(playerView,activity);
     }
-@UnstableApi
+
    private class scaleGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener{
        @SuppressLint("SetTextI18n")
        @Override
@@ -74,41 +85,74 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
        }
    }
 
-    @OptIn(markerClass = UnstableApi.class)
     @Override
     public boolean onDown(@NonNull MotionEvent e) {
-//        if (e.getPointerCount()==1&& !activity.isControlLocked()&&!activity.isPlaylistVisible()){
-//            if (e.getX() < (float) playerView.getWidth() / 2) {
-//                // Left half of the screen
-//                Objects.requireNonNull(activity.playerView.getPlayer()).seekBack();
-//            } else {
-//                Objects.requireNonNull(activity.playerView.getPlayer()).seekForward();
-//            }
-//        }
+
         return false;
     }
     @Override
     public void onShowPress(@NonNull MotionEvent motionEvent) {
 
     }
-    @UnstableApi
+
+    @SuppressLint("SetTextI18n")
     @Override
-    public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
+    public boolean onDoubleTap(@NonNull MotionEvent e) {
+        float screenWidth = playerView.getWidth();
+        float tapX = e.getX();
+        if (inExclusionArea(e)&&!PlayerActivity.isControlLocked&&!PlayerActivity.isPlaylistVisible) {
+            if (activity.playerView.isControllerFullyVisible()) {
+                activity.playerView.hideController();
+            }
+            if (tapX < screenWidth / 2) {
+                seekForward.setVisibility(View.GONE);
+                dpSeekBack+=seekIncrementTime[preferences.getDefaultSeekSpeed()];
+                // Double tap on the left side, rewind
+                Objects.requireNonNull(playerView.getPlayer()).seekBack();
+                seekBack.setVisibility(View.VISIBLE);
+                seekBack.setText(dpSeekBack+"s");
+
+            } else {
+                seekBack.setVisibility(View.GONE);
+                dpSeekForward+=seekIncrementTime[preferences.getDefaultSeekSpeed()];
+                // Double tap on the right side, forward
+                Objects.requireNonNull(playerView.getPlayer()).seekForward();
+                seekForward.setVisibility(View.VISIBLE);
+                seekForward.setText(dpSeekForward+"s");
+
+            }
+            new Handler().postDelayed(this::hideSeekLabel,3000);
+        }
+        return super.onDoubleTap(e);
+    }
+
+    private void hideSeekLabel() {
+            seekForward.setVisibility(View.GONE);
+            seekBack.setVisibility(View.GONE);
+            dpSeekBack=0;
+            dpSeekForward=0;
+
+    }
+
+
+    @Override
+    public boolean onSingleTapConfirmed(@NonNull MotionEvent motionEvent) {
         if (activity.playerView.isControllerFullyVisible()) {
             activity.playerView.hideController();
+            hideSeekLabel();
         } else {
-            activity.playerView.showController();
-            activity.hidePlaylist();
+             activity.playerView.showController();
+             hideSeekLabel();
+                activity.hidePlaylist();
+
         }
         return true;
     }
 
-    @UnstableApi
     @Override
     public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
-        boolean isControlLocked=activity.isControlLocked();
-        boolean isPlaylistVisible=activity.isPlaylistVisible();
-        if (!isControlLocked&&!isPlaylistVisible) {
+
+        if (!PlayerActivity.isControlLocked &&!PlayerActivity.isPlaylistVisible && inExclusionArea(e1)) {
             activity.setStartOverVisibility();
             float deltaX = e2.getX() - e1.getX();
             float deltaY = e2.getY() - e1.getY();
@@ -174,8 +218,18 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         return false;
     }
 
+
+
     @Override
-    public void onLongPress(@NonNull MotionEvent motionEvent) {
+    public void onLongPress(@NonNull MotionEvent e) {
+        if (e.getPointerCount()<=1) {
+            if (!PlayerActivity.isControlLocked && !PlayerActivity.isPlaylistVisible && inExclusionArea(e)) {
+                playerView.hideController();
+                fastSeekText.setVisibility(View.VISIBLE);
+                Objects.requireNonNull(playerView.getPlayer()).setPlaybackSpeed(2f);
+            }
+
+        }
 
     }
 
@@ -183,7 +237,6 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     public boolean onFling(@Nullable MotionEvent motionEvent, @NonNull MotionEvent motionEvent1, float v, float v1) {
         return false;
     }
-    @UnstableApi
     @SuppressLint("ClickableViewAccessibility")
     private void onTouchListener(PlayerView playerView, PlayerActivity activity) {
         playerView.setOnTouchListener((view, motionEvent) -> {
@@ -209,5 +262,14 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     public  void resetScaleFactor(){
         scaleFactor=1f;
     }
-
+    private boolean inExclusionArea(MotionEvent firstEvent) {
+        float gestureExclusionBorder = dpToPx(EXCLUSION_AREA, playerView.getContext());
+        return !(firstEvent.getY() < gestureExclusionBorder) &&
+                !(firstEvent.getY() > playerView.getHeight() - gestureExclusionBorder) &&
+                !(firstEvent.getX() < gestureExclusionBorder) &&
+                !(firstEvent.getX() > playerView.getWidth() - gestureExclusionBorder);
+    }
+    public static float dpToPx(float dp, Context context) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
 }

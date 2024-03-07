@@ -172,6 +172,53 @@
         tools:ignore="ContentDescription" />
   </LinearLayout>
 
+  <TextView
+      android:id="@+id/dp_seek_forward"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/_20s"
+      android:textColor="@color/white"
+      android:textSize="15sp"
+      android:layout_marginEnd="100dp"
+      app:drawableTopCompat="@drawable/ic_fast_forward"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      android:visibility="gone"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/dp_seek_back"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/_20s"
+      android:layout_marginStart="100dp"
+      android:textColor="@color/white"
+      android:textSize="15sp"
+      android:visibility="gone"
+      app:drawableTopCompat="@drawable/ic_rewind_player"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/lp_fast_seek"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/fast_seek"
+      android:visibility="gone"
+      android:paddingEnd="10dp"
+      android:gravity="center_vertical"
+      android:paddingStart="10dp"
+      android:paddingTop="2dp"
+      android:paddingBottom="2dp"
+      android:background="@color/player_background"
+      android:textColor="@color/white"
+      android:textSize="15sp"
+      android:layout_marginTop="50dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:drawableLeftCompat="@drawable/ic_fast_forward" />
   <LinearLayout
       android:id="@+id/start_over_layout"
       android:layout_width="wrap_content"

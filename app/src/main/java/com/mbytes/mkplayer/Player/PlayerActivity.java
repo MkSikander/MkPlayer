@@ -577,6 +577,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void hideProgressBar() {
+        TextView fText=findViewById(R.id.lp_fast_seek);
+        if (player.getPlaybackParameters().speed!=preferences.getDefaultPlaybackSpeed()){
+            player.setPlaybackSpeed(playbackSpeeds[preferences.getDefaultPlaybackSpeed()]);
+            fText.setVisibility(View.GONE);
+
+        }
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             // Your existing code here
@@ -692,9 +698,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     }
 
-    public boolean isPlaylistVisible(){
-        return isPlaylistVisible;
-    }
+
 
 
 
