@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/zoom_layout">
+
 
     <androidx.media3.ui.AspectRatioFrameLayout
         android:id="@+id/exo_content_frame"
@@ -21,7 +18,7 @@
             android:background="@android:color/black" />
 
     </androidx.media3.ui.AspectRatioFrameLayout>
-</FrameLayout>
+
 
     <ProgressBar
         android:id="@id/exo_buffering"

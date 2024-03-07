@@ -6,12 +6,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 import com.mbytes.mkplayer.Player.PlayerActivity;
 import com.mbytes.mkplayer.R;
@@ -28,7 +28,8 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
     private final PlayerView playerView;
     private static  float scaleFactor;
     private final TextView zoomPercent;
-    private final FrameLayout zoomLayout;
+    @UnstableApi
+    private final AspectRatioFrameLayout zoomLayout;
     private long prevP;
     public static final float FULL_SWIPE_RANGE_SCREEN_RATIO = 0.66f;
     private final Preferences preferences;
@@ -41,7 +42,7 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
         this.volumeManager=volumeManager;
         this.playerView=activity.playerView;
         preferences=new Preferences(playerView.getContext());
-        zoomLayout=activity.findViewById(R.id.zoom_layout);
+        zoomLayout=activity.findViewById(R.id.exo_content_frame);
         zoomPercent=activity.findViewById(R.id.zoom_perc);
         scaleFactor=zoomLayout.getScaleY();
         gestureDetector=new GestureDetector(activity,this);
@@ -54,7 +55,8 @@ public class PlayerGestureHelper implements GestureDetector.OnGestureListener {
        @Override
        public boolean onScale(@NonNull ScaleGestureDetector detector) {
            if(!activity.isControlLocked()&&preferences.getZoomGesture()) {
-               scaleFactor *= detector.getScaleFactor();
+
+               scaleFactor *=detector.getScaleFactor();
                zoomPercent.setVisibility(View.VISIBLE);
                scaleFactor = Math.max(0.25f, Math.min(scaleFactor, 4f));
                zoomLayout.setScaleX(scaleFactor);
