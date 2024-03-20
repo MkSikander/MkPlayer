@@ -128,8 +128,11 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     //when video is deleted or renamed by user
     @Override
     public void onVideoLoadRequested() {
-        isRefreshing=true;
-        reloadVideos();
+        mHandler.postDelayed(()->{
+            isRefreshing=true;
+            reloadVideos();
+        },100);
+
     }
     private List<VideoItem> getVideosFromFolder(String folderPath) {
         List<VideoItem> videosInFolder = new ArrayList<>();

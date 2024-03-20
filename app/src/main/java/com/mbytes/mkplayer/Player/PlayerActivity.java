@@ -3,6 +3,7 @@ package com.mbytes.mkplayer.Player;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
+import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
 import static androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJson;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
@@ -21,7 +22,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -33,6 +33,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
@@ -45,6 +46,7 @@ import androidx.media3.exoplayer.SeekParameters;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.extractor.DefaultExtractorsFactory;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,6 +70,7 @@ public class PlayerActivity extends AppCompatActivity {
     private ExoPlayer player;
     public PlayerView playerView;
     public static boolean isControlLocked = false;
+    public static boolean isPlaylistVisible=false;
     private boolean startAutoPlay;
     private int startItemIndex;
     private long startPosition;
@@ -102,9 +105,10 @@ public class PlayerActivity extends AppCompatActivity {
     private BrightnessManager brightnessManager;
     private VolumeManager volumeManager;
     private PlayerGestureHelper playerGestureHelper;
-    private FrameLayout zoomLayout;
+    private AspectRatioFrameLayout zoomLayout;
     private Long skipPosition = 0L;
     private int tempPlaybackSpeed;
+
     private static boolean orientation;
     private RecyclerView playListRecyclerViewLand, playListRecyclerViewPortrait;
     private ConstraintLayout playlistLayoutLand, playlistLayoutPortrait;
@@ -133,6 +137,7 @@ public class PlayerActivity extends AppCompatActivity {
         outState.putLong(KEY_POSITION, startPosition);
     }
 
+    @SuppressLint("SetTextI18n")
     private void initViews(Bundle savedInstanceState) {
         preferences = new Preferences(PlayerActivity.this);
         tempPlaybackSpeed = preferences.getDefaultPlaybackSpeed();
@@ -151,7 +156,7 @@ public class PlayerActivity extends AppCompatActivity {
         ImageView playlistBackLand = findViewById(R.id.btn_back_land);
         ImageView playlistBackPortrait = findViewById(R.id.btn_back_portrait);
         ImageView prevBtn = findViewById(R.id.exo_prev);
-        zoomLayout = findViewById(R.id.zoom_layout);
+        zoomLayout = findViewById(R.id.exo_content_frame);
         ImageView backBtn = findViewById(R.id.video_back);
         title = findViewById(R.id.video_title);
         ImageView scalingBtn = findViewById(R.id.scaling);
@@ -220,38 +225,46 @@ public class PlayerActivity extends AppCompatActivity {
             zoomLayout.setScaleY(1f);
             playerGestureHelper.resetScaleFactor();
             int currentMode = playerView.getResizeMode();
-            int newMode = RESIZE_MODE_FIT; // Default to fit
+            TextView zoomText=findViewById(R.id.zoom_perc);
+            zoomText.setVisibility(View.VISIBLE);
+            // Default to fit
             switch (currentMode) {
                 case RESIZE_MODE_FIT:
-                    newMode = RESIZE_MODE_FILL;
+                    playerView.setResizeMode(RESIZE_MODE_FILL);
+                    zoomText.setText("Stretch");
+                    scalingBtn.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_zoom_fill));
                     break;
                 case RESIZE_MODE_FILL:
-                    newMode = RESIZE_MODE_ZOOM;
+                    playerView.setResizeMode(RESIZE_MODE_ZOOM);
+                    zoomText.setText("Crop");
+                    scalingBtn.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_zoom_zoom));
                     break;
                 case RESIZE_MODE_ZOOM:
-                    newMode = RESIZE_MODE_FIXED_HEIGHT;
+                    playerView.setResizeMode(RESIZE_MODE_FIT);
+                    zoomText.setText("100 %");
+                    scalingBtn.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_zoom_fixed_height));
                     break;
-                case androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT:
-                case androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH:
+                case RESIZE_MODE_FIXED_HEIGHT:
+                case RESIZE_MODE_FIXED_WIDTH:
+                    playerView.setResizeMode(RESIZE_MODE_FIT);
+                    zoomText.setText("100 %");
+                    scalingBtn.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_fit_screen));
                     break;
             }
-            playerView.setResizeMode(newMode);
+            new Handler().postDelayed(()-> zoomText.setVisibility(View.GONE),400);
+
         });
         startOver.setOnClickListener(view -> {
             player.seekTo(0L);
             startOverLayout.setVisibility(View.GONE);
         });
         cancelStartOver.setOnClickListener(view -> startOverLayout.setVisibility(View.VISIBLE));
-        playlistBackLand.setOnClickListener(view -> {
-            playlistLayoutLand.startAnimation(slideOutRight);
-            playlistLayoutLand.setVisibility(View.GONE);
-        });
-        playlistBackPortrait.setOnClickListener(view -> {
-            playlistLayoutPortrait.startAnimation(slideOutBottom);
-            playlistLayoutPortrait.setVisibility(View.GONE);
-        });
+        playlistBackLand.setOnClickListener(view -> hidePlaylist());
+        playlistBackPortrait.setOnClickListener(view -> hidePlaylist());
 
     }
+
+
 
     @SuppressLint("SourceLockedOrientationActivity")
     @OptIn(markerClass = UnstableApi.class)
@@ -345,6 +358,7 @@ public class PlayerActivity extends AppCompatActivity {
                     }
 
                 }
+
             }
         });
 
@@ -536,7 +550,6 @@ public class PlayerActivity extends AppCompatActivity {
         setLastVideos();
         super.onStop();
     }
-
     @Override
     public void onDestroy() {
         preferences.setDefaultPlaybackSpeed(tempPlaybackSpeed);
@@ -565,6 +578,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void hideProgressBar() {
+        TextView fText=findViewById(R.id.lp_fast_seek);
+        if (player.getPlaybackParameters().speed!=preferences.getDefaultPlaybackSpeed()){
+            player.setPlaybackSpeed(playbackSpeeds[preferences.getDefaultPlaybackSpeed()]);
+            fText.setVisibility(View.GONE);
+
+        }
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             // Your existing code here
@@ -641,6 +660,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void showPlaylistVideos() {
+        isPlaylistVisible=true;
         if (playerView.isControllerFullyVisible()) {
             playerView.hideController();
         }
@@ -648,21 +668,26 @@ public class PlayerActivity extends AppCompatActivity {
         vol_layout.setVisibility(View.GONE);
 
         if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+            playlistLayoutLand.getLayoutParams().width= playerView.getMeasuredWidth()/2;
+            playlistLayoutLand.requestLayout();
             playlistLayoutLand.setVisibility(View.VISIBLE);
             playlistLayoutLand.startAnimation(slideInRight);
             playListRecyclerViewLand.setLayoutManager(new LinearLayoutManager(this));
             PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
             playListRecyclerViewLand.setAdapter(adapter);
+            playListRecyclerViewLand.scrollToPosition(position);
         } else {
             playlistLayoutPortrait.setVisibility(View.VISIBLE);
             playlistLayoutPortrait.startAnimation(slideInBottom);
             playListRecyclerViewPortrait.setLayoutManager(new LinearLayoutManager(this));
             PlaylistVideoAdapter adapter = new PlaylistVideoAdapter(this, playerVideos, position);
             playListRecyclerViewPortrait.setAdapter(adapter);
+            playListRecyclerViewPortrait.scrollToPosition(position);
         }
     }
 
     public void hidePlaylist() {
+        isPlaylistVisible=false;
         if (playlistLayoutPortrait.getVisibility() == View.VISIBLE) {
             playlistLayoutPortrait.startAnimation(slideOutBottom);
             playlistLayoutPortrait.setVisibility(View.GONE);
@@ -673,6 +698,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
     }
+
+
+
 
 
 }

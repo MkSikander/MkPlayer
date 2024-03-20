@@ -218,7 +218,7 @@
     <string name="new_tag">New</string>
     <string name="_9">9</string>
     <string name="back">back</string>
-    <string name="delete_the_following_file">Delete the following Video</string>
+    <string name="delete_the_following_file">Delete following video</string>
     <string name="delete_permanently">Delete Permanently</string>
     <string name="name_a_to_z">Title A to Z</string>
     <string name="title_z_to_a">Title Z to A</string>
@@ -228,5 +228,6 @@
     <string name="show_video_count">Show video count</string>
     <string name="_4444">4444</string>
     <string name="this_is_title_of_video">this is title of video</string>
+    <string name="_20s">20s</string>
 
 </resources>

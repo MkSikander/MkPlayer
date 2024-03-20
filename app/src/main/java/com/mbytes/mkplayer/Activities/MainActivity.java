@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
     }
     @Override
     public void onVideoLoadRequested() {
-        loadVideoFolders();
+        mHandler.postDelayed(this::loadVideoFolders,200);
     }
     @SuppressLint("NotifyDataSetChanged")
     @OptIn(markerClass = UnstableApi.class)

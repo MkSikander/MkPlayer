@@ -65,7 +65,6 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
           ((PlayerActivity) mContext).playThis(position);
           mSelectedPosition=position;
           notifyDataSetChanged();
-
       });
         holder.removeVideoFromList.setOnClickListener(view -> {
             if (position>=0&&position<mVideos.size()){
@@ -86,7 +85,6 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
                     ((PlayerActivity)mContext).updateList(mVideos);
                     notifyDataSetChanged();
                 }
-
             }
         });
     }
@@ -103,7 +101,6 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
         Context context;
         @UnstableApi
 
-
         @OptIn(markerClass = UnstableApi.class)
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,7 +108,6 @@ public class PlaylistVideoAdapter extends RecyclerView.Adapter<PlaylistVideoAdap
             removeVideoFromList=itemView.findViewById(R.id.remove_vid_from_playlist);
             videoName = itemView.findViewById(R.id.playlist_video_name);
             context= itemView.getContext();
-
 
         }
     }
