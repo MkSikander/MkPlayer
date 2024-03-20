@@ -10,25 +10,12 @@ import androidx.media3.common.C;
 public class Preferences {
 
     private static final String MYPREF = "mypref";
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
     public Preferences(Context context) {
         preferences = context.getSharedPreferences(MYPREF, MODE_PRIVATE);
     }
 
-    public void setString(String key, String value) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(key, value);
-        editor.apply();
-    }
-
-    public int getInt(String key){
-        return preferences.getInt(key,0);
-    }
-    public void setInt(String key,int value){
-        SharedPreferences.Editor editor=preferences.edit();
-        editor.putInt(key, value);
-    }
 
     public String getString(String key) {
         return preferences.getString(key, "");
@@ -49,6 +36,16 @@ public class Preferences {
         editor.putBoolean(key, value);
         editor.apply();
     }
+    public void setIsAnyVideoPlayed(boolean value){
+        String key="is_any_video_played";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+    public boolean getIsAnyVideoPlayed(){
+        String key="is_any_video_played";
+        return preferences.getBoolean(key,false);
+    }
 
 
     public void setLastVideos(String key,String key1,int position,String json){
@@ -58,9 +55,6 @@ public class Preferences {
         editor.apply();
     }
 
-    public String getVideoList(String key){
-        return preferences.getString(key,"");
-    }
 
     public int getVideoPosition(String key){
         return preferences.getInt(key, C.INDEX_UNSET);
@@ -91,6 +85,186 @@ public class Preferences {
         editor.putString(key, SortOption);
         editor.apply();
     }
+    public void setSeekGesture(boolean value){
+        String key="seek_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getSeekGesture(){
+        String key="seek_gesture_setting";
+       return preferences.getBoolean(key,true);
+    }
+    public void setScrollGesture(boolean value){
+        String key="scroll_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getScrollGesture(){
+        String key="scroll_gesture_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setZoomGesture(boolean value){
+        String key="zoom_gesture_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getZoomGesture(){
+        String key="zoom_gesture_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setResumePref(boolean value){
+        String key="resume_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getResumePref(){
+        String key="resume_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setFastSeekPref(boolean value){
+        String key="fast_seek_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getFastSeekPref(){
+        String key="fast_seek_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setBrightnessPref(boolean value){
+        String key="brightness_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getBrightnessPref(){
+        String key="brightness_setting";
+        return preferences.getBoolean(key,true);
+    }
+    public void setAutoPlayPref(boolean value){
+        String key="autoplay_setting";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getAutoPlayPref(){
+        String key="autoplay_setting";
+        return preferences.getBoolean(key,true);
+    }
+
+    public void setCurrentBrightnessPref(float value){
+        String key="previous_brightness";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putFloat(key,value);
+        editor.apply();
+    }
+    public float getPreviousBrightnessPref(){
+        String key="previous_brightness";
+        return preferences.getFloat(key,-2f);
+    }
+    public void setDefaultPlaybackSpeed(int value){
+        String key="default_playback_speed";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key,value);
+        editor.apply();
+    }
+    public int getDefaultPlaybackSpeed(){
+        String key="default_playback_speed";
+        return preferences.getInt(key,3);
+    }
+    public void setDefaultSeekSpeed(int value){
+        String key="default_seek_speed";
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt(key,value);
+        editor.apply();
+    }
+    public int getDefaultSeekSpeed(){
+        String key="default_seek_speed";
+        return preferences.getInt(key,0);
+    }
 
 
+    public void setDefaultOrientation(int i) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt("def_orient",i);
+        editor.apply();
+    }
+
+    public int getDefaultOrientation() {
+        return preferences.getInt("def_orient",2);
+    }
+
+
+    public void setContrast(boolean value) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("contrast",value);
+        editor.apply();
+    }
+
+    public String getStoragePermission() {
+        return preferences.getString("Allow","");
+    }
+    public void setStoragePermission(String value){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putString("Allow",value);
+        editor.apply();
+    }
+
+    public void setDefaultTheme(int value) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt("DefTheme",value);
+        editor.apply();
+    }
+
+    public int getDefaultTheme() {
+        return preferences.getInt("DefTheme",-1);
+    }
+
+    public void setSelectedTheme(int i) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putInt("selected_theme",i);
+        editor.apply();
+    }
+    public int getSelectedTheme(){
+        return preferences.getInt("selected_theme",0);
+    }
+
+    public void updateFolders(boolean b) {
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("update_folder",b);
+        editor.apply();
+    }
+    public boolean isUpdateFolder(){
+        return preferences.getBoolean("update_folder",false);
+
+    }
+    public void setShowNewTag(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("show_new_tag",b);
+        editor.apply();
+    }
+    public boolean isShowNewTag() {
+       return preferences.getBoolean("show_new_tag",true);
+    }
+    public void setShowVidCount(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("show_video_count",b);
+        editor.apply();
+    }
+    public boolean isShowVideoCount() {
+        return preferences.getBoolean("show_video_count",true);
+    }
+
+    public boolean isShowNewVideoTag() {
+        return preferences.getBoolean("new_video_tag",true);
+    }
+    public void setShowNewVideoTag(boolean b){
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putBoolean("new_video_tag",b);
+        editor.apply();
+    }
 }

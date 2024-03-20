@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -26,7 +27,8 @@
                 android:layout_height="50dp"
                 android:padding="10dp"
                 android:background="@drawable/transparent_circle_background"
-                android:src="@drawable/ic_arrow_left" />
+                android:src="@drawable/ic_arrow_left_white"
+                android:contentDescription="@string/todo" />
 
             <TextView
                 android:id="@+id/video_title"
@@ -39,50 +41,61 @@
                 android:text="@string/title"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
-
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/playback_speed"
+                android:padding="10dp"
+                android:src="@drawable/ic_speed"
+                android:contentDescription="@string/todo"
+                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:id="@+id/audio_track"
+                android:padding="10dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_audio_track"
-                android:layout_marginEnd="20dp"
+                android:background="@drawable/transparent_circle_background"
+                android:contentDescription="@string/todo"
                 />
             <ImageView
                 android:layout_width="wrap_content"
                 android:id="@+id/exo_subtitle_track"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
                 android:src="@drawable/ic_subtitle_track"
-                android:layout_marginEnd="20dp"
+                android:contentDescription="@string/todo"
                 />
-            <!--            <ImageView-->
-            <!--                android:id="@+id/video_list"-->
-            <!--                android:layout_width="40dp"-->
-            <!--                android:layout_height="40dp"-->
-            <!--                android:layout_gravity="center_vertical"-->
-            <!--                android:src="@drawable/ic_playlist" />-->
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_playlist"
+                android:id="@+id/playlist"
+                android:padding="10dp"
+                android:background="@drawable/transparent_circle_background"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/todo" />
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/video_more"-->
-            <!--                android:layout_width="30dp"-->
-            <!--                android:layout_height="30dp"-->
-            <!--                android:layout_gravity="center_vertical"-->
-            <!--                android:src="@drawable/ic_more_wight" />-->
 
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview_icon"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/toolbar"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" />
-
-        <!--        <include layout="@layout/swipe_zoom_design" />-->
+            android:layout_above="@+id/bottom_controls"
+            android:padding="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:id="@+id/rotate"
+            android:background="@drawable/transparent_circle_background"
+            android:src="@drawable/ic_screen_rotation"
+            android:contentDescription="@string/todo" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/bottom_controls"
             android:layout_alignParentBottom="true"
             android:background="#66000000"
             android:orientation="vertical">
@@ -120,7 +133,6 @@
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/exo_duration"
                     android:layout_toEndOf="@+id/exo_position"
-                    app:played_color="?attr/colorPrimary"
                     app:scrubber_drawable="@drawable/scrubber" />
             </RelativeLayout>
 
@@ -136,30 +148,35 @@
                 <ImageView
                     android:id="@+id/lock"
                     android:layout_width="24dp"
+                    android:background="@drawable/transparent_circle_background"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_lock_open" />
+                    android:src="@drawable/ic_lock_open"
+                    android:contentDescription="@string/todo" />
 
                 <ImageView
                     android:id="@+id/exo_rew"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:src="@drawable/rewind_back" />
+                    android:src="@drawable/ic_rewind_player"
+                    android:contentDescription="@string/todo" />
 
                 <ImageView
                     android:id="@+id/exo_prev"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_skip_prev" />
+                    android:src="@drawable/ic_skip_prev"
+                    android:contentDescription="@string/todo" />
 
                 <ImageView
                     android:id="@+id/exo_play_pause"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_play" />
+                    android:src="@drawable/ic_play"
+                    android:contentDescription="@string/todo" />
 
 
                 <ImageView
@@ -167,21 +184,24 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_skip_next" />
+                    android:src="@drawable/ic_skip_next"
+                    android:contentDescription="@string/todo" />
 
                 <ImageView
                     android:id="@+id/exo_ffwd"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:src="@drawable/rewind_forward" />
+                    android:src="@drawable/ic_fast_forward"
+                    android:contentDescription="@string/todo" />
 
                 <ImageView
                     android:id="@+id/scaling"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_fit_screen" />
+                    android:src="@drawable/ic_fit_screen"
+                    android:contentDescription="@string/todo" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
@@ -190,11 +210,16 @@
         android:id="@+id/unlock"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        tools:visibility="visible"
+        android:padding="10dp"
+        android:background="@drawable/transparent_circle_background"
         android:scaleType="centerInside"
         android:src="@drawable/ic_lock"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:contentDescription="@string/todo" />
+
 
 </RelativeLayout>

@@ -227,7 +227,7 @@ public class LibrariesForLibs extends AbstractExternalDependencyFactory {
             public Provider<String> getActivity() { return getVersion("activity"); }
 
             /**
-             * Returns the version associated to this alias: agp (8.3.0-beta02)
+             * Returns the version associated to this alias: agp (8.3.0-rc02)
              * If the version is a rich version and that its not expressible as a
              * single version string, then an empty string is returned.
              * This version was declared in catalog libs.versions.toml
@@ -267,7 +267,7 @@ public class LibrariesForLibs extends AbstractExternalDependencyFactory {
             public Provider<String> getEspressoCore() { return getVersion("espressoCore"); }
 
             /**
-             * Returns the version associated to this alias: exoplayer (1.2.0)
+             * Returns the version associated to this alias: exoplayer (1.2.1)
              * If the version is a rich version and that its not expressible as a
              * single version string, then an empty string is returned.
              * This version was declared in catalog libs.versions.toml

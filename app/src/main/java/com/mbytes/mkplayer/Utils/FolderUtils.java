@@ -7,20 +7,16 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mbytes.mkplayer.Model.VideoFolder;
 import com.mbytes.mkplayer.R;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,7 +58,7 @@ public class FolderUtils {
         });
         TextView renameTextView = bottomSheetView.findViewById(R.id.layout_rename);
         renameTextView.setOnClickListener(v -> {
-            renameVideo(context, videoFolder);
+            renameFolder(context, videoFolder);
             bottomSheetDialog.dismiss();
         });
 
@@ -76,43 +72,32 @@ public class FolderUtils {
 
     @NonNull
     private static MaterialAlertDialogBuilder getMaterialAlertDialogBuilder(Context context, VideoFolder videoFolder) {
-        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context,R.style.ThemeOverlay_App_MaterialAlertDialog);
         dialogBuilder.setTitle("Are You Sure");
         dialogBuilder.setMessage("Deleted video will not be restored");
         dialogBuilder.setPositiveButton("Delete", (dialogInterface, i) -> deleteFolder(videoFolder));
-
         return dialogBuilder;
     }
 //renaming Folder
-    private static void renameVideo(Context context, VideoFolder videoFolder) {
-        MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context);
+    private static void renameFolder(Context context, VideoFolder videoFolder) {
+        MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context,R.style.ThemeOverlay_App_MaterialAlertDialog);
         View customView = LayoutInflater.from(context).inflate(R.layout.custom_rename_dialog, null);
         alertDialogBuilder.setView(customView);
-
         // Access views in your custom layout
         TextView titleTextView = customView.findViewById(R.id.dialog_title);
         EditText newNameEditText = customView.findViewById(R.id.new_name_edittext);
-        Button renameButton = customView.findViewById(R.id.rename_button);
-        Button cancelButton=customView.findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(view -> alertDialog.dismiss());
-
+        alertDialogBuilder.setNegativeButton("Cancel",((dialogInterface, i) -> alertDialog.dismiss()));
         // Customize the dialog title if needed
         titleTextView.setText(R.string.rename_folder);
-
-
-        renameButton.setOnClickListener(view -> {
+        alertDialogBuilder.setPositiveButton("Rename", (dialogInterface, i) -> {
             String newName = newNameEditText.getText().toString().trim();
             renameFolder(videoFolder.getFolderPath(), newName);
-
-
-        });
-
-
+                });
         alertDialog = alertDialogBuilder.create();
         // Create and show the dialog
         alertDialog.show();
     }
-    private static void renameFolder( String currentFolderPath, String newName) {
+    private static void renameFolder(String currentFolderPath, String newName) {
         File currentFolder = new File(currentFolderPath);
         File parentDirectory = currentFolder.getParentFile();
 
@@ -136,7 +121,6 @@ public class FolderUtils {
     // Folder Delete
     private static void deleteFolder( VideoFolder videoFolder) {
         File folder = new File(videoFolder.getFolderPath());
-
         if (folder.exists() && folder.isDirectory()) {
             File[] files = folder.listFiles();
 
@@ -210,10 +194,9 @@ public class FolderUtils {
     @SuppressLint("SetTextI18n")
     private static void showProperties(Context context, VideoFolder videoFolder) {
 
-        MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context);
+        MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context,R.style.ThemeOverlay_App_MaterialAlertDialog);
         View customView = LayoutInflater.from(context).inflate(R.layout.dialog_info_folder, null);
         alertDialogBuilder.setView(customView);
-
         // Access views in your custom layout
         TextView titleTextView = customView.findViewById(R.id.info_title);
         TextView nameTextView = customView.findViewById(R.id.info_name);

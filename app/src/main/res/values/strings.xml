@@ -13,7 +13,7 @@
     <string name="allow_access">Allow Access</string>
     <string name="permission_text">To Play Videos Please Give Storage Permission</string>
     <string name="cancel">Cancel</string>
-    <string name="okay">Okay</string>
+    <string name="okay">OK</string>
     <string name="file_name">File Name:</string>
     <string name="file_info">File Info</string>
     <string name="rename_video">Rename Video</string>
@@ -60,13 +60,13 @@
     <string name="quick_settings">Quick Settings</string>
     <string name="autoplay_settings">Autoplay</string>
     <string name="autoplay_settings_description">Automatically play the next video in the current folder</string>
-    <string name="remember_brightness_level">Remember brightness level</string>
+    <string name="remember_brightness_level">Remember brightness</string>
     <string name="remember_brightness_level_description">Remember brightness level between playback sessions</string>
     <string name="remember_selections">Remember selections</string>
     <string name="remember_selections_description">Remember selections for each file like audio track, subtitle track, etc</string>
     <string name="resume">Resume</string>
     <string name="resume_description">Select whether to resume played videos from the point where you stopped</string>
-    <string name="seek_gesture">Seek gesture</string>
+    <string name="seek_gesture">Seek Gesture</string>
     <string name="seek_gesture_description">Swipe horizontally to seek forwards or backwards</string>
     <string name="select_audio_track">Select audio track</string>
     <string name="select_subtitle_track">Select subtitle track</string>
@@ -91,7 +91,7 @@
     <string name="dynamic_theme_description">Apply colors from system wallpaper to the application theme</string>
     <string name="controls_lock">Lock controls</string>
     <string name="controls_unlock">Unlock controls</string>
-    <string name="select_playback_speed">Select playback speed</string>
+    <string name="select_playback_speed">Select Playback Speed</string>
     <string name="audio">Audio</string>
     <string name="preferred_audio_lang">Preferred audio language</string>
     <string name="preferred_audio_lang_description">Language of the audio track you want to use by default</string>
@@ -158,7 +158,7 @@
     <string name="embedded_styles">Embedded styles</string>
     <string name="embedded_styles_desc">Apply the embedded styles that are present in subtitle files, such as ASS and so on</string>
     <string name="controller_timeout">Controller timeout</string>
-    <string name="seek_increment">Seek increment</string>
+    <string name="seek_increment">Seek Increment/Decrement</string>
     <string name="seconds">%1$s seconds</string>
     <string name="delete_file">The following file will be deleted permanently</string>
     <string name="subtitle_text_encoding">Subtitle text encoding</string>
@@ -172,7 +172,7 @@
     <string name="hundred_percent">100%</string>
     <string name="zoom_gesture">Zoom gesture</string>
     <string name="zoom_gesture_description">Pinch to zoom the video</string>
-    <string name="high_contrast_dark_theme">High contrast dark theme</string>
+    <string name="high_contrast_dark_theme">High contrast</string>
     <string name="high_contrast_dark_theme_desc">Use pure black background for dark theme</string>
     <string name="audio_desc">Audio playback options</string>
     <string name="pause_on_headset_disconnect">Pause on disconnect</string>
@@ -204,4 +204,30 @@
     <string name="rename_folder">Rename Folder</string>
     <string name="_5555">5555</string>
     <string name="seek_text">+00:30</string>
+    <string name="start_over">Start Over</string>
+    <string name="continue_from_where_you_left">Continue from where you left</string>
+    <string name="percent">150%</string>
+    <string name="desc">desc</string>
+    <string name="playlist">Playlist</string>
+    <string name="player_settings">Player</string>
+    <string name="player_control_player_appearance">Player control,Player appearance</string>
+    <string name="player">Player</string>
+    <string name="_1x">1x</string>
+    <string name="seek_increment_text">10 Sec</string>
+    <string name="_10_seconds">10 Seconds</string>
+    <string name="new_tag">New</string>
+    <string name="_9">9</string>
+    <string name="back">back</string>
+    <string name="delete_the_following_file">Delete following video</string>
+    <string name="delete_permanently">Delete Permanently</string>
+    <string name="name_a_to_z">Title A to Z</string>
+    <string name="title_z_to_a">Title Z to A</string>
+    <string name="old_to_new"> Old to New</string>
+    <string name="date_new_to_old">New to Old</string>
+    <string name="show_new_tag">Show new tag</string>
+    <string name="show_video_count">Show video count</string>
+    <string name="_4444">4444</string>
+    <string name="this_is_title_of_video">this is title of video</string>
+    <string name="_20s">20s</string>
+
 </resources>

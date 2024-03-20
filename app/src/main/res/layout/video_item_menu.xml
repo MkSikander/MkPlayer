@@ -32,9 +32,9 @@ android:layout_height="match_parent"
         <TextView
             android:layout_width="match_parent"
             android:id="@+id/layout_rename"
+            android:textColor="?attr/colorTertiaryFixed"
             android:layout_height="wrap_content"
             android:text="@string/rename"
-            android:textColor="?attr/colorTertiary"
             android:layout_marginStart="30dp"
             android:textSize="16sp"/>
 
@@ -57,9 +57,9 @@ android:layout_height="match_parent"
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/layout_delete"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_height="wrap_content"
         android:text="@string/delete"
-        android:textColor="?attr/colorTertiary"
         android:layout_marginStart="30dp"
         android:textSize="16sp"/>
 
@@ -84,8 +84,8 @@ android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/share"
+        android:textColor="?attr/colorTertiaryFixed"
         android:id="@+id/layout_share"
-        android:textColor="?attr/colorTertiary"
         android:layout_marginStart="30dp"
         android:textSize="16sp"/>
 
@@ -113,9 +113,9 @@ android:layout_height="match_parent"
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/layout_info"
+        android:textColor="?attr/colorTertiaryFixed"
         android:layout_height="wrap_content"
         android:text="@string/info"
-        android:textColor="?attr/colorTertiary"
         android:layout_marginStart="30dp"
         android:textSize="16sp"/>
 

@@ -7,9 +7,14 @@ public class VolumeManager {
 
     private AudioManager audioManager;
     private LoudnessEnhancer loudnessEnhancer;
+    public static final int MAX_VOLUME_BOOST = 2000;
+    private float currentVolume;
+    private int maxStreamVolume;
 
     public VolumeManager(AudioManager audioManager) {
         this.audioManager = audioManager;
+        this.maxStreamVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        this.currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
     public LoudnessEnhancer getLoudnessEnhancer() {
@@ -35,7 +40,7 @@ public class VolumeManager {
     }
 
     public int getMaxStreamVolume() {
-        return audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        return maxStreamVolume;
     }
 
     public float getCurrentVolume() {
@@ -51,11 +56,11 @@ public class VolumeManager {
     }
 
     private float getCurrentLoudnessGain() {
-        return (getCurrentVolume() - getMaxStreamVolume()) * (MAX_VOLUME_BOOST / getMaxStreamVolume());
+        return (getCurrentVolume() - getMaxStreamVolume()) * ((float) MAX_VOLUME_BOOST / getMaxStreamVolume());
     }
 
     public int getVolumePercentage() {
-        return (int) ((getCurrentVolume() / getMaxStreamVolume()) * 100);
+        return (int) ((getCurrentVolume() / getMaxStreamVolume()) * 16);
     }
 
     @SuppressWarnings("deprecation")
@@ -84,16 +89,12 @@ public class VolumeManager {
             }
         }
     }
-
     public void increaseVolume(boolean showVolumePanel) {
         setVolume(getCurrentVolume() + 1, showVolumePanel);
     }
-
     public void decreaseVolume(boolean showVolumePanel) {
         setVolume(getCurrentVolume() - 1, showVolumePanel);
     }
 
-    public static final int MAX_VOLUME_BOOST = 2000;
-    private float currentVolume;
 }
 
