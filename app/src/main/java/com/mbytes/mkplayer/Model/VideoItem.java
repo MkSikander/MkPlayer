@@ -27,10 +27,10 @@ public class VideoItem implements Comparable<VideoItem>, Parcelable {
         this.videoResolution=videoResolution;
         this.videoType=videoType;
     }
-    public VideoItem(String videoPath, String videoDuration) {
+    public VideoItem(String videoPath, String videoDuration,String videoName) {
         this.videoPath=videoPath;
         this.videoDuration=videoDuration;
-        this.videoName = ""; // Default value for videoName
+        this.videoName = videoName; // Default value for videoName
         this.dateAdded = new Date(); // Default value for dateAdded
         this.videoSize = 0; // Default value for videoSize
         this.videoType = ""; // Default value for videoType

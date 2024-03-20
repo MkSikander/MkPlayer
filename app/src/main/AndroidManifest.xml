@@ -48,7 +48,15 @@
         <activity
             android:name=".Player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"
-            android:exported="true" />
+            android:exported="true"
+            >
+            <intent-filter>
+            <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="video/*" android:scheme="content"/>
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".Activities.VideosListActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|layoutDirection"

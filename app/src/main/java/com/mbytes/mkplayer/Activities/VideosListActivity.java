@@ -37,7 +37,6 @@ public class VideosListActivity extends AppCompatActivity implements VideoListAd
     private Handler mHandler;
     private Preferences sharedPreferences;
     private RecyclerView videosRecyclerview;
-
     private String nameOfFolder,folderPath;
     private TextView videoCount;
     private boolean isLoadVideoExecuted,isRefreshing;

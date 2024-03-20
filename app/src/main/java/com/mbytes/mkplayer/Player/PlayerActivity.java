@@ -9,13 +9,18 @@ import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.convertVideoListToJso
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setAudioTrack;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setPlaybackSpeed;
 import static com.mbytes.mkplayer.Player.Utils.PlayerUtils.setSubTrack;
-
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
@@ -28,7 +33,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -50,7 +54,6 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.mbytes.mkplayer.Model.VideoItem;
 import com.mbytes.mkplayer.Player.Utils.BrightnessManager;
 import com.mbytes.mkplayer.Player.Utils.PlayerGestureHelper;
@@ -59,7 +62,6 @@ import com.mbytes.mkplayer.Player.Utils.VolumeManager;
 import com.mbytes.mkplayer.R;
 import com.mbytes.mkplayer.Player.Utils.PlayerUtils;
 import com.mbytes.mkplayer.Utils.Preferences;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -186,10 +188,39 @@ public class PlayerActivity extends AppCompatActivity {
         if (newPosition > -1) {
             playThis(newPosition);
         }
+        try {
+            Intent intent = getIntent();
+            if (intent.getData() != null && intent.getData().getScheme() != null &&
+                    intent.getData().getScheme().equalsIgnoreCase("content")) {
+                final Cursor cursor = getContentResolver().query(intent.getData(),
+                        new String[]{(MediaStore.Video.Media.DATA)},
+                        null, null, null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    try {
+                        final String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+                        final File file = new File(path);
+                        final VideoItem videoItem = new VideoItem(path, "0", file.getName());
+                        playerVideos.add(videoItem);
+                        cursor.close();
+                    } catch (Exception e) {
+                        final String tempPath = getPathFromURI(this, intent.getData());
+                        final File tempFile = new File(tempPath);
+                        final VideoItem video = new VideoItem(tempPath, "0L", tempFile.getName());
+                        playerVideos.add(video);
+                        cursor.close();
+                    }
+                }
+                position = 0;
+            } else {
+                position = getIntent().getIntExtra("position", 1);
+                playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
+            }
+        }
+        catch (Exception ignored){}
 
         playerGestureHelper = new PlayerGestureHelper(this, brightnessManager, volumeManager);
-        position = getIntent().getIntExtra("position", 1);
-        playerVideos = Objects.requireNonNull(getIntent().getExtras()).getParcelableArrayList("videoArrayList");
+
         nextBtn.setOnClickListener(view -> {
             PlayNext();
             setCurrentPosition();
@@ -698,8 +729,25 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
     }
+    private String getPathFromURI(Context context, Uri uri) {
+        String filePath = "";
+        // ExternalStorageProvider
+        String docId = DocumentsContract.getDocumentId(uri);
+        String[] split = docId.split(":");
+        String type = split[0];
 
-
+        if ("primary".equalsIgnoreCase(type)) {
+            return Environment.getExternalStorageDirectory().getAbsolutePath()  + "/" + split[1];
+        } else {
+            // getExternalMediaDirs() added in API 21
+            File[] external = context.getExternalMediaDirs();
+            if (external.length > 1) {
+                filePath = external[1].getAbsolutePath();
+                filePath = filePath.substring(0, filePath.indexOf("Android")) + split[1];
+            }
+            return filePath; // Updated return statement
+        }
+    }
 
 
 

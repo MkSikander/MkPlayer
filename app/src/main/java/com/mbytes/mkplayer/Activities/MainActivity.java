@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements FolderSort.OnSort
                 String videoPath = cursor.getString(pathColumn);
                 String videoDuration = cursor.getString(durationColumn);
                 if (videoPath.lastIndexOf(File.separator) == folderPath.length() && videoDuration != null) {
-                    VideoItem videoItem = new VideoItem(videoPath, videoDuration);
+                    VideoItem videoItem = new VideoItem(videoPath, videoDuration,"");
                     videosInFolder.add(videoItem);
                 }
             }
